@@ -107,12 +107,12 @@ namespace WoWGuildOrganizer
 
                         if (result.Groups["Race"].Success)
                         {
-                            member.Race = result.Groups["Race"].Value;
+                            member.Race = Converter.ConvertRace(result.Groups["Race"].Value);
                         }
 
                         if (result.Groups["Class"].Success)
                         {
-                            member.Class = result.Groups["Class"].Value;
+                            member.Class = Converter.ConvertClass(result.Groups["Class"].Value);
                         }
 
                         if (result.Groups["Level"].Success)
@@ -122,6 +122,7 @@ namespace WoWGuildOrganizer
 
                         if (result.Groups["AchPts"].Success)
                         {
+                            //TODO:  This is current broke on Blizzard's side... always returns 0.
                             member.AchievementPoints = Convert.ToInt32(result.Groups["AchPts"].Value);
                         }
 

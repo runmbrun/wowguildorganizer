@@ -74,6 +74,14 @@ namespace WoWGuildOrganizer
 
 
                     String DataString = getSiteData.Data;
+
+                    // clear out the first part...
+                    Int32 count = DataString.IndexOf(@"""items"":{");
+                    if (count != -1)
+                    {
+                        DataString = DataString.Substring(count + 9);
+                    }
+
                     String Search = @"""(?<Slot>\w+)"":{.*?""id"":(?<Id>\d+).*?""name"":""(?<Name>[A-Za-z ]+).*?""quality"":(?<Quality>\d+).*?""tooltipParams"":{(?<ToolTips>.*?)}.*?}";
                     Regex test = new Regex(Search, RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
 
