@@ -116,13 +116,17 @@ namespace WoWGuildOrganizer
             // 2. MissingEnchant
             //   Enchants Example:  "enchant":4209
             // Ignore the slots that can never have enchants/gems
-            if (Slot != "shirt" && Slot != "tabard" && Slot != "neck" && Slot != "waist" && 
+            if (Slot != "shirt" && Slot != "tabard" && Slot != "neck" && Slot != "waist" && Slot != "ranged" && Slot != "offHand" && 
                 !Slot.StartsWith("trinket") && !Slot.StartsWith("finger"))
             {
                 if (!_toolTips.Contains("enchant"))
                 {
                     MissingEnchant = "1";
                 }
+            }
+            else if (Slot != "offHand")
+            {
+                //TODO - offHand can have an enchant if it's a shield, but can't if it's not
             }
 
             // 3. MissingGem
@@ -134,12 +138,14 @@ namespace WoWGuildOrganizer
                 {
                     MissingGem = "1";
                 }
-            }
-
-            
+            }                
                 
-                
-            //TODO - Profession audits -> Rings if Enchanter, Legs if LW, Gems if JC, Sockets if BS
+            //TODO - Profession audits -> 
+            //  1. 2 x Ring enchants -> if Enchanter
+            //  2. 1 x Bracer special enchant -> if Leatherworker
+            //  3. 3 x Special Gems -> if Jewelcrafter
+            //  4. 2 x Sockets (bracer and hands) -> if Blacksmith
+            //  5. 1 x cloak special enchant -> if Tailor
 
         }
     }

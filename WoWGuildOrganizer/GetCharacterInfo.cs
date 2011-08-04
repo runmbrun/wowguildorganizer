@@ -28,6 +28,9 @@ namespace WoWGuildOrganizer
             get { return _equipedilevel; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public GetCharacterInfo()
         {            
             MaxiLevel = 0;

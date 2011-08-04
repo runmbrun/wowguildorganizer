@@ -63,6 +63,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Converter.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -78,6 +79,7 @@
     <Compile Include="GetCharacterInfo.cs" />
     <Compile Include="GetCharacterItemInfo.cs" />
     <Compile Include="GetGuildInfo.cs" />
+    <Compile Include="GetItemInfo.cs" />
     <Compile Include="GetWebSiteData.cs" />
     <Compile Include="GuildMember.cs" />
     <Compile Include="GuildMemberGroup.cs" />
