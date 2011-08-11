@@ -89,6 +89,32 @@ namespace WoWGuildOrganizer
             //TODO - set color of line
             _quality = q;
         }
+
+        private Boolean _canenchant;
+        public void CanEnchant(Boolean e)
+        {
+            _canenchant = e;
+        }
+        public Boolean CanEnchant()
+        {
+            return _canenchant;
+        }
+
+        private Boolean _cansocket;
+        public void CanSocket(Boolean s)
+        {
+            _cansocket = s;
+        }
+        public Boolean CanSocket()
+        {
+            return _cansocket;
+        }
+
+        private Int32 _socketcount;
+        public void SocketCount(Int32 s)
+        {
+            _socketcount = s;
+        }
         
         private String _toolTips;
         public void SetToolTips(String t)
@@ -102,7 +128,12 @@ namespace WoWGuildOrganizer
             //  4. LastUpdated
 
 
+            
+
+
             // 1. MissingItem
+            /*  TODO - this currently can't be done.
+             * This is checked for in the FormItemAudit.PassData() function.
             if (Name.Length == 0)
             {
                 // Only Missing if not one of these two slots
@@ -112,21 +143,16 @@ namespace WoWGuildOrganizer
                     MissingItem = "1";
                 }
             }
+            */
 
             // 2. MissingEnchant
             //   Enchants Example:  "enchant":4209
-            // Ignore the slots that can never have enchants/gems
-            if (Slot != "shirt" && Slot != "tabard" && Slot != "neck" && Slot != "waist" && Slot != "ranged" && Slot != "offHand" && 
-                !Slot.StartsWith("trinket") && !Slot.StartsWith("finger"))
+            if (CanEnchant())
             {
                 if (!_toolTips.Contains("enchant"))
                 {
                     MissingEnchant = "1";
                 }
-            }
-            else if (Slot != "offHand")
-            {
-                //TODO - offHand can have an enchant if it's a shield, but can't if it's not
             }
 
             // 3. MissingGem
@@ -138,7 +164,26 @@ namespace WoWGuildOrganizer
                 {
                     MissingGem = "1";
                 }
-            }                
+            }
+            if (CanSocket())
+            {
+                Int32 start = 0;
+                Int32 count = 0;
+
+
+                if (_toolTips.Length > 0)
+                {
+                    while ((start = _toolTips.IndexOf("gem", start + 1)) != -1)
+                    {
+                        count++;
+                    }
+                }
+
+                if (count < _socketcount)
+                {
+                    MissingGem = (_socketcount - count).ToString();
+                }
+            }
                 
             //TODO - Profession audits -> 
             //  1. 2 x Ring enchants -> if Enchanter

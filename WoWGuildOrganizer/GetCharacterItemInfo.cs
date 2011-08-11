@@ -105,10 +105,46 @@ namespace WoWGuildOrganizer
                     }
                     #endregion
 
-                    // Get the Average iLevel of character's Gear
+                    // Get the item info
                     foreach (Match result in test.Matches(DataString))
                     {
                         ItemAudit audit = new ItemAudit();
+                        Int32 Id = 0;
+                        ItemInfo item = new ItemInfo();
+
+
+                        // First get the item id
+                        if (result.Groups["Id"].Success)
+                        {
+                            audit.Id = result.Groups["Id"].Value.ToString();
+                            Id = Convert.ToInt32(audit.Id);
+                        }
+
+                        // Now check for the item in the item cache
+                        if (!WoWGuildOrganizer.Form1.Items.Items.Contains(Id))
+                        {
+                            // Need to add in this item to the Item Cache
+
+                            // First fetch the data
+                            GetItemInfo get = new GetItemInfo();
+                            if (get.CollectData(Id))
+                            {
+                                item = get.Item;
+                                WoWGuildOrganizer.Form1.Items.Items.Add(item);
+                            }                            
+                        }
+                        else
+                        {
+                            item = (ItemInfo)WoWGuildOrganizer.Form1.Items.Items[Id];
+                        }
+                        
+                        if (Id != 0)
+                        {
+                            // Set CanEnchant and CanSocket values
+                            audit.CanEnchant(item.CanEnchant);
+                            audit.CanSocket(item.CanSocket);
+                            audit.SocketCount(item.SocketCount);
+                        }
 
                         if (result.Groups["Slot"].Success)
                         {
