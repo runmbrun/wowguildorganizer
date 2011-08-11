@@ -84,6 +84,8 @@
     <Compile Include="GuildMember.cs" />
     <Compile Include="GuildMemberGroup.cs" />
     <Compile Include="ItemAudit.cs" />
+    <Compile Include="ItemCache.cs" />
+    <Compile Include="ItemInfo.cs" />
     <Compile Include="MultiThreadUIInvokeFunctions.cs">
       <SubType>Form</SubType>
     </Compile>

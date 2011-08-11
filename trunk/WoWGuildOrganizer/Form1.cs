@@ -22,10 +22,11 @@ namespace WoWGuildOrganizer
     {
         #region " Variables "
 
-        String URLWowAPI = @"http://us.battle.net/api/wow/";
+        public String URLWowAPI = @"http://us.battle.net/api/wow/";
         GuildMemberGroup SavedCharacters;
         private BackgroundWorker GetGuildInfoAsyncWorker = new BackgroundWorker();
         private StopWatch sw = new StopWatch();
+        static public ItemCache Items;
 
         #endregion
 
@@ -51,7 +52,7 @@ namespace WoWGuildOrganizer
 
             // init the struct that will store all the char info
             SavedCharacters = new GuildMemberGroup();
-                        
+            
             // Attempt to load the last guild saved...
             //   check for a data file and if there is one, try to load it up
             try
@@ -76,6 +77,33 @@ namespace WoWGuildOrganizer
                     MessageBox.Show(String.Format("  **ERROR[LoadTempData]: {0}", ex.Message));
                 }
             }
+
+            // init the struct that will store all the char info
+            Items = new ItemCache();
+
+            // TODO - need to save this to a file, and load it up on startup
+            //   check for a data file and if there is one, try to load it up
+            try
+            {
+                if (File.Exists("ItemCache.dat"))
+                {
+                    //Open the file written above and read values from it.
+                    Stream stream = File.Open("ItemCache.dat", FileMode.Open);
+                    BinaryFormatter bformatter = new BinaryFormatter();
+
+                    Items.Items = (ArrayList)bformatter.Deserialize(stream);
+                    stream.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                if (!ex.Message.StartsWith("Could not find file"))
+                {
+                    Log(String.Format("  **ERROR: ", ex.Message));
+                    MessageBox.Show(String.Format("  **ERROR[LoadTempData]: {0}", ex.Message));
+                }
+            }
+
 
             // Create a background worker thread that Searches and Reports Progress and Supports Cancellation            
             GetGuildInfoAsyncWorker.WorkerReportsProgress = true;
@@ -369,7 +397,7 @@ namespace WoWGuildOrganizer
 
         #endregion
         
-        #region Get Guild Information Async Background Worker
+        #region " Get Guild Information Async Background Worker "
 
         /// <summary>
         /// 
@@ -642,6 +670,14 @@ namespace WoWGuildOrganizer
                     Stream stream = File.Open("SavedCharacters.dat", FileMode.Create);
                     BinaryFormatter bformatter = new BinaryFormatter();
                     bformatter.Serialize(stream, SavedCharacters);
+                    stream.Close();
+                }
+
+                if (Items.Items.Count > 0)
+                {
+                    Stream stream = File.Open("ItemCache.dat", FileMode.Create);
+                    BinaryFormatter bformatter = new BinaryFormatter();
+                    bformatter.Serialize(stream, Items);
                     stream.Close();
                 }
             }

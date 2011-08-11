@@ -63,7 +63,7 @@ namespace WoWGuildOrganizer
                 Int32 MissingTotal = 0;
 
                 
-                
+                // Check each item that the character has equiped
                 foreach (ItemAudit item in ItemAuditList)
                 {
                     // Check for missing Items
@@ -94,7 +94,7 @@ namespace WoWGuildOrganizer
                 }
 
                 // Count up the missing items
-                MissingTotal += (17 - MissingItems);
+                MissingTotal += (ItemAuditList.Count - MissingItems);
                 textBoxMissingItems.Text = (17 - MissingItems).ToString();
 
                 // Count the missing enchants
