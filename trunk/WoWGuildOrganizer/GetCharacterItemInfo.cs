@@ -15,11 +15,103 @@ namespace WoWGuildOrganizer
         Boolean Debug = false;
         String DebugFile = @"c:\temp\GetCharacterItemInfo.log";
 
-        public ArrayList ItemAudits;
+        public Dictionary<String, ItemAudit> ItemAudits;
 
         public GetCharacterItemInfo()
         {
-            ItemAudits = new ArrayList();
+            ItemAudits = new Dictionary<String, ItemAudit>();
+            FillOutItemAuditsArrayList();
+        }
+
+        private void FillOutItemAuditsArrayList()
+        {
+            // fill out a blank array with all the slots
+            for (Int32 i = 0; i < 19; i++)
+            {
+                ItemAudit audit = new ItemAudit();
+
+                switch (i)
+                {
+                    case 0:
+                        audit.Slot = "head";
+                        audit.MissingItem = "1";
+                        break;
+                    case 1:
+                        audit.Slot = "neck";
+                        audit.MissingItem = "1";
+                        break;
+                    case 2:
+                        audit.Slot = "shoulder";
+                        audit.MissingItem = "1";
+                        break;
+                    case 3:
+                        audit.Slot = "back";
+                        audit.MissingItem = "1";
+                        break;
+                    case 4:
+                        audit.Slot = "tabard";
+                        audit.MissingItem = "1";
+                        break;
+                    case 5:
+                        audit.Slot = "shirt";
+                        audit.MissingItem = "1";
+                        break;
+                    case 6:
+                        audit.Slot = "wrist";
+                        audit.MissingItem = "1";
+                        break;
+                    case 7:
+                        audit.Slot = "hands";
+                        audit.MissingItem = "1";
+                        break;
+                    case 8:
+                        audit.Slot = "waist";
+                        audit.MissingItem = "1";
+                        break;
+                    case 9:
+                        audit.Slot = "legs";
+                        audit.MissingItem = "1";
+                        break;
+                    case 10:
+                        audit.Slot = "feet";
+                        audit.MissingItem = "1";
+                        break;
+                    case 11:
+                        audit.Slot = "finger1";
+                        audit.MissingItem = "1";
+                        break;
+                    case 12:
+                        audit.Slot = "finger2";
+                        audit.MissingItem = "1";
+                        break;
+                    case 13:
+                        audit.Slot = "trinket1";
+                        audit.MissingItem = "1";
+                        break;
+                    case 14:
+                        audit.Slot = "trinket2";
+                        audit.MissingItem = "1";
+                        break;
+                    case 15:
+                        audit.Slot = "mainHand";
+                        audit.MissingItem = "1";
+                        break;
+                    case 16:
+                        audit.Slot = "offHand";
+                        audit.MissingItem = "1";
+                        break;
+                    case 17:
+                        audit.Slot = "ranged";
+                        audit.MissingItem = "1";
+                        break;
+                    case 18:
+                        audit.Slot = "chest";
+                        audit.MissingItem = "1";
+                        break;
+                }
+
+                ItemAudits.Add(audit.Slot, audit);
+            }
         }
 
         /// <summary>
@@ -85,6 +177,7 @@ namespace WoWGuildOrganizer
                     String Search = @"""(?<Slot>\w+)"":{.*?""id"":(?<Id>\d+).*?""name"":""(?<Name>[A-Za-z ]+).*?""quality"":(?<Quality>\d+).*?""tooltipParams"":{(?<ToolTips>.*?)}.*?}";
                     Regex test = new Regex(Search, RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
 
+                    
                     #region DEBUG
                     // this is for debugging only
                     if (Debug)
@@ -105,79 +198,95 @@ namespace WoWGuildOrganizer
                     }
                     #endregion
 
+
+                    // 
+
+
                     // Get the item info
                     foreach (Match result in test.Matches(DataString))
                     {
-                        ItemAudit audit = new ItemAudit();
                         Int32 Id = 0;
                         ItemInfo item = new ItemInfo();
 
 
-                        // First get the item id
-                        if (result.Groups["Id"].Success)
-                        {
-                            audit.Id = result.Groups["Id"].Value.ToString();
-                            Id = Convert.ToInt32(audit.Id);
-                        }
-
-                        // Now check for the item in the item cache
-                        if (!WoWGuildOrganizer.Form1.Items.Items.Contains(Id))
-                        {
-                            // Need to add in this item to the Item Cache
-
-                            // First fetch the data
-                            GetItemInfo get = new GetItemInfo();
-                            if (get.CollectData(Id))
-                            {
-                                item = get.Item;
-                                WoWGuildOrganizer.Form1.Items.Items.Add(item);
-                            }                            
-                        }
-                        else
-                        {
-                            item = (ItemInfo)WoWGuildOrganizer.Form1.Items.Items[Id];
-                        }
-                        
-                        if (Id != 0)
-                        {
-                            // Set CanEnchant and CanSocket values
-                            audit.CanEnchant(item.CanEnchant);
-                            audit.CanSocket(item.CanSocket);
-                            audit.SocketCount(item.SocketCount);
-                        }
-
+                        // First get the slot, if no slot then it's an missing item
                         if (result.Groups["Slot"].Success)
                         {
-                            audit.Slot = result.Groups["Slot"].Value.ToString();
-                        }
+                            String slot = result.Groups["Slot"].Value.ToString();
+                            ItemAudit audit = new ItemAudit();
 
-                        if (result.Groups["Id"].Success)
-                        {
-                            audit.Id = result.Groups["Id"].Value.ToString();
-                        }
 
-                        if (result.Groups["Name"].Success)
-                        {
-                            audit.Name = result.Groups["Name"].Value.ToString();
-                        }
+                            if (!ItemAudits.ContainsKey(slot))
+                            {
+                                // bad!
+                                String Error = String.Format("ERROR: ", "GetCharacterInfo.CollectData() - slot missing");
+                            }
+                            else
+                            {
+                                audit = ItemAudits[slot];
 
-                        if (result.Groups["Quality"].Success)
-                        {
-                            audit.SetQuality(result.Groups["Quality"].Value.ToString());
-                        }
+                                // First get the item id
+                                if (result.Groups["Id"].Success)
+                                {
+                                    audit.Id = result.Groups["Id"].Value.ToString();
+                                    Id = Convert.ToInt32(audit.Id);
+                                }
 
-                        if (result.Groups["ToolTips"].Success)
-                        {
-                            audit.SetToolTips(result.Groups["ToolTips"].Value.ToString());
-                        }
+                                // Now check for the item in the item cache
+                                if (!WoWGuildOrganizer.Form1.Items.Contains(Id))
+                                {
+                                    // Need to add in this item to the Item Cache
 
-                        //TODO - need to check this item from the ItemCache, if not there, need to fetch it
-                        if (result.Groups["ItemLevel"].Success)
-                        {
-                            audit.ItemLevel = Convert.ToInt32(result.Groups["ItemLevel"].Value.ToString());
-                        }
+                                    // First fetch the data
+                                    GetItemInfo get = new GetItemInfo();
+                                    if (get.CollectData(Id))
+                                    {
+                                        item = get.Item;
+                                        item.Id = Id;
+                                        WoWGuildOrganizer.Form1.Items.AddItem(item);
+                                    }
+                                }
+                                else
+                                {
+                                    item = (ItemInfo)WoWGuildOrganizer.Form1.Items.GetItem(Id);
+                                }
 
-                        ItemAudits.Add(audit);
+                                if (Id != 0)
+                                {
+                                    // Set CanEnchant and CanSocket values
+                                    audit.CanEnchant(item.CanEnchant);
+                                    audit.CanSocket(item.CanSocket);
+                                    audit.SocketCount(item.SocketCount);
+                                    audit.MissingItem = "0";
+                                }
+
+                                if (result.Groups["Id"].Success)
+                                {
+                                    audit.Id = result.Groups["Id"].Value.ToString();
+                                }
+
+                                if (result.Groups["Name"].Success)
+                                {
+                                    audit.Name = result.Groups["Name"].Value.ToString();
+                                }
+
+                                if (result.Groups["Quality"].Success)
+                                {
+                                    audit.SetQuality(result.Groups["Quality"].Value.ToString());
+                                }
+
+                                if (result.Groups["ToolTips"].Success)
+                                {
+                                    audit.SetToolTips(result.Groups["ToolTips"].Value.ToString());
+                                }
+
+                                //TODO - need to check this item from the ItemCache, if not there, need to fetch it
+                                if (result.Groups["ItemLevel"].Success)
+                                {
+                                    audit.ItemLevel = Convert.ToInt32(result.Groups["ItemLevel"].Value.ToString());
+                                }
+                            }
+                        }
                     }
 
                     Success = true;

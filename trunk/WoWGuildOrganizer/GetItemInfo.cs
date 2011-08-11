@@ -196,6 +196,7 @@ namespace WoWGuildOrganizer
                     Int32 InventoryType = -1;
                     String SearchSockets = @"""hasSockets"":";
                     String SocketBoolean = "";
+                    String SocketCount = @"""type"":";
                     
                     #region DEBUG
                     // this is for debugging only
@@ -220,6 +221,7 @@ namespace WoWGuildOrganizer
                     Int32 i = DataString.IndexOf(SearchEnchants);
                     Int32 j = DataString.IndexOf(",", i);
                     InventoryType = Convert.ToInt32(DataString.Substring(i + SearchEnchants.Length, j - (i + SearchEnchants.Length)));
+                    Item.InventoryType = InventoryType;
 
                     // Find if the Item is enchantable
                     if (DetermineIfCanEnchantItem(InventoryType))
@@ -227,7 +229,7 @@ namespace WoWGuildOrganizer
                         Item.CanEnchant = true;
                     }
 
-                    // caputre the socket boolean
+                    // capture the socket boolean
                     i = DataString.IndexOf(SearchSockets);
                     j = DataString.IndexOf(",", i);
                     SocketBoolean = DataString.Substring(i + SearchSockets.Length, j - (i + SearchSockets.Length));
@@ -237,10 +239,14 @@ namespace WoWGuildOrganizer
                     if (SocketBoolean.ToUpper() == "TRUE")
                     {
                         Item.CanSocket = true;
-
+                        
                         // Now search for how many sockets...
-                        // TODO
-                        Item.SocketCount = 1;
+                        //   capture the number of sockets
+                        i = 0;
+                        while ((i = DataString.IndexOf(SocketCount, i + 1)) != -1)
+                        {
+                            Item.SocketCount += 1;
+                        }
                     }
 
                     
@@ -271,7 +277,7 @@ namespace WoWGuildOrganizer
 
             switch (type)
             {
-                // hand hand
+                // main hand
                 case 0:
                     CanEnchant = true;
                     break;
@@ -337,9 +343,7 @@ namespace WoWGuildOrganizer
                     break;
                 // off hand OR main hand
                 case 17:
-                    // TODO - what is this???
-                    //  if shield or weapon => true
-                    //  if off hand => false
+                    // two handed weapon
                     CanEnchant = true;
                     break;
                 // tabard
@@ -354,7 +358,11 @@ namespace WoWGuildOrganizer
                 case 21:
                     CanEnchant = true;
                     break;
-                // off hand
+                // off hand weapon
+                case 22:
+                    CanEnchant = true;
+                    break;
+                // off hand frill
                 case 23:
                     CanEnchant = false;
                     break;

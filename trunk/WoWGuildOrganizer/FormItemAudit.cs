@@ -21,7 +21,7 @@ namespace WoWGuildOrganizer
             set { _name = value; labelName.Text = _name; }
         }
 
-        public ArrayList ItemAuditList = null;
+        ArrayList ItemAuditList = null;
 
 
         /// <summary>
@@ -51,34 +51,48 @@ namespace WoWGuildOrganizer
                 GetCharacterItemInfo itemAudit = new GetCharacterItemInfo();
                 if (itemAudit.CollectData(Website))
                 {
-                    ItemAuditList = itemAudit.ItemAudits;
+                    foreach(ItemAudit a in itemAudit.ItemAudits.Values)
+                    {
+                        ItemAuditList.Add(a);
+                    }
                 }
 
                 //TODO:  Do AUDIT stuff here!
 
                 
-                Int32 MissingItems = ItemAuditList.Count;
+                Int32 MissingItems = 0;
                 Int32 MissingEnchants = 0;
                 Int32 MissingGems = 0;
                 Int32 MissingTotal = 0;
+                Boolean TwoHanded = false;
 
+                
                 
                 // Check each item that the character has equiped
                 foreach (ItemAudit item in ItemAuditList)
                 {
+                    // Figure out if the mainHand is a two handed weapon
+                    if (item.Slot == "mainHand")
+                    {
+                        if (Form1.Items.GetItem(Convert.ToInt32(item.Id)).InventoryType == 17)
+                        {
+                            TwoHanded = true;
+                        }
+                    }
+
                     // Check for missing Items
-                    //   There can be a total of 19 items on a person.
-                    //    2 are optional, the Tabard and Shirt.
-                    // So, get total count, check if tabard and shirt need to be "uncounted"
-                    // and confirm that number is 17.
-                    if (item.Slot == "shirt")
+                    if (item.MissingItem != "0")
                     {
-                        MissingItems -= 1;
-                    }
-                    if (item.Slot == "tabard")
-                    {
-                        MissingItems -= 1;
-                    }
+                        // 
+                        if (!(item.Slot == "offHand" && TwoHanded) && item.Slot != "tabard" && item.Slot != "shirt")
+                        {
+                            MissingItems++;
+                        }
+                        else
+                        {
+                            item.MissingItem = "0";
+                        }
+                    }                    
 
                     // Check for missing enchants
                     if (item.MissingEnchant != "0")
@@ -94,8 +108,8 @@ namespace WoWGuildOrganizer
                 }
 
                 // Count up the missing items
-                MissingTotal += (ItemAuditList.Count - MissingItems);
-                textBoxMissingItems.Text = (17 - MissingItems).ToString();
+                MissingTotal += MissingItems;
+                textBoxMissingItems.Text = MissingItems.ToString();
 
                 // Count the missing enchants
                 MissingTotal += MissingEnchants;
