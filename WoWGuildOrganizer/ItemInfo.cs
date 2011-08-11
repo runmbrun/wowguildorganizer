@@ -6,7 +6,7 @@ using System.Text;
 namespace WoWGuildOrganizer
 {
     [Serializable]
-    class ItemInfo
+    public class ItemInfo
     {
         // Need the following:
         //  1.  Id
@@ -40,6 +40,13 @@ namespace WoWGuildOrganizer
         {
             get { return _socketcount; }
             set { _socketcount = value; }
+        }
+
+        private Int32 _inventorytype;
+        public Int32 InventoryType
+        {
+            get { return _inventorytype; }
+            set { _inventorytype = value; }
         }
 
     }

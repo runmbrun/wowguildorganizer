@@ -91,7 +91,7 @@ namespace WoWGuildOrganizer
                     Stream stream = File.Open("ItemCache.dat", FileMode.Open);
                     BinaryFormatter bformatter = new BinaryFormatter();
 
-                    Items.Items = (ArrayList)bformatter.Deserialize(stream);
+                    Items = (ItemCache)bformatter.Deserialize(stream);
                     stream.Close();
                 }
             }
@@ -673,7 +673,7 @@ namespace WoWGuildOrganizer
                     stream.Close();
                 }
 
-                if (Items.Items.Count > 0)
+                if (Items.GetCount() > 0)
                 {
                     Stream stream = File.Open("ItemCache.dat", FileMode.Create);
                     BinaryFormatter bformatter = new BinaryFormatter();
