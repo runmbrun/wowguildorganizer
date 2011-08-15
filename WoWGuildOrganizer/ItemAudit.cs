@@ -128,6 +128,9 @@ namespace WoWGuildOrganizer
         public void SetToolTips(String t)
         {
             _toolTips = t;
+            Int32 GemCount = 0;
+            Boolean ExtraSocket = false;
+
 
             // now parse this out and fix the unknown properties...
             //  1. MissingItem
@@ -136,35 +139,35 @@ namespace WoWGuildOrganizer
             //  4. LastUpdated
 
 
-            
-
-
-            // 1. MissingItem
-            /*  TODO - this currently can't be done.
-             * This is checked for in the FormItemAudit.PassData() function.
-            if (Name.Length == 0)
+            if (Slot == "waist")
             {
-                // Only Missing if not one of these two slots
-                if (Slot != "shirt" || Slot != "tabard")
+                // Check to see if Extra Socket if filled or not...
+                if (_toolTips.Contains(@"extraSocket"":true"))
                 {
-                    // Missing Item!
-                    MissingItem = "1";
+                    ExtraSocket = true;
+                }
+                else
+                {
+                    MissingEnchant = "1";
                 }
             }
-            */
+
+            // Find the number of Gems in the item
+            Int32 start = 0;
+            if (_toolTips.Length > 0)
+            {
+                while ((start = _toolTips.IndexOf("gem", start + 1)) != -1)
+                {
+                    GemCount++;
+                }
+            }
+
 
             // 2. MissingEnchant
             //   Enchants Example:  "enchant":4209
             if (CanEnchant())
-            {
-                if (Slot == "waist")
-                {
-                    if (!_toolTips.Contains("extraSocket"))
-                    {
-                        MissingEnchant = "1";
-                    }
-                }
-                else if (!_toolTips.Contains("enchant"))
+            {   
+                if (!_toolTips.Contains("enchant"))
                 {
                     MissingEnchant = "1";
                 }
@@ -172,27 +175,38 @@ namespace WoWGuildOrganizer
 
             // 3. MissingGem
             //   Gems - Example: "gem0":52209,
-            // TODO - see if the item has sockets..
             if (CanSocket())
             {
-                Int32 start = 0;
-                Int32 count = 0;
-
-
-                if (_toolTips.Length > 0)
+                if (ExtraSocket)
                 {
-                    while ((start = _toolTips.IndexOf("gem", start + 1)) != -1)
+                    if (GemCount < (_socketcount + 1))
                     {
-                        count++;
+                        MissingGem = ((_socketcount + 1) - GemCount).ToString();
                     }
                 }
-
-                if (count < _socketcount)
+                else
                 {
-                    MissingGem = (_socketcount - count).ToString();
+                    if (GemCount < _socketcount)
+                    {
+                        MissingGem = (_socketcount - GemCount).ToString();
+                    }
                 }
             }
-                
+            else
+            {
+                if (Slot == "waist")
+                {
+                    // no other sockets exist in the waist, make sure there is 
+                    //  at least 1 gem for it though
+                    if (GemCount != 1)
+                    {
+                        MissingGem = "1";
+                    }
+                }
+            }
+
+            // *** Special Cases: ***
+                                        
             //TODO - Profession audits -> 
             //  1. 2 x Ring enchants -> if Enchanter
             //  2. 1 x Bracer special enchant -> if Leatherworker
