@@ -43,12 +43,15 @@
             this.textBoxRealm = new System.Windows.Forms.TextBox();
             this.progressBarCollectData = new System.Windows.Forms.ProgressBar();
             this.buttonGetGuildInfo = new System.Windows.Forms.Button();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.buttonDeleteItemCacheData = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPageGuildData.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewGuildData)).BeginInit();
             this.tabPageSettings.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox1.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -100,6 +103,7 @@
             // 
             // tabPageSettings
             // 
+            this.tabPageSettings.Controls.Add(this.groupBox2);
             this.tabPageSettings.Controls.Add(this.groupBox3);
             this.tabPageSettings.Controls.Add(this.groupBox1);
             this.tabPageSettings.Location = new System.Drawing.Point(4, 22);
@@ -116,14 +120,14 @@
             this.groupBox3.Controls.Add(this.buttonLoad);
             this.groupBox3.Location = new System.Drawing.Point(259, 6);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(200, 117);
+            this.groupBox3.Size = new System.Drawing.Size(200, 59);
             this.groupBox3.TabIndex = 9;
             this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Save and Load";
+            this.groupBox3.Text = "Save and Load Guild Data";
             // 
             // buttonSave
             // 
-            this.buttonSave.Location = new System.Drawing.Point(21, 88);
+            this.buttonSave.Location = new System.Drawing.Point(19, 19);
             this.buttonSave.Name = "buttonSave";
             this.buttonSave.Size = new System.Drawing.Size(75, 23);
             this.buttonSave.TabIndex = 4;
@@ -133,7 +137,7 @@
             // 
             // buttonLoad
             // 
-            this.buttonLoad.Location = new System.Drawing.Point(102, 88);
+            this.buttonLoad.Location = new System.Drawing.Point(100, 19);
             this.buttonLoad.Name = "buttonLoad";
             this.buttonLoad.Size = new System.Drawing.Size(75, 23);
             this.buttonLoad.TabIndex = 5;
@@ -206,6 +210,26 @@
             this.buttonGetGuildInfo.UseVisualStyleBackColor = true;
             this.buttonGetGuildInfo.Click += new System.EventHandler(this.buttonGetGuildInfo_Click);
             // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.buttonDeleteItemCacheData);
+            this.groupBox2.Location = new System.Drawing.Point(259, 71);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(200, 59);
+            this.groupBox2.TabIndex = 10;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Delete Item Cache Data";
+            // 
+            // buttonDeleteItemCacheData
+            // 
+            this.buttonDeleteItemCacheData.Location = new System.Drawing.Point(19, 19);
+            this.buttonDeleteItemCacheData.Name = "buttonDeleteItemCacheData";
+            this.buttonDeleteItemCacheData.Size = new System.Drawing.Size(75, 23);
+            this.buttonDeleteItemCacheData.TabIndex = 4;
+            this.buttonDeleteItemCacheData.Text = "Delete";
+            this.buttonDeleteItemCacheData.UseVisualStyleBackColor = true;
+            this.buttonDeleteItemCacheData.Click += new System.EventHandler(this.buttonDeleteItemCacheData_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -224,6 +248,7 @@
             this.groupBox3.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -245,6 +270,8 @@
         private System.Windows.Forms.Button buttonSave;
         private System.Windows.Forms.Button buttonLoad;
         private System.Windows.Forms.Button buttonGetGuildInfo;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.Button buttonDeleteItemCacheData;
     }
 }
 

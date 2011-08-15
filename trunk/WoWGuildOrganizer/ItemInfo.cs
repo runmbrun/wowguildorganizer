@@ -13,6 +13,9 @@ namespace WoWGuildOrganizer
         //  2.  CanEnchant
         //  3.  CanSocket
         //  4.  SocketCount
+        //  5.  InventoryType
+        //  6.  Quality
+        //  7.  ItemLevel
 
         private Int32 _id;
         public Int32 Id
@@ -49,5 +52,18 @@ namespace WoWGuildOrganizer
             set { _inventorytype = value; }
         }
 
+        private Int32 _quality;
+        public Int32 Quality
+        {
+            get { return _quality; }
+            set { _quality = value; }
+        }
+
+        private Int32 _itemlevel;
+        public Int32 ItemLevel
+        {
+            get { return _itemlevel; }
+            set { _itemlevel = value; }
+        }
     }
 }

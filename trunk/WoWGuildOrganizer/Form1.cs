@@ -856,6 +856,29 @@ namespace WoWGuildOrganizer
             }
         }
 
-        #endregion
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void buttonDeleteItemCacheData_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (File.Exists("ItemCache.dat"))
+                {
+                    // delete it
+                    File.Delete("ItemCache.dat");
+
+                    // clear the current cache
+                    Items = new ItemCache();
+                }
+            }
+            catch (Exception ex)
+            {
+            }
+        }
+
+        #endregion        
     }
 }

@@ -32,8 +32,6 @@ namespace WoWGuildOrganizer
             InitializeComponent();
 
             ItemAuditList = new ArrayList();
-
-            textBoxAuditStatus.Text = "Failed";
         }
 
         /// <summary>
@@ -74,7 +72,7 @@ namespace WoWGuildOrganizer
                     // Figure out if the mainHand is a two handed weapon
                     if (item.Slot == "mainHand")
                     {
-                        if (Form1.Items.GetItem(Convert.ToInt32(item.Id)).InventoryType == 17)
+                        if (Form1.Items.GetItem(item.GetId()).InventoryType == 17)
                         {
                             TwoHanded = true;
                         }
@@ -103,7 +101,7 @@ namespace WoWGuildOrganizer
                     // Check for missing enchants
                     if (item.MissingGem != "0")
                     {
-                        MissingGems++;
+                        MissingGems += Convert.ToInt32(item.MissingGem);
                     }
                 }
 
@@ -121,6 +119,15 @@ namespace WoWGuildOrganizer
 
                 // Count the total missing 
                 textBoxMissingTotal.Text = MissingTotal.ToString();
+
+                if (MissingTotal > 0)
+                {
+                    textBoxAuditStatus.Text = "Failed";
+                }
+                else
+                {
+                    textBoxAuditStatus.Text = "Passed!";
+                }
 
                 // Update the grid
                 UpdateGridData();
@@ -152,30 +159,62 @@ namespace WoWGuildOrganizer
             // refresh the grid data since it's been changed
             dataGridViewItemAudit.Refresh();
 
-            // Color the cells now...  Columns 4, 5, 6.
+            // Color the cells and text now...  
             for (Int32 i = 0; i < dataGridViewItemAudit.Rows.Count; i++)
             {
-                // Any Missing Items?
+                // Color Item Name text according to Item Qualtiy
+                switch (((ItemAudit)ItemAuditList[i]).GetQuality())
+                {
+                    // Epic = purple
+                    case 4:
+                        dataGridViewItemAudit.Rows[i].Cells[1].Style.ForeColor = Color.Purple;
+                        break;
+                    // Rare = blue
+                    case 3:
+                        dataGridViewItemAudit.Rows[i].Cells[1].Style.ForeColor = Color.Blue;
+                        break;
+                    // Uncommon = green
+                    case 2:
+                        dataGridViewItemAudit.Rows[i].Cells[1].Style.ForeColor = Color.LightGreen;
+                        break;
+                    // Common = white
+                    case 1:
+                        dataGridViewItemAudit.Rows[i].Cells[1].Style.ForeColor = Color.Black;
+                        break;
+                    // Epic = gray
+                    case 0:
+                        dataGridViewItemAudit.Rows[i].Cells[1].Style.ForeColor = Color.LightGray;
+                        break;
+                    // Unknown
+                    default:
+                        dataGridViewItemAudit.Rows[i].Cells[1].Style.ForeColor = Color.Red;
+                        break;
+                }
+
+                // Any Missing Items? -> Column 3
+                if (dataGridViewItemAudit.Rows[i].Cells[3].Value.ToString() != "0")
+                {
+                    dataGridViewItemAudit.Rows[i].Cells[3].Style.BackColor = Color.Red;
+                }
+
+                // Any Missing Enchants? -> Column 4
                 if (dataGridViewItemAudit.Rows[i].Cells[4].Value.ToString() != "0")
                 {
                     dataGridViewItemAudit.Rows[i].Cells[4].Style.BackColor = Color.Red;
                 }
 
-                // Any Missing Enchants?
+                // Any Missing Gems? -> Column 5
                 if (dataGridViewItemAudit.Rows[i].Cells[5].Value.ToString() != "0")
                 {
                     dataGridViewItemAudit.Rows[i].Cells[5].Style.BackColor = Color.Red;
-                }
-
-                // Any Missing Gems?
-                if (dataGridViewItemAudit.Rows[i].Cells[6].Value.ToString() != "0")
-                {
-                    dataGridViewItemAudit.Rows[i].Cells[6].Style.BackColor = Color.Red;
                 }
             }
 
             // refresh the grid data since it's been changed
             dataGridViewItemAudit.Refresh();
+
+            // Set grid properties
+            dataGridViewItemAudit.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
 
             // Resize the rows
             dataGridViewItemAudit.AutoResizeColumns();

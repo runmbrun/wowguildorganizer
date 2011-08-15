@@ -34,7 +34,7 @@ namespace WoWGuildOrganizer
         public Boolean CollectData(Int32 Id)
         {
             // URL = Host + "/api/wow/item/" + ItemId => "hasSockets":false,
-            return CollectData(@"http://us.battle.net/api/wow/" + @"item/" + Id.ToString());
+            return CollectData(@"http://us.battle.net/api/wow/item/" + Id.ToString());
         }
 
         /// <summary>
@@ -196,7 +196,9 @@ namespace WoWGuildOrganizer
                     Int32 InventoryType = -1;
                     String SearchSockets = @"""hasSockets"":";
                     String SocketBoolean = "";
-                    String SocketCount = @"""type"":";
+                    String SearchSocketCount = @"""type"":";
+                    String SearchItemLevel = @"""itemLevel"":";
+                    Int32 ItemLevel = -1;
                     
                     #region DEBUG
                     // this is for debugging only
@@ -229,7 +231,7 @@ namespace WoWGuildOrganizer
                         Item.CanEnchant = true;
                     }
 
-                    // capture the socket boolean
+                    // Capture the socket boolean
                     i = DataString.IndexOf(SearchSockets);
                     j = DataString.IndexOf(",", i);
                     SocketBoolean = DataString.Substring(i + SearchSockets.Length, j - (i + SearchSockets.Length));
@@ -243,14 +245,16 @@ namespace WoWGuildOrganizer
                         // Now search for how many sockets...
                         //   capture the number of sockets
                         i = 0;
-                        while ((i = DataString.IndexOf(SocketCount, i + 1)) != -1)
+                        while ((i = DataString.IndexOf(SearchSocketCount, i + 1)) != -1)
                         {
                             Item.SocketCount += 1;
                         }
                     }
-
                     
-                    // TODO - Find what the Item Level is
+                    // Capture the item level
+                    i = DataString.IndexOf(SearchItemLevel);
+                    j = DataString.IndexOf(",", i);                    
+                    Item.ItemLevel = Convert.ToInt32(DataString.Substring(i + SearchItemLevel.Length, j - (i + SearchItemLevel.Length)));
 
                     Success = true;
                 }
@@ -336,6 +340,10 @@ namespace WoWGuildOrganizer
                 // shield
                 case 14:
                     CanEnchant = true;
+                    break;
+                // ranged
+                case 15:
+                    CanEnchant = false;
                     break;
                 // back
                 case 16:

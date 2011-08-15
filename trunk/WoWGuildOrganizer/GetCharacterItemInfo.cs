@@ -174,7 +174,7 @@ namespace WoWGuildOrganizer
                         DataString = DataString.Substring(count + 9);
                     }
 
-                    String Search = @"""(?<Slot>\w+)"":{.*?""id"":(?<Id>\d+).*?""name"":""(?<Name>[A-Za-z ]+).*?""quality"":(?<Quality>\d+).*?""tooltipParams"":{(?<ToolTips>.*?)}.*?}";
+                    String Search = @"""(?<Slot>\w+)"":{.*?""id"":(?<Id>\d+).*?""name"":""(?<Name>[A-Za-z ':-]+?)"",.*?""quality"":(?<Quality>\d+).*?""tooltipParams"":{(?<ToolTips>.*?)}.*?}";
                     Regex test = new Regex(Search, RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
 
                     
@@ -228,8 +228,8 @@ namespace WoWGuildOrganizer
                                 // First get the item id
                                 if (result.Groups["Id"].Success)
                                 {
-                                    audit.Id = result.Groups["Id"].Value.ToString();
-                                    Id = Convert.ToInt32(audit.Id);
+                                    audit.SetId(Convert.ToInt32(result.Groups["Id"].Value));
+                                    Id = audit.GetId();
                                 }
 
                                 // Now check for the item in the item cache
@@ -262,7 +262,7 @@ namespace WoWGuildOrganizer
 
                                 if (result.Groups["Id"].Success)
                                 {
-                                    audit.Id = result.Groups["Id"].Value.ToString();
+                                    audit.SetId(Convert.ToInt32(result.Groups["Id"].Value));
                                 }
 
                                 if (result.Groups["Name"].Success)
@@ -279,12 +279,8 @@ namespace WoWGuildOrganizer
                                 {
                                     audit.SetToolTips(result.Groups["ToolTips"].Value.ToString());
                                 }
-
-                                //TODO - need to check this item from the ItemCache, if not there, need to fetch it
-                                if (result.Groups["ItemLevel"].Success)
-                                {
-                                    audit.ItemLevel = Convert.ToInt32(result.Groups["ItemLevel"].Value.ToString());
-                                }
+                               
+                                audit.ItemLevel = item.ItemLevel;
                             }
                         }
                     }
