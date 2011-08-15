@@ -31,13 +31,6 @@ namespace WoWGuildOrganizer
             set { _name = value; }
         }
 
-        private String _id;
-        public String Id
-        {
-            get { return _id; }
-            set {_id = value; }
-        }
-
         private Int32 _itemLevel;
         public Int32 ItemLevel
         {
@@ -74,7 +67,7 @@ namespace WoWGuildOrganizer
         }
         #endregion
 
-
+        #region " Constructor "
         public ItemAudit()
         {
             MissingItem = "0";
@@ -82,12 +75,27 @@ namespace WoWGuildOrganizer
             MissingGem = "0";
             _quality = "0";
         }
+        #endregion
+
+
+        private Int32 _id;
+        public Int32 GetId()
+        {
+            return _id; 
+        }
+        public void SetId(Int32 i)
+        { 
+            _id = i;
+        }
 
         private String _quality;
         public void SetQuality(String q)
         {   
-            //TODO - set color of line
             _quality = q;
+        }
+        public Int32 GetQuality()
+        {
+            return Convert.ToInt32(_quality);
         }
 
         private Boolean _canenchant;
@@ -149,7 +157,14 @@ namespace WoWGuildOrganizer
             //   Enchants Example:  "enchant":4209
             if (CanEnchant())
             {
-                if (!_toolTips.Contains("enchant"))
+                if (Slot == "waist")
+                {
+                    if (!_toolTips.Contains("extraSocket"))
+                    {
+                        MissingEnchant = "1";
+                    }
+                }
+                else if (!_toolTips.Contains("enchant"))
                 {
                     MissingEnchant = "1";
                 }
@@ -158,13 +173,6 @@ namespace WoWGuildOrganizer
             // 3. MissingGem
             //   Gems - Example: "gem0":52209,
             // TODO - see if the item has sockets..
-            if (Slot == "waist")
-            {
-                if (!_toolTips.Contains("extraSocket"))
-                {
-                    MissingGem = "1";
-                }
-            }
             if (CanSocket())
             {
                 Int32 start = 0;
