@@ -213,7 +213,21 @@ namespace WoWGuildOrganizer
             //  3. 3 x Special Gems -> if Jewelcrafter
             //  4. 2 x Sockets (bracer and hands) -> if Blacksmith
             //  5. 1 x cloak special enchant -> if Tailor
-
+            /*
+             * skillLines
+                "185","Cooking"
+                "773","Inscription"
+                "755","Jewelcrafting"
+                "393","Skinning"
+                "333","Enchanting"
+                "202","Engineering"
+                "197","Tailoring"
+                "186","Mining"
+                "182","Herbalism"
+                "171","Alchemy"
+                "165","Leatherworking"
+                "164","Blacksmithing"
+             * */
         }
     }
 }

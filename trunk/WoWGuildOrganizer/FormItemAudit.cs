@@ -165,6 +165,18 @@ namespace WoWGuildOrganizer
                 // Color Item Name text according to Item Qualtiy
                 switch (((ItemAudit)ItemAuditList[i]).GetQuality())
                 {
+                    // Heirloom = brown
+                    case 7:
+                        dataGridViewItemAudit.Rows[i].Cells[1].Style.ForeColor = Color.Brown;
+                        break;
+                    // Artifact = red
+                    case 6:
+                        dataGridViewItemAudit.Rows[i].Cells[1].Style.ForeColor = Color.Red;
+                        break;
+                    // Legendary = orange
+                    case 5:
+                        dataGridViewItemAudit.Rows[i].Cells[1].Style.ForeColor = Color.Orange;
+                        break;
                     // Epic = purple
                     case 4:
                         dataGridViewItemAudit.Rows[i].Cells[1].Style.ForeColor = Color.Purple;
@@ -181,7 +193,7 @@ namespace WoWGuildOrganizer
                     case 1:
                         dataGridViewItemAudit.Rows[i].Cells[1].Style.ForeColor = Color.Black;
                         break;
-                    // Epic = gray
+                    // Poor = gray
                     case 0:
                         dataGridViewItemAudit.Rows[i].Cells[1].Style.ForeColor = Color.LightGray;
                         break;

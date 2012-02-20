@@ -285,7 +285,7 @@ namespace WoWGuildOrganizer
                 case 0:
                     CanEnchant = true;
                     break;
-                // helm
+                // head
                 case 1: 
                     CanEnchant = true;
                     break;
@@ -333,7 +333,7 @@ namespace WoWGuildOrganizer
                 case 12:
                     CanEnchant = false;
                     break;
-                // one - hand
+                // one-hand weapon
                 case 13:
                     CanEnchant = true;
                     break;
@@ -349,20 +349,19 @@ namespace WoWGuildOrganizer
                 case 16:
                     CanEnchant = true;
                     break;
-                // off hand OR main hand
-                case 17:
-                    // two handed weapon
+                // two handed weapon
+                case 17:                    
                     CanEnchant = true;
                     break;
                 // tabard
                 case 19:
                     CanEnchant = false;
                     break;
-                // chest - TODO - why is there 2?
+                // chest - robe
                 case 20:
                     CanEnchant = true;
                     break;
-                // main hand
+                // main hand weapon
                 case 21:
                     CanEnchant = true;
                     break;
@@ -372,6 +371,10 @@ namespace WoWGuildOrganizer
                     break;
                 // off hand frill
                 case 23:
+                    CanEnchant = false;
+                    break;
+                // thrown
+                case 25:
                     CanEnchant = false;
                     break;
                 // ranged
