@@ -1,0 +1,25 @@
+A List of all the feature and bug fixes that will need to be incorportated at some point in time.  
+In no particular order...
+
+
+=====================
++ Updates and Fixes +
+=====================
+
+Character Audit:
+1.  Add Professions checks
+2.  Add Average and Max iLevel
+3.  Add sorting to the iLevel so can find the lowest iLevel items for replacing first.
+
+
+
+================
++ New Features +
+================
+
+1.  Add new Raid Data tab.
+	- Tab will contain a group of characters that 
+	- Will have character audit functionality as Guild Data
+2.  Add new Raid Settings tab.
+	- Tab will contain buttons to add characters to Raid Data Tab.
+	
