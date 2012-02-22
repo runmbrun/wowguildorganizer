@@ -63,6 +63,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ControlHelper.cs" />
     <Compile Include="Converter.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
@@ -120,6 +121,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="RaidMemberGroup.cs" />
     <Compile Include="StopWatch.cs" />
     <Compile Include="WoWItem.cs" />
   </ItemGroup>

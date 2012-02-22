@@ -24,6 +24,7 @@ namespace WoWGuildOrganizer
 
         public String URLWowAPI = @"http://us.battle.net/api/wow/";
         GuildMemberGroup SavedCharacters;
+        RaidMemberGroup RaidGroup;
         private BackgroundWorker GetGuildInfoAsyncWorker = new BackgroundWorker();
         private StopWatch sw = new StopWatch();
         static public ItemCache Items;
@@ -38,13 +39,14 @@ namespace WoWGuildOrganizer
             // Load up the guild name textbox if it's been saved before
             if (!String.IsNullOrEmpty(Properties.Settings.Default.GuildName))
             {
-                textBoxGuildName.Text = Properties.Settings.Default.GuildName;
+                textBoxGuildName.Text = Properties.Settings.Default.GuildName;                
             }
 
             // Load up the realm name textbox if it's been saved before
             if (!String.IsNullOrEmpty(Properties.Settings.Default.Realm))
             {
                 textBoxRealm.Text = Properties.Settings.Default.Realm;
+                textBoxCharacterRealm.Text = textBoxRealm.Text;
             }
 
             // setup the data grid view
@@ -78,11 +80,39 @@ namespace WoWGuildOrganizer
                 }
             }
 
+            // init the struct that will store all the raod info
+            RaidGroup = new RaidMemberGroup();
+
+            // Attempt to load the last raid saved...
+            //   check for a data file and if there is one, try to load it up
+            try
+            {
+                if (File.Exists("RaidGroup.dat"))
+                {
+                    //Open the file written above and read values from it.
+                    Stream stream = File.Open("RaidGroup.dat", FileMode.Open);
+                    BinaryFormatter bformatter = new BinaryFormatter();
+
+                    RaidGroup = (RaidMemberGroup)bformatter.Deserialize(stream);
+                    stream.Close();
+
+                    //TODO - need to get a label ready
+                    //label3.Text = RaidGroup.RaidGroup.Count.ToString() + " total characters";
+                }
+            }
+            catch (Exception ex)
+            {
+                if (!ex.Message.StartsWith("Could not find file"))
+                {
+                    Log(String.Format("  **ERROR: ", ex.Message));
+                    MessageBox.Show(String.Format("  **ERROR[LoadTempData]: {0}", ex.Message));
+                }
+            }
+
             // init the struct that will store all the char info
             Items = new ItemCache();
 
-            // TODO - need to save this to a file, and load it up on startup
-            //   check for a data file and if there is one, try to load it up
+            // Attempt to load the last Item Cache saved...
             try
             {
                 if (File.Exists("ItemCache.dat"))
@@ -143,6 +173,31 @@ namespace WoWGuildOrganizer
             dataGridViewGuildData.ReadOnly = true;
             dataGridViewGuildData.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dataGridViewGuildData.AutoResizeColumns();
+
+
+
+
+            dataGridViewRaidGroup.ColumnCount = 0;
+
+            dataGridViewRaidGroup.ColumnHeadersDefaultCellStyle.BackColor = Color.Navy;
+            dataGridViewRaidGroup.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            dataGridViewRaidGroup.ColumnHeadersDefaultCellStyle.Font = new Font(dataGridViewRaidGroup.Font, FontStyle.Bold);
+
+            dataGridViewRaidGroup.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.DisplayedCellsExceptHeaders;
+            dataGridViewRaidGroup.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.Single;
+            dataGridViewRaidGroup.CellBorderStyle = DataGridViewCellBorderStyle.Single;
+            dataGridViewRaidGroup.GridColor = Color.Black;
+            dataGridViewRaidGroup.RowHeadersVisible = false;
+
+            // Set the background color for all rows and for alternating rows. 
+            // The value for alternating rows overrides the value for all rows. 
+            dataGridViewRaidGroup.RowsDefaultCellStyle.BackColor = Color.White;
+
+            dataGridViewRaidGroup.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dataGridViewRaidGroup.MultiSelect = true;
+            dataGridViewRaidGroup.ReadOnly = true;
+            dataGridViewRaidGroup.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dataGridViewRaidGroup.AutoResizeColumns();
         }
 
         /// <summary>
@@ -434,6 +489,9 @@ namespace WoWGuildOrganizer
                 // start the wait cursor
                 WaitCursor(true);
 
+                // Stop updating the Grid until the end
+                SuspendGrid(true);
+
                 // Periodically check if a cancellation request is pending.
                 // If the user clicks cancel the line
                 // m_AsyncWorker.CancelAsync(); if ran above.  This
@@ -490,19 +548,16 @@ namespace WoWGuildOrganizer
                                         if (newmember.Name == oldmember.Name)
                                         {
                                             // match!
+
                                             // now check to see if level or achievement points have been updated
-                                            if (newmember.Level != oldmember.Level)
-                                            {
-                                                newmember.Level = newmember.Level;
-                                            }
-                                            else
+                                            if (newmember.Level.CompareTo(oldmember.Level) == 0)
                                             {
                                                 newmember.ClearFlags();
                                             }
 
                                             // always check to carry over the max iLevel value from old to new
                                             // since new will always be blank
-                                            if (newmember.MaxiLevel != oldmember.MaxiLevel)
+                                            if (newmember.MaxiLevel == 0 && oldmember.MaxiLevel != 0)
                                             {
                                                 newmember.MaxiLevel = oldmember.MaxiLevel;
                                                 newmember.ClearItemLevelFlag();
@@ -510,7 +565,7 @@ namespace WoWGuildOrganizer
 
                                             // always check to carry over the max iLevel value from old to new
                                             // since new will always be blank
-                                            if (newmember.EquipediLevel != oldmember.EquipediLevel)
+                                            if (newmember.EquipediLevel == 0 && oldmember.EquipediLevel != 0)
                                             {
                                                 newmember.EquipediLevel = oldmember.EquipediLevel;
                                                 newmember.ClearItemLevelFlag();
@@ -523,47 +578,56 @@ namespace WoWGuildOrganizer
                             }
                             else
                             {
-                                // Fill out the data grid with the data we collected
+                                // First time collection of the guild...
+                                //  Fill out the data grid with the data we collected
                                 SavedCharacters.SavedCharacters = guildInfo.Characters;
                             }
                         }
 
 
-                        // Now get the Character data
+                        // Now get the individual Character data
                         Int32 Count = 0;
                         Int32 Total = SavedCharacters.SavedCharacters.Count;
                         ArrayList Errors = new ArrayList();
                         
+                         try
+                         {
 
-                        // Go through all the guild members
-                        foreach (GuildMember gm in SavedCharacters.SavedCharacters)
-                        {
-                            // Only check for Item Level for characters over level 10
-                            //  Otherwise these characters won't be in the Armory
-                            if (Convert.ToInt32(gm.Level) >= 10)
+                            // Go through all the guild members
+                            foreach (GuildMember gm in SavedCharacters.SavedCharacters)
                             {
-                                // This is the Web Site to get the character info from...
-                                // http://us.battle.net/api/wow/character/Thrall/Purdee/?fields=items
+                               
+                                    // Only check for Item Level for characters over level 10
+                                    //  Otherwise these characters won't be in the Armory
+                                    if (Convert.ToInt32(gm.Level) >= 10)
+                                    {
+                                        // This is the Web Site to get the character info from...
+                                        // http://us.battle.net/api/wow/character/Thrall/Purdee/?fields=items
 
-                                GetCharacterInfo charInfo = new GetCharacterInfo();
-                                if (charInfo.CollectData(URLWowAPI + "character/" + textBoxRealm.Text + "/" + gm.Name + "?fields=items"))
-                                {
-                                    // success!
+                                        GetCharacterInfo charInfo = new GetCharacterInfo();
+                                        if (charInfo.CollectData(URLWowAPI + "character/" + textBoxRealm.Text + "/" + gm.Name + "?fields=items"))
+                                        {
+                                            // success!
 
-                                    // Fill out the data grid with the data we collected
-                                    gm.MaxiLevel = charInfo.MaxiLevel;
-                                    gm.EquipediLevel = charInfo.EquipediLevel;
+                                            // Fill out the data grid with the data we collected
+                                            gm.MaxiLevel = charInfo.MaxiLevel;
+                                            gm.EquipediLevel = charInfo.EquipediLevel;
+                                        }
+                                        else
+                                        {
+                                            // Fail!  Save all errors until the end!
+                                            Errors.Add("      " + gm.Name + "\t\t" + gm.Level);
+                                        }
+                                    }
+
+                                    // Progress update
+                                    Double tempNum = (Double)Count++ / (Double)Total * 100;
+                                    bwAsync.ReportProgress((Int32)tempNum);
                                 }
-                                else
-                                {
-                                    // Fail!  Save all errors until the end!
-                                    Errors.Add("      " + gm.Name + "\t\t" + gm.Level);
-                                }
-                            }
-                            
-                            // Progress update
-                            Double tempNum = (Double)Count++ / (Double)Total * 100;
-                            bwAsync.ReportProgress((Int32)tempNum);
+                         }
+                        catch (Exception ex)
+                        {
+                            Log("Error: " + ex.Message);
                         }
 
                         // Data has been gathered now...
@@ -630,6 +694,7 @@ namespace WoWGuildOrganizer
 
                 // change the buttons back
                 buttonGetGuildInfo.Text = "Get Guild Info";
+                buttonRefreshGuildData.Text = "Refresh";
 
                 // start the wait cursor
                 WaitCursor(false);
@@ -639,6 +704,9 @@ namespace WoWGuildOrganizer
                 // now switch the tab
                 tabControl1.SelectTab(0);
             }
+
+            // Stop updating the Grid until the end
+            SuspendGrid(false);
         }
         #endregion
 
@@ -673,6 +741,14 @@ namespace WoWGuildOrganizer
                     stream.Close();
                 }
 
+                if (RaidGroup.RaidGroup.Count > 0)
+                {
+                    Stream stream = File.Open("RaidGroup.dat", FileMode.Create);
+                    BinaryFormatter bformatter = new BinaryFormatter();
+                    bformatter.Serialize(stream, RaidGroup);
+                    stream.Close();
+                }
+
                 if (Items.GetCount() > 0)
                 {
                     Stream stream = File.Open("ItemCache.dat", FileMode.Create);
@@ -695,6 +771,11 @@ namespace WoWGuildOrganizer
         private void Form1_Load(object sender, EventArgs e)
         {
             SortGrid("Level DESC, EquipediLevel DESC");
+
+            // refresh the grid data since it's been changed
+            dataGridViewRaidGroup.DataSource = null;
+            dataGridViewRaidGroup.DataSource = RaidGroup.RaidGroup;
+            dataGridViewRaidGroup.Refresh();
         }
 
         #endregion
@@ -829,6 +910,7 @@ namespace WoWGuildOrganizer
                 {
                     //Log("Cancelling Search...");
                     buttonGetGuildInfo.Enabled = false;
+                    buttonRefreshGuildData.Enabled = false;
 
                     // Notify the worker thread that a cancel has been requested.
                     // The cancel will not actually happen until the thread in the
@@ -846,6 +928,7 @@ namespace WoWGuildOrganizer
 
                     // Change the button text so that this can be cancelled
                     buttonGetGuildInfo.Text = "Cancel";
+                    buttonRefreshGuildData.Text = "Cancel";
                     
                     // Start the stop watch
                     sw.Start();
@@ -876,9 +959,171 @@ namespace WoWGuildOrganizer
             }
             catch (Exception ex)
             {
+                Log("Error: " + ex.Message);
             }
         }
 
         #endregion        
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void buttonAddCharacterToRaidData_Click(object sender, EventArgs e)
+        {  
+            // This is the Web Site to get the character info from...
+            // http://us.battle.net/api/wow/character/Thrall/Purdee/?fields=items
+
+            GetCharacterInfo charInfo = new GetCharacterInfo();
+            GuildMember gm = new GuildMember();
+
+            if (charInfo.CollectFullData(URLWowAPI + "character/" + textBoxCharacterRealm.Text + "/" + textBoxCharacterName.Text + "?fields=items"))
+            {
+                // success!
+
+                // Fill out the data grid with the data we collected                
+                gm = charInfo.Guildie;
+
+                // Clear out the Grid Data Source to get it ready for the new data
+                dataGridViewRaidGroup.DataSource = null;
+
+                // Add new character to Raid
+                RaidGroup.RaidGroup.Add(gm);
+
+                // refresh grid data
+                dataGridViewRaidGroup.DataSource = RaidGroup.RaidGroup;
+
+                // refresh the grid data since it's been changed
+                dataGridViewRaidGroup.Refresh();
+
+            }
+            else
+            {
+                // Fail!  Save all errors until the end!
+                //TODO
+            }
+        }
+
+        /// <summary>
+        /// Refresh the Guild Data 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void buttonRefreshGuildData_Click(object sender, EventArgs e)
+        {
+            // Simply Callthe buttonGetGuildInfo click 
+            buttonGetGuildInfo_Click(sender, e);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void buttonRaidGroupRefresh_Click(object sender, EventArgs e)
+        {
+            // TODO
+            // 1. Cycle through all the character individually and refresh each one.
+
+            WaitCursor(true);
+
+            try
+            {
+                ArrayList UpdatedCharacters = new ArrayList();
+
+                foreach (GuildMember oldMember in RaidGroup.RaidGroup)
+                {
+                    GetCharacterInfo charInfo = new GetCharacterInfo();
+                    GuildMember gm = new GuildMember();
+
+                    // This is the Web Site to get the character info from...
+                    // http://us.battle.net/api/wow/character/Thrall/Purdee/?fields=items
+                    if (charInfo.CollectFullData(URLWowAPI + "character/" + textBoxRealm.Text + "/" + oldMember.Name + "/?fields=items"))
+                    {
+                        // success!
+
+                        // Now we have the new info
+                        gm = charInfo.Guildie;
+
+                        // Compare the new info with the old info
+                        //  And make updates as needed...
+                        Boolean Updated = false;
+                        
+                        // Level
+                        if (oldMember.Level != gm.Level)
+                        {
+                            oldMember.Level = gm.Level;
+                            Updated = true;
+                        }
+
+                        // Achievement Points
+                        if (oldMember.AchievementPoints != gm.AchievementPoints)
+                        {
+                            oldMember.AchievementPoints = gm.AchievementPoints;
+                            Updated = true;
+                        }
+
+                        // Equiped iLevel
+                        if (oldMember.EquipediLevel != gm.EquipediLevel)
+                        {
+                            oldMember.EquipediLevel = gm.EquipediLevel;
+                            Updated = true;
+                        }
+
+                        // Max iLevel
+                        if (oldMember.MaxiLevel != gm.MaxiLevel)
+                        {
+                            oldMember.MaxiLevel = gm.MaxiLevel;
+                            Updated = true;
+                        }
+
+                        if (Updated)
+                        {
+                            UpdatedCharacters.Add(oldMember.Name);
+                        }
+                    }
+                    else
+                    {
+                        // Fail!  Save all errors until the end!
+                        //TODO
+                    }
+                }
+
+                // Clear out the Grid Data Source to get it ready for the new data
+                dataGridViewRaidGroup.DataSource = null;
+
+                // Now check to see if the Item Level has changed and if their level has changed
+                Int32 Count = 0;
+                foreach (GuildMember gm in RaidGroup.RaidGroup)
+                {
+                    if (gm.IsItemLevelChanged())
+                    {
+                        dataGridViewGuildData.Rows[Count].DefaultCellStyle.BackColor = Color.Aquamarine;
+                    }
+                    else
+                    {
+                        dataGridViewGuildData.Rows[Count].DefaultCellStyle.BackColor = Color.White;
+                    }
+
+                    Count++;
+                }                
+
+                // refresh grid data
+                dataGridViewRaidGroup.DataSource = RaidGroup.RaidGroup;
+
+                // refresh the grid data since it's been changed
+                dataGridViewRaidGroup.Refresh();
+
+            }
+            catch (Exception ex)
+            {
+                Log("Error: " + ex.Message);
+            }
+
+            WaitCursor(false);
+        }
+
+        
     }
 }

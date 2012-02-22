@@ -117,8 +117,13 @@ namespace WoWGuildOrganizer
         private Boolean _namechanged;
         private Boolean _ilevelchanged;
 
+        /// <summary>
+        /// Here is the constructor
+        /// </summary>
         public GuildMember()
         {
+            _maxilevel = 0;
+            _equipedilevel = 0;
             _levelchanged = false;
             _namechanged = false;
             _ilevelchanged = false;

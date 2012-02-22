@@ -28,6 +28,13 @@ namespace WoWGuildOrganizer
             get { return _equipedilevel; }
         }
 
+        private GuildMember _guildie;
+        public GuildMember Guildie
+        {
+            set { _guildie = value; }
+            get { return _guildie; }
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -35,6 +42,7 @@ namespace WoWGuildOrganizer
         {            
             MaxiLevel = 0;
             EquipediLevel = 0;
+            Guildie = new GuildMember();
         }
 
         /// <summary>
@@ -123,6 +131,142 @@ namespace WoWGuildOrganizer
                         if (result.Groups["equip_iLevel"].Success)
                         {
                             EquipediLevel = Convert.ToInt32(result.Groups["equip_iLevel"].Value.ToString());
+                        }
+                    }
+
+                    Success = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                String Error = String.Format("ERROR: ", ex.Message);
+            }
+
+            return Success;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="WebPage"></param>
+        /// <returns></returns>
+        public Boolean CollectFullData(String WebPage)
+        {
+            Boolean Success = false;
+
+
+            try
+            {
+                GetWebSiteData getSiteData = new GetWebSiteData();
+
+
+                if (!getSiteData.Parse(WebPage))
+                {
+                    // error
+                }
+                else
+                {
+                    // now parse the data
+
+                    // piece in web site that is important
+                    // code to expresso => replace "" with "
+                    // expresso to code => replace " with ""
+
+                    /*
+                      character":{.*?name":"(?<Name>\w+).*?class":(?<Class>\d+).*?race":(?<Race>\d+).*?level":(?<Level>\d+).*?achievementPoints":(?<AchPts>\d+).*?}{
+                      "lastModified":1311454367000,
+                      "name":"Breaktooth",
+                      "realm":"Thrall",
+                      "class":11,
+                      "race":8,
+                      "gender":0,
+                      "level":75,
+                      "achievementPoints":390,
+                      "thumbnail":"thrall/19/74347795-avatar.jpg",
+                      "items":{
+                        "averageItemLevel":127,
+                        "averageItemLevelEquipped":116,
+                        "head":{
+                          "id":39034,
+                          "name":"Bearskin Helm",
+                          "icon":"inv_helmet_108",
+                          "quality":2,
+                          "tooltipParams":{}
+                        },    
+                    */
+
+
+                    String DataString = getSiteData.Data;
+                    //String Search = @"averageItemLevel"":(?<avg_iLevel>\d+).*?averageItemLevelEquipped"":(?<equip_iLevel>\d+)";
+                    String Search = @"""name"":""(?<name>\w+)"".*?""class"":(?<class>\d+).*?""race"":(?<race>\d+).*?""level"":(?<level>\d+).*?""achievementPoints"":(?<achs>\d+).*?""averageItemLevel"":(?<avg_iLevel>\d+).*?averageItemLevelEquipped"":(?<equip_iLevel>\d+)";
+                    Regex test = new Regex(Search, RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
+
+                    #region DEBUG
+                    /*
+                    // this is for debugging only
+                    if (Debug)
+                    {
+                        // Create the output file.
+                        using (FileStream fs = File.Create(DebugFile)) { }
+                        // Open the stream and write to it
+                        using (FileStream fs = File.OpenWrite(DebugFile))
+                        {
+                            Byte[] info = new UTF8Encoding(true).GetBytes("   ");
+                            // Add some information to the file.
+                            fs.Write(info, 0, info.Length);
+                            info = new UTF8Encoding(true).GetBytes(Search);
+                            fs.Write(info, 0, info.Length);
+                            info = new UTF8Encoding(true).GetBytes(DataString);
+                            fs.Write(info, 0, info.Length);
+                        }
+                    }
+                     * */
+                    #endregion
+
+                    // Get the Average iLevel of character's Gear
+                    foreach (Match result in test.Matches(DataString))
+                    {
+                        // last modified not needed?
+
+                        if (result.Groups["name"].Success)
+                        {
+                            Guildie.Name = result.Groups["name"].Value.ToString();
+                        }
+
+                        // realm not needed?
+
+                        if (result.Groups["class"].Success)
+                        {
+                            Guildie.Class = Converter.ConvertClass(result.Groups["class"].Value.ToString());
+                        }
+
+                        if (result.Groups["race"].Success)
+                        {
+                            Guildie.Race = Converter.ConvertRace(result.Groups["race"].Value.ToString());
+                        }
+
+                        // gender is not needed
+
+                        if (result.Groups["level"].Success)
+                        {
+                            Guildie.Level = result.Groups["level"].Value.ToString();
+                        }
+
+                        if (result.Groups["achs"].Success)
+                        {
+                            Guildie.AchievementPoints = Convert.ToInt32(result.Groups["achs"].Value.ToString());
+                        }
+
+                        //...
+
+                        if (result.Groups["avg_iLevel"].Success)
+                        {
+                            Guildie.MaxiLevel = Convert.ToInt32(result.Groups["avg_iLevel"].Value.ToString());
+                        }
+
+                        if (result.Groups["equip_iLevel"].Success)
+                        {
+                            Guildie.EquipediLevel = Convert.ToInt32(result.Groups["equip_iLevel"].Value.ToString());
                         }
                     }
 
