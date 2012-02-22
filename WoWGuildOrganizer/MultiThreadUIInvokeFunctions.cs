@@ -14,6 +14,7 @@ namespace WoWGuildOrganizer
         delegate void SetWaitCursorCallback(Boolean Wait);
         delegate void LabelCallback(String Message);
         delegate void SortGridCallback(String Sorting);
+        delegate void SuspendGridCallback(Boolean Suspend);
         #endregion
 
 
@@ -126,6 +127,35 @@ namespace WoWGuildOrganizer
                 
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="Wait"></param>
+        public void SuspendGrid(Boolean Suspend)
+        {
+            // InvokeRequired required compares the thread ID of the
+            // calling thread to the thread ID of the creating thread.
+            // If these threads are different, it returns true.
+            if (this.InvokeRequired)
+            {
+                SuspendGridCallback d = new SuspendGridCallback(SuspendGrid);
+                this.Invoke(d, new object[] { Suspend });
+            }
+            else
+            {
+                // suspend or resume the grid painting
+                if (Suspend)
+                {
+                    ControlHelper.SuspendDrawing(dataGridViewGuildData);
+                }
+                else
+                {
+                    ControlHelper.ResumeDrawing(dataGridViewGuildData);
+                }
+            }
+        }
+
         #endregion
 
     }

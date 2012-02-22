@@ -198,7 +198,7 @@ namespace WoWGuildOrganizer
                     String SocketBoolean = "";
                     String SearchSocketCount = @"""type"":";
                     String SearchItemLevel = @"""itemLevel"":";
-                    Int32 ItemLevel = -1;
+                    //Int32 ItemLevel = -1;
                     
                     #region DEBUG
                     // this is for debugging only
