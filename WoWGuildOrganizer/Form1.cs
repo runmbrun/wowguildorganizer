@@ -1093,24 +1093,25 @@ namespace WoWGuildOrganizer
                 // Clear out the Grid Data Source to get it ready for the new data
                 dataGridViewRaidGroup.DataSource = null;
 
+                // refresh grid data
+                dataGridViewRaidGroup.DataSource = RaidGroup.RaidGroup;
+
                 // Now check to see if the Item Level has changed and if their level has changed
                 Int32 Count = 0;
                 foreach (GuildMember gm in RaidGroup.RaidGroup)
                 {
-                    if (gm.IsItemLevelChanged())
+                    //if (gm.IsItemLevelChanged())
+                    if (UpdatedCharacters.Contains(gm.Name))
                     {
-                        dataGridViewGuildData.Rows[Count].DefaultCellStyle.BackColor = Color.Aquamarine;
+                        dataGridViewRaidGroup.Rows[Count].DefaultCellStyle.BackColor = Color.Aquamarine;
                     }
                     else
                     {
-                        dataGridViewGuildData.Rows[Count].DefaultCellStyle.BackColor = Color.White;
+                        dataGridViewRaidGroup.Rows[Count].DefaultCellStyle.BackColor = Color.White;
                     }
 
                     Count++;
-                }                
-
-                // refresh grid data
-                dataGridViewRaidGroup.DataSource = RaidGroup.RaidGroup;
+                }
 
                 // refresh the grid data since it's been changed
                 dataGridViewRaidGroup.Refresh();
