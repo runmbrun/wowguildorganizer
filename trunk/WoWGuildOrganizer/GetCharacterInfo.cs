@@ -249,7 +249,7 @@ namespace WoWGuildOrganizer
 
                         if (result.Groups["level"].Success)
                         {
-                            Guildie.Level = result.Groups["level"].Value.ToString();
+                            Guildie.Level = Convert.ToInt32(result.Groups["level"].Value);
                         }
 
                         if (result.Groups["achs"].Success)

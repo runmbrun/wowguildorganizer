@@ -17,8 +17,8 @@ namespace WoWGuildOrganizer
             set { _name = value; }
         }
 
-        private String _level;
-        public String Level
+        private Int32 _level;
+        public Int32 Level
         {
             get { return _level; }
             set 
