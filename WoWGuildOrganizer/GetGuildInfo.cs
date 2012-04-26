@@ -117,7 +117,7 @@ namespace WoWGuildOrganizer
 
                         if (result.Groups["Level"].Success)
                         {
-                            member.Level = result.Groups["Level"].Value;
+                            member.Level = Convert.ToInt32(result.Groups["Level"].Value);
                         }
 
                         if (result.Groups["AchPts"].Success)
