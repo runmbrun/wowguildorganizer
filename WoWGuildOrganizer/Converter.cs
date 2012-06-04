@@ -69,14 +69,26 @@ namespace WoWGuildOrganizer
 
             switch (In)
             {
+                case "1":
+                    Converted = "Human";
+                    break;
                 case "2":
                     Converted = "Orc";
+                    break;
+                case "3":
+                    Converted = "Dwarf";
+                    break;
+                case "4":
+                    Converted = "Night Elf";
                     break;
                 case "5":
                     Converted = "Undead";
                     break;
                 case "6":
                     Converted = "Tauren";
+                    break;
+                case "7":
+                    Converted = "Gnome";
                     break;
                 case "8":
                     Converted = "Troll";
@@ -86,6 +98,12 @@ namespace WoWGuildOrganizer
                     break;
                 case "10":
                     Converted = "Blood Elf";
+                    break;
+                case "11":
+                    Converted = "Draenei";
+                    break;
+                case "22":
+                    Converted = "Worgen";
                     break;
                 default:
                     Converted = "error";
