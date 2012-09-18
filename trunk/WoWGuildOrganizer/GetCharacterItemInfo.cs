@@ -26,7 +26,7 @@ namespace WoWGuildOrganizer
         private void FillOutItemAuditsArrayList()
         {
             // fill out a blank array with all the slots
-            for (Int32 i = 0; i < 19; i++)
+            for (Int32 i = 0; i < 18; i++)
             {
                 ItemAudit audit = new ItemAudit();
 
@@ -47,65 +47,61 @@ namespace WoWGuildOrganizer
                     case 3:
                         audit.Slot = "back";
                         audit.MissingItem = "1";
-                        break;
+                        break;                    
                     case 4:
-                        audit.Slot = "tabard";
+                        audit.Slot = "chest";
                         audit.MissingItem = "1";
                         break;
                     case 5:
-                        audit.Slot = "shirt";
+                        audit.Slot = "tabard";
                         audit.MissingItem = "1";
                         break;
                     case 6:
-                        audit.Slot = "wrist";
+                        audit.Slot = "shirt";
                         audit.MissingItem = "1";
                         break;
                     case 7:
-                        audit.Slot = "hands";
+                        audit.Slot = "wrist";
                         audit.MissingItem = "1";
                         break;
                     case 8:
-                        audit.Slot = "waist";
+                        audit.Slot = "hands";
                         audit.MissingItem = "1";
                         break;
                     case 9:
-                        audit.Slot = "legs";
+                        audit.Slot = "waist";
                         audit.MissingItem = "1";
                         break;
                     case 10:
-                        audit.Slot = "feet";
+                        audit.Slot = "legs";
                         audit.MissingItem = "1";
                         break;
                     case 11:
-                        audit.Slot = "finger1";
+                        audit.Slot = "feet";
                         audit.MissingItem = "1";
                         break;
                     case 12:
-                        audit.Slot = "finger2";
+                        audit.Slot = "finger1";
                         audit.MissingItem = "1";
                         break;
                     case 13:
-                        audit.Slot = "trinket1";
+                        audit.Slot = "finger2";
                         audit.MissingItem = "1";
                         break;
                     case 14:
-                        audit.Slot = "trinket2";
+                        audit.Slot = "trinket1";
                         audit.MissingItem = "1";
                         break;
                     case 15:
-                        audit.Slot = "mainHand";
+                        audit.Slot = "trinket2";
                         audit.MissingItem = "1";
                         break;
                     case 16:
-                        audit.Slot = "offHand";
+                        audit.Slot = "mainHand";
                         audit.MissingItem = "1";
                         break;
                     case 17:
-                        audit.Slot = "ranged";
-                        audit.MissingItem = "1";
-                        break;
-                    case 18:
-                        audit.Slot = "chest";
+                        audit.Slot = "offHand";
                         audit.MissingItem = "1";
                         break;
                 }
@@ -174,7 +170,7 @@ namespace WoWGuildOrganizer
                         DataString = DataString.Substring(count + 9);
                     }
 
-                    String Search = @"""(?<Slot>\w+)"":{.*?""id"":(?<Id>\d+).*?""name"":""(?<Name>[A-Za-z ':-]+?)"",.*?""quality"":(?<Quality>\d+).*?""tooltipParams"":{(?<ToolTips>.*?)}.*?}";
+                    String Search = @"""(?<Slot>\w+)"":{.*?""id"":(?<Id>\d+).*?""name"":""(?<Name>[A-Za-z ',:-]+?)"",.*?""quality"":(?<Quality>\d+).*?""tooltipParams"":{(?<ToolTips>.*?)}.*?}";
                     Regex test = new Regex(Search, RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
 
                     
@@ -198,10 +194,7 @@ namespace WoWGuildOrganizer
                     }
                     #endregion
 
-
-                    // 
-
-
+                    
                     // Get the item info
                     foreach (Match result in test.Matches(DataString))
                     {

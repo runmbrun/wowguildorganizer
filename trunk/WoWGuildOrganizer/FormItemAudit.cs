@@ -21,6 +21,20 @@ namespace WoWGuildOrganizer
             set { _name = value; labelName.Text = _name; }
         }
 
+        private String _maxilevel;
+        public String MaxiLevel
+        {
+            get { return _maxilevel; }
+            set { _maxilevel = value; }
+        }
+
+        private String _equippedilevel;
+        public String EquippediLevel
+        {
+            get { return _equippedilevel; }
+            set { _equippedilevel = value; }
+        }
+
         ArrayList ItemAuditList = null;
 
 
@@ -55,15 +69,19 @@ namespace WoWGuildOrganizer
                     }
                 }
 
-                //TODO:  Do AUDIT stuff here!
+
+                // Fill out the Max iLevel information                
+                textBoxMaxiLevel.Text = MaxiLevel;
 
                 
+                // Do AUDIT stuff here!                
                 Int32 MissingItems = 0;
                 Int32 MissingEnchants = 0;
                 Int32 MissingGems = 0;
                 Int32 MissingTotal = 0;
+                Double iLevels = 0;
+                Int32 ItemCount = 0;
                 Boolean TwoHanded = false;
-
                 
                 
                 // Check each item that the character has equiped
@@ -81,16 +99,26 @@ namespace WoWGuildOrganizer
                     // Check for missing Items
                     if (item.MissingItem != "0")
                     {
-                        // 
+                        // Make sure only two handed weapons don't have off hand
                         if (!(item.Slot == "offHand" && TwoHanded) && item.Slot != "tabard" && item.Slot != "shirt")
                         {
+                            // Missing this item
                             MissingItems++;
                         }
                         else
                         {
+                            // Not missing this item
                             item.MissingItem = "0";
                         }
-                    }                    
+                    }
+                    else
+                    {
+                        if (item.Slot != "tabard" && item.Slot != "shirt")
+                        {
+                            iLevels += item.ItemLevel;
+                            ItemCount++;
+                        }
+                    }
 
                     // Check for missing enchants
                     if (item.MissingEnchant != "0")
@@ -104,6 +132,9 @@ namespace WoWGuildOrganizer
                         MissingGems += Convert.ToInt32(item.MissingGem);
                     }
                 }
+
+                // Now double check the Equipped iLevel value!
+                textBoxEquippediLevel.Text = String.Format("{0:0.##}  ({1})", (iLevels / Convert.ToDouble(ItemCount)), EquippediLevel);
 
                 // Count up the missing items
                 MissingTotal += MissingItems;
@@ -203,6 +234,11 @@ namespace WoWGuildOrganizer
                         break;
                 }
 
+                // iLevel too low?  -> Column 2
+                //   - red if less than equipped iLevel - 20
+                //   - orange if in between equipped iLevel - 20 and equipped
+                //TODO mmb
+
                 // Any Missing Items? -> Column 3
                 if (dataGridViewItemAudit.Rows[i].Cells[3].Value.ToString() != "0")
                 {
@@ -220,6 +256,10 @@ namespace WoWGuildOrganizer
                 {
                     dataGridViewItemAudit.Rows[i].Cells[5].Style.BackColor = Color.Red;
                 }
+
+                // Passed or Failed!
+                //   - Red = Failed!
+                //   - ?   - Passed!
             }
 
             // refresh the grid data since it's been changed
