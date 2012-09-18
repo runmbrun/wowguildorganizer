@@ -59,11 +59,11 @@ namespace WoWGuildOrganizer
             set { _missingGem = value; }
         }
 
-        private DateTime _lastupdated;
-        public DateTime LastUpdated
+        private DateTime _professions;
+        public DateTime Profession
         {
-            get { return _lastupdated; }
-            set { _lastupdated = value; }
+            get { return _professions; }
+            set { _professions = value; }
         }
         #endregion
 
@@ -205,10 +205,14 @@ namespace WoWGuildOrganizer
                 }
             }
 
-            // *** Special Cases: ***
-                                        
-            //TODO - Profession audits -> 
+            // *** Profession Cases: ***
+
             //  1. 2 x Ring enchants -> if Enchanter
+           
+
+
+
+            //TODO - Profession audits ->             
             //  2. 1 x Bracer special enchant -> if Leatherworker
             //  3. 3 x Special Gems -> if Jewelcrafter
             //  4. 2 x Sockets (bracer and hands) -> if Blacksmith

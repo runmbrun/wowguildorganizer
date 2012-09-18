@@ -42,9 +42,15 @@
             this.label1 = new System.Windows.Forms.Label();
             this.textBoxMissingItems = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.textBoxEquippediLevel = new System.Windows.Forms.TextBox();
+            this.textBoxMaxiLevel = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewItemAudit)).BeginInit();
             this.panel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // labelName
@@ -59,7 +65,7 @@
             // textBoxAuditStatus
             // 
             this.textBoxAuditStatus.Enabled = false;
-            this.textBoxAuditStatus.Location = new System.Drawing.Point(61, 124);
+            this.textBoxAuditStatus.Location = new System.Drawing.Point(82, 126);
             this.textBoxAuditStatus.Name = "textBoxAuditStatus";
             this.textBoxAuditStatus.ReadOnly = true;
             this.textBoxAuditStatus.Size = new System.Drawing.Size(190, 20);
@@ -175,17 +181,66 @@
             // label5
             // 
             this.label5.AutoSize = true;
+            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label5.Location = new System.Drawing.Point(12, 127);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(43, 13);
+            this.label5.Size = new System.Drawing.Size(64, 17);
             this.label5.TabIndex = 6;
             this.label5.Text = "Status: ";
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.label7);
+            this.groupBox2.Controls.Add(this.label6);
+            this.groupBox2.Controls.Add(this.textBoxMaxiLevel);
+            this.groupBox2.Controls.Add(this.textBoxEquippediLevel);
+            this.groupBox2.Location = new System.Drawing.Point(15, 40);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(200, 73);
+            this.groupBox2.TabIndex = 7;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "iLevel";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(6, 25);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(55, 13);
+            this.label6.TabIndex = 6;
+            this.label6.Text = "Equipped:";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(6, 47);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(30, 13);
+            this.label7.TabIndex = 6;
+            this.label7.Text = "Max:";
+            // 
+            // textBoxEquippediLevel
+            // 
+            this.textBoxEquippediLevel.Location = new System.Drawing.Point(67, 19);
+            this.textBoxEquippediLevel.Name = "textBoxEquippediLevel";
+            this.textBoxEquippediLevel.ReadOnly = true;
+            this.textBoxEquippediLevel.Size = new System.Drawing.Size(127, 20);
+            this.textBoxEquippediLevel.TabIndex = 0;
+            // 
+            // textBoxMaxiLevel
+            // 
+            this.textBoxMaxiLevel.Location = new System.Drawing.Point(67, 40);
+            this.textBoxMaxiLevel.Name = "textBoxMaxiLevel";
+            this.textBoxMaxiLevel.ReadOnly = true;
+            this.textBoxMaxiLevel.Size = new System.Drawing.Size(68, 20);
+            this.textBoxMaxiLevel.TabIndex = 0;
             // 
             // FormItemAudit
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(805, 572);
+            this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.panel1);
@@ -198,6 +253,8 @@
             this.panel1.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -219,5 +276,10 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox textBoxMissingTotal;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.TextBox textBoxMaxiLevel;
+        private System.Windows.Forms.TextBox textBoxEquippediLevel;
     }
 }

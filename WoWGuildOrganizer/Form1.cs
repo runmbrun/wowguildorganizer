@@ -348,6 +348,9 @@ namespace WoWGuildOrganizer
                 // Pass the name to the new form
                 charAudit.CharacterName = CharName;
 
+                charAudit.EquippediLevel = ((GuildMember)(SavedCharacters.SavedCharacters[CurrentRow])).EquipediLevel.ToString();
+                charAudit.MaxiLevel = ((GuildMember)(SavedCharacters.SavedCharacters[CurrentRow])).MaxiLevel.ToString();
+
                 // Pass the Data to the Form
                 if (charAudit.PassData(URLWowAPI + "character/" + textBoxRealm.Text + "/" + CharName + "?fields=items"))
                 {
