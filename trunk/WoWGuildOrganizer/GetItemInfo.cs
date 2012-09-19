@@ -287,7 +287,7 @@ namespace WoWGuildOrganizer
                     break;
                 // head
                 case 1: 
-                    CanEnchant = true;
+                    CanEnchant = false;
                     break;
                 // neck
                 case 2:

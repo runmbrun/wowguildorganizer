@@ -28,6 +28,7 @@ namespace WoWGuildOrganizer
         private BackgroundWorker GetGuildInfoAsyncWorker = new BackgroundWorker();
         private StopWatch sw = new StopWatch();
         static public ItemCache Items;
+        ArrayList ErrorLog = new ArrayList();
 
         #endregion
 
@@ -351,6 +352,9 @@ namespace WoWGuildOrganizer
                 charAudit.EquippediLevel = ((GuildMember)(SavedCharacters.SavedCharacters[CurrentRow])).EquipediLevel.ToString();
                 charAudit.MaxiLevel = ((GuildMember)(SavedCharacters.SavedCharacters[CurrentRow])).MaxiLevel.ToString();
 
+                charAudit.Profession1 = ((GuildMember)(SavedCharacters.SavedCharacters[CurrentRow])).GetProfession1();
+                charAudit.Profession2 = ((GuildMember)(SavedCharacters.SavedCharacters[CurrentRow])).GetProfession2();
+
                 // Pass the Data to the Form
                 if (charAudit.PassData(URLWowAPI + "character/" + textBoxRealm.Text + "/" + CharName + "?fields=items"))
                 {
@@ -608,13 +612,15 @@ namespace WoWGuildOrganizer
                                         // http://us.battle.net/api/wow/character/Thrall/Purdee/?fields=items
 
                                         GetCharacterInfo charInfo = new GetCharacterInfo();
-                                        if (charInfo.CollectData(URLWowAPI + "character/" + textBoxRealm.Text + "/" + gm.Name + "?fields=items"))
+                                        if (charInfo.CollectData(URLWowAPI + "character/" + textBoxRealm.Text + "/" + gm.Name + "?fields=items,professions"))
                                         {
                                             // success!
 
                                             // Fill out the data grid with the data we collected
                                             gm.MaxiLevel = charInfo.MaxiLevel;
                                             gm.EquipediLevel = charInfo.EquipediLevel;
+                                            gm.SetProfession1(charInfo.Profession1);
+                                            gm.SetProfession2(charInfo.Profession2);
                                         }
                                         else
                                         {
@@ -652,7 +658,7 @@ namespace WoWGuildOrganizer
                                 ErrorMessage += str + "\n";
                             }
 
-                            DisplayError(ErrorMessage);
+                            Log(ErrorMessage);
                         }
                     }
                     catch (Exception ex)
@@ -879,10 +885,30 @@ namespace WoWGuildOrganizer
         /// <param name="Message"></param>
         public void Log(String Message)
         {
+            // Add to the Error Log
             // mmb - todo
-            //MessageBox.Show(Message);
+            ErrorLog.Add(Message);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public void ShowAllErrors()
+        {
+            String Errors = "";
+
+            foreach (String s in ErrorLog)
+            {
+                Errors += s + "\n";
+            }
+
+            MessageBox.Show(Errors);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="Message"></param>
         public void DisplayError(String Message)
         {
             MessageBox.Show(Message);
@@ -966,8 +992,19 @@ namespace WoWGuildOrganizer
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void button1_Click(object sender, EventArgs e)
+        {
+            ShowAllErrors();
+        }
+
         #endregion        
 
+        #region " Raid Tab Functionality "
         /// <summary>
         /// 
         /// </summary>
@@ -1127,7 +1164,6 @@ namespace WoWGuildOrganizer
 
             WaitCursor(false);
         }
-
-        
+        #endregion
     }
 }

@@ -59,8 +59,8 @@ namespace WoWGuildOrganizer
             set { _missingGem = value; }
         }
 
-        private DateTime _professions;
-        public DateTime Profession
+        private String _professions;
+        public String Profession
         {
             get { return _professions; }
             set { _professions = value; }
@@ -123,7 +123,111 @@ namespace WoWGuildOrganizer
         {
             _socketcount = s;
         }
-        
+
+        public Boolean IsEnchanted()
+        {
+            if (_toolTips.Contains(@"enchant"))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public Boolean IsInscriptionEnchant()
+        {
+            // Current Inscription Enchants:
+            if (_toolTips.Contains(@"enchant"))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public Boolean IsLeatherworkingEnchant()
+        {
+            // Current Leatherworking Enchants:
+            if (_toolTips.Contains(@"enchant"))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public Boolean IsTailorEnchant()
+        {
+            // Current Tailor Enchants:
+            // 4115 - Lightweave Embroidery
+            // ? - Darkglow Embroidery
+            // ? - Master's Spellthread
+            // ? - Sanctified Spellthread
+            // ? - Swordguard Embroidery
+
+            if (_toolTips.Contains("4115") || 
+                _toolTips.Contains("4115") || 
+                _toolTips.Contains("4115") || 
+                _toolTips.Contains("4115") || 
+                _toolTips.Contains("4115"))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public Boolean IsBlacksmithingSocket()
+        {
+            if (_toolTips.Contains(@"extraSocket"))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public Boolean IsJewelcraftingGem()
+        {
+            // TODO - mmb.  This is going to be tough
+            if (_toolTips != null)
+            {
+                if (_toolTips.Contains("Gem"))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public Boolean IsEngineeringCog()
+        {
+            // TODO - mmb.  This is going to be tough
+            if (_toolTips.Contains("1"))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }  
+
         private String _toolTips;
         public void SetToolTips(String t)
         {
@@ -206,13 +310,8 @@ namespace WoWGuildOrganizer
             }
 
             // *** Profession Cases: ***
-
-            //  1. 2 x Ring enchants -> if Enchanter
-           
-
-
-
             //TODO - Profession audits ->             
+            //  1. 2 x Ring enchants -> if Enchanter
             //  2. 1 x Bracer special enchant -> if Leatherworker
             //  3. 3 x Special Gems -> if Jewelcrafter
             //  4. 2 x Sockets (bracer and hands) -> if Blacksmith

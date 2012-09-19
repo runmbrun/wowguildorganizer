@@ -35,6 +35,20 @@ namespace WoWGuildOrganizer
             set { _equippedilevel = value; }
         }
 
+        private String _profession1;
+        public String Profession1
+        {
+            get { return _profession1; }
+            set { _profession1 = value; }
+        }
+
+        private String _profession2;
+        public String Profession2
+        {
+            get { return _profession2; }
+            set { _profession2 = value; }
+        }
+
         ArrayList ItemAuditList = null;
 
 
@@ -73,11 +87,17 @@ namespace WoWGuildOrganizer
                 // Fill out the Max iLevel information                
                 textBoxMaxiLevel.Text = MaxiLevel;
 
+                // Fill out the profession information
+                textBoxProfessions.Text = Profession1 + ", " + Profession2;
+
                 
                 // Do AUDIT stuff here!                
                 Int32 MissingItems = 0;
                 Int32 MissingEnchants = 0;
                 Int32 MissingGems = 0;
+                Int32 MissingJCGems = 0;
+                Int32 MissingCogs = 0;
+                Int32 MissingProfs = 0;
                 Int32 MissingTotal = 0;
                 Double iLevels = 0;
                 Int32 ItemCount = 0;
@@ -90,7 +110,9 @@ namespace WoWGuildOrganizer
                     // Figure out if the mainHand is a two handed weapon
                     if (item.Slot == "mainHand")
                     {
-                        if (Form1.Items.GetItem(item.GetId()).InventoryType == 17)
+                        // Check to see if weapon is two handed
+                        if (Form1.Items.GetItem(item.GetId()).InventoryType == 17 ||
+                            Form1.Items.GetItem(item.GetId()).InventoryType == 26)
                         {
                             TwoHanded = true;
                         }
@@ -131,6 +153,83 @@ namespace WoWGuildOrganizer
                     {
                         MissingGems += Convert.ToInt32(item.MissingGem);
                     }
+
+                    // Check for Profession Specials
+
+                    // Blacksmith - Check for special Socket on bracer and hands
+                    if ((Profession1 == "Blacksmithing" || Profession2 == "Blacksmithing") && (item.Slot == "wrist" || item.Slot == "hands"))
+                    {
+                        if (!item.IsBlacksmithingSocket())
+                        {
+                            item.Profession = "1";
+                            MissingProfs++;
+                        }
+                    }
+
+                    // Enchanting - Check for enchants on both rings
+                    if ((Profession1 == "Enchanting" || Profession2 == "Enchanting") && (item.Slot == "finger1" || item.Slot == "finger2"))
+                    {   
+                        if (!item.IsEnchanted())
+                        {
+                            item.Profession = "1";
+                            MissingProfs++;
+                        }
+                    }
+
+                    // Enchanting - Check for enchants on both rings
+                    if ((Profession1 == "Engineering" || Profession2 == "Engineering") && (item.Slot == "head"))
+                    {
+                        // TODO - mmb
+                        if (item.IsEngineeringCog())
+                        {
+                            MissingCogs++;
+                        }
+                    }
+
+                    // Enchanting - Check for enchants on both rings
+                    if ((Profession1 == "Inscription" || Profession2 == "Inscription") && (item.Slot == "wrist"))
+                    {
+                        // TODO - mmb
+                        if (!item.IsInscriptionEnchant())
+                        {
+                            item.Profession = "1";
+                            MissingProfs++;
+                        }
+                    }
+
+                    // Leatherworking - Check for Enchant on Bracer
+                    // This should already be covered by regular enchant check... 
+                    //   but should I check to make sure the enchant is a LW one?                    
+                    if ((Profession1 == "Leatherworking" || Profession2 == "Leatherworking") && (item.Slot == "wrist"))
+                    {
+                        // TODO - mmb
+                        if (!item.IsLeatherworkingEnchant())
+                        {
+                            item.Profession = "1";
+                            MissingProfs++;
+                        }
+                    }
+
+                    // Jewelcrafting - Check for 3 special gems                    
+                    if (Profession1 == "Jewelcrafting" || Profession2 == "Jewelcrafting")
+                    {
+                        if (item.IsJewelcraftingGem())
+                        {
+                            MissingJCGems++;
+                        }
+                    }
+
+                    // Tailor - Check for special enchant on cloak
+                    // This should already be covered by regular enchant check... 
+                    //   but should I check to make sure the enchant is a Tailor one? 
+                    if ((Profession1 == "Tailoring" || Profession2 == "Tailoring") && (item.Slot == "back"))
+                    {
+                        if (!item.IsTailorEnchant())
+                        {
+                            item.Profession = "1";
+                            MissingProfs++;
+                        }
+                    }
                 }
 
                 // Now double check the Equipped iLevel value!
@@ -147,6 +246,36 @@ namespace WoWGuildOrganizer
                 // Count the missing gems
                 MissingTotal += MissingGems;
                 textBoxMissingGems.Text = MissingGems.ToString();
+
+                // Count the missing Jewelcrafting Gems
+                if (Profession1 == "Jewelcrafting" || Profession2 == "Jewelcrafting")
+                {
+                    if (MissingJCGems < 3)
+                    {
+                        MissingJCGems = 3 - MissingJCGems;
+                        MissingProfs += MissingJCGems;
+
+                        // TODO - mmb
+                        // need to do something more to show this is missing.  but how?
+                    }
+                }
+
+                // Count the missing Jewelcrafting Gems
+                if (Profession1 == "Engineering" || Profession2 == "Engineering")
+                {
+                    if (MissingCogs < 3)
+                    {
+                        MissingCogs = 3 - MissingCogs;
+                        MissingProfs += MissingCogs;
+
+                        // TODO - mmb
+                        // need to do something more to show this is missing.  but how?
+                    }
+                }
+
+                // Count the missing profession specials
+                MissingTotal += MissingProfs;
+                textBoxMissingProfessions.Text = MissingProfs.ToString();
 
                 // Count the total missing 
                 textBoxMissingTotal.Text = MissingTotal.ToString();
@@ -238,6 +367,15 @@ namespace WoWGuildOrganizer
                 //   - red if less than equipped iLevel - 20
                 //   - orange if in between equipped iLevel - 20 and equipped
                 //TODO mmb
+                Int32 iLevel = Convert.ToInt32(dataGridViewItemAudit.Rows[i].Cells[2].Value.ToString());
+                if (i != 5 && i != 6 && iLevel != 0 && iLevel != 1)
+                {
+                    // This is subjective... TODO - mmb
+                    if (iLevel < (Convert.ToInt32(EquippediLevel) - 20))
+                    {
+                        dataGridViewItemAudit.Rows[i].Cells[2].Style.BackColor = Color.Red;
+                    }
+                }
 
                 // Any Missing Items? -> Column 3
                 if (dataGridViewItemAudit.Rows[i].Cells[3].Value.ToString() != "0")
@@ -255,6 +393,14 @@ namespace WoWGuildOrganizer
                 if (dataGridViewItemAudit.Rows[i].Cells[5].Value.ToString() != "0")
                 {
                     dataGridViewItemAudit.Rows[i].Cells[5].Style.BackColor = Color.Red;
+                }
+
+                // Any Missing Profession Specials? -> Column 6
+                if (dataGridViewItemAudit.Rows[i].Cells[6].Value != null && 
+                    dataGridViewItemAudit.Rows[i].Cells[6].Value.ToString() != "0" &&
+                    dataGridViewItemAudit.Rows[i].Cells[6].Value.ToString() != "")
+                {
+                    dataGridViewItemAudit.Rows[i].Cells[6].Style.BackColor = Color.Red;
                 }
 
                 // Passed or Failed!
