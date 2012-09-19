@@ -43,10 +43,14 @@
             this.textBoxMissingItems = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
-            this.textBoxEquippediLevel = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
             this.textBoxMaxiLevel = new System.Windows.Forms.TextBox();
+            this.textBoxEquippediLevel = new System.Windows.Forms.TextBox();
+            this.textBoxMissingProfessions = new System.Windows.Forms.TextBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.textBoxProfessions = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewItemAudit)).BeginInit();
             this.panel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -97,7 +101,9 @@
             // 
             this.groupBox1.Controls.Add(this.label4);
             this.groupBox1.Controls.Add(this.textBoxMissingTotal);
+            this.groupBox1.Controls.Add(this.label8);
             this.groupBox1.Controls.Add(this.label3);
+            this.groupBox1.Controls.Add(this.textBoxMissingProfessions);
             this.groupBox1.Controls.Add(this.textBoxMissingGems);
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.textBoxMissingEnchants);
@@ -130,7 +136,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(59, 87);
+            this.label3.Location = new System.Drawing.Point(59, 74);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(72, 13);
             this.label3.TabIndex = 1;
@@ -138,7 +144,7 @@
             // 
             // textBoxMissingGems
             // 
-            this.textBoxMissingGems.Location = new System.Drawing.Point(23, 84);
+            this.textBoxMissingGems.Location = new System.Drawing.Point(23, 71);
             this.textBoxMissingGems.Name = "textBoxMissingGems";
             this.textBoxMissingGems.ReadOnly = true;
             this.textBoxMissingGems.Size = new System.Drawing.Size(24, 20);
@@ -147,7 +153,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(59, 57);
+            this.label2.Location = new System.Drawing.Point(59, 48);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(90, 13);
             this.label2.TabIndex = 1;
@@ -155,7 +161,7 @@
             // 
             // textBoxMissingEnchants
             // 
-            this.textBoxMissingEnchants.Location = new System.Drawing.Point(23, 54);
+            this.textBoxMissingEnchants.Location = new System.Drawing.Point(23, 45);
             this.textBoxMissingEnchants.Name = "textBoxMissingEnchants";
             this.textBoxMissingEnchants.ReadOnly = true;
             this.textBoxMissingEnchants.Size = new System.Drawing.Size(24, 20);
@@ -164,7 +170,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(59, 27);
+            this.label1.Location = new System.Drawing.Point(59, 22);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(70, 13);
             this.label1.TabIndex = 1;
@@ -172,7 +178,7 @@
             // 
             // textBoxMissingItems
             // 
-            this.textBoxMissingItems.Location = new System.Drawing.Point(23, 24);
+            this.textBoxMissingItems.Location = new System.Drawing.Point(23, 19);
             this.textBoxMissingItems.Name = "textBoxMissingItems";
             this.textBoxMissingItems.ReadOnly = true;
             this.textBoxMissingItems.Size = new System.Drawing.Size(24, 20);
@@ -194,21 +200,12 @@
             this.groupBox2.Controls.Add(this.label6);
             this.groupBox2.Controls.Add(this.textBoxMaxiLevel);
             this.groupBox2.Controls.Add(this.textBoxEquippediLevel);
-            this.groupBox2.Location = new System.Drawing.Point(15, 40);
+            this.groupBox2.Location = new System.Drawing.Point(275, 17);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(200, 73);
             this.groupBox2.TabIndex = 7;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "iLevel";
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(6, 25);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(55, 13);
-            this.label6.TabIndex = 6;
-            this.label6.Text = "Equipped:";
             // 
             // label7
             // 
@@ -219,13 +216,14 @@
             this.label7.TabIndex = 6;
             this.label7.Text = "Max:";
             // 
-            // textBoxEquippediLevel
+            // label6
             // 
-            this.textBoxEquippediLevel.Location = new System.Drawing.Point(67, 19);
-            this.textBoxEquippediLevel.Name = "textBoxEquippediLevel";
-            this.textBoxEquippediLevel.ReadOnly = true;
-            this.textBoxEquippediLevel.Size = new System.Drawing.Size(127, 20);
-            this.textBoxEquippediLevel.TabIndex = 0;
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(6, 25);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(55, 13);
+            this.label6.TabIndex = 6;
+            this.label6.Text = "Equipped:";
             // 
             // textBoxMaxiLevel
             // 
@@ -235,13 +233,57 @@
             this.textBoxMaxiLevel.Size = new System.Drawing.Size(68, 20);
             this.textBoxMaxiLevel.TabIndex = 0;
             // 
+            // textBoxEquippediLevel
+            // 
+            this.textBoxEquippediLevel.Location = new System.Drawing.Point(67, 19);
+            this.textBoxEquippediLevel.Name = "textBoxEquippediLevel";
+            this.textBoxEquippediLevel.ReadOnly = true;
+            this.textBoxEquippediLevel.Size = new System.Drawing.Size(127, 20);
+            this.textBoxEquippediLevel.TabIndex = 0;
+            // 
+            // textBoxMissingProfessions
+            // 
+            this.textBoxMissingProfessions.Location = new System.Drawing.Point(23, 97);
+            this.textBoxMissingProfessions.Name = "textBoxMissingProfessions";
+            this.textBoxMissingProfessions.ReadOnly = true;
+            this.textBoxMissingProfessions.Size = new System.Drawing.Size(24, 20);
+            this.textBoxMissingProfessions.TabIndex = 0;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(59, 100);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(137, 13);
+            this.label8.TabIndex = 1;
+            this.label8.Text = "Profession Specials Missing";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(30, 45);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(64, 13);
+            this.label9.TabIndex = 6;
+            this.label9.Text = "Professions:";
+            // 
+            // textBoxProfessions
+            // 
+            this.textBoxProfessions.Location = new System.Drawing.Point(33, 61);
+            this.textBoxProfessions.Name = "textBoxProfessions";
+            this.textBoxProfessions.ReadOnly = true;
+            this.textBoxProfessions.Size = new System.Drawing.Size(199, 20);
+            this.textBoxProfessions.TabIndex = 0;
+            // 
             // FormItemAudit
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(805, 572);
             this.Controls.Add(this.groupBox2);
+            this.Controls.Add(this.label9);
             this.Controls.Add(this.label5);
+            this.Controls.Add(this.textBoxProfessions);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.textBoxAuditStatus);
@@ -281,5 +323,9 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox textBoxMaxiLevel;
         private System.Windows.Forms.TextBox textBoxEquippediLevel;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.TextBox textBoxMissingProfessions;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.TextBox textBoxProfessions;
     }
 }

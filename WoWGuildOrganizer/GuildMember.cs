@@ -117,6 +117,26 @@ namespace WoWGuildOrganizer
         private Boolean _namechanged;
         private Boolean _ilevelchanged;
 
+        private String _profession1;
+        public void SetProfession1 (String prof)
+        {
+            _profession1 = prof;
+        }
+        public String GetProfession1()
+        {
+            return _profession1;
+        }
+        private String _profession2;
+        public void SetProfession2(String prof)
+        {
+            _profession2 = prof;
+        }
+        public String GetProfession2()
+        {
+            return _profession2;
+        }
+
+
         /// <summary>
         /// Here is the constructor
         /// </summary>

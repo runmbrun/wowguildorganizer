@@ -28,6 +28,20 @@ namespace WoWGuildOrganizer
             get { return _equipedilevel; }
         }
 
+        private String _profession1;
+        public String Profession1
+        {
+            set { _profession1 = value; }
+            get { return _profession1; }
+        }
+
+        private String _profession2;
+        public String Profession2
+        {
+            set { _profession2 = value; }
+            get { return _profession2; }
+        }
+
         private GuildMember _guildie;
         public GuildMember Guildie
         {
@@ -97,7 +111,8 @@ namespace WoWGuildOrganizer
 
 
                     String DataString = getSiteData.Data;
-                    String Search = @"averageItemLevel"":(?<avg_iLevel>\d+).*?averageItemLevelEquipped"":(?<equip_iLevel>\d+)";
+                    //String Search = @"averageItemLevel"":(?<avg_iLevel>\d+).*?averageItemLevelEquipped"":(?<equip_iLevel>\d+)";
+                    String Search = @"averageItemLevel"":(?<avg_iLevel>\d+).*?averageItemLevelEquipped"":(?<equip_iLevel>\d+),.*?primary"":.*?name"":""(?<Profession1>\w+).*?name"":""(?<Profession2>\w+)";
                     Regex test = new Regex(Search, RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
 
                     #region DEBUG
@@ -131,6 +146,16 @@ namespace WoWGuildOrganizer
                         if (result.Groups["equip_iLevel"].Success)
                         {
                             EquipediLevel = Convert.ToInt32(result.Groups["equip_iLevel"].Value.ToString());
+                        }
+
+                        if (result.Groups["Profession1"].Success)
+                        {
+                            Profession1 = result.Groups["Profession1"].Value;
+                        }
+
+                        if (result.Groups["Profession2"].Success)
+                        {
+                            Profession2 = result.Groups["Profession2"].Value;
                         }
                     }
 
@@ -197,8 +222,8 @@ namespace WoWGuildOrganizer
 
 
                     String DataString = getSiteData.Data;
-                    //String Search = @"averageItemLevel"":(?<avg_iLevel>\d+).*?averageItemLevelEquipped"":(?<equip_iLevel>\d+)";
-                    String Search = @"""name"":""(?<name>\w+)"".*?""class"":(?<class>\d+).*?""race"":(?<race>\d+).*?""level"":(?<level>\d+).*?""achievementPoints"":(?<achs>\d+).*?""averageItemLevel"":(?<avg_iLevel>\d+).*?averageItemLevelEquipped"":(?<equip_iLevel>\d+)";
+                    String Search = @"""name"":""(?<name>\w+)"".*?""class"":(?<class>\d+).*?""race"":(?<race>\d+).*?""level"":(?<level>\d+).*?""achievementPoints"":(?<achs>\d+).*?""averageItemLevel"":(?<avg_iLevel>\d+).*?averageItemLevelEquipped"":(?<equip_iLevel>\d+),.*?primary"":.*?name"":""(?<Profession1>\w+).*?name"":""(?<Profession2>\w+)";
+                    //"name":"(?<name>\w+)".*?"class":(?<class>\d+).*?"race":(?<race>\d+).*?"level":(?<level>\d+).*?"achievementPoints":(?<achs>\d+).*?"averageItemLevel":(?<avg_iLevel>\d+).*?averageItemLevelEquipped":(?<equip_iLevel>\d+)
                     Regex test = new Regex(Search, RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
 
                     #region DEBUG
@@ -267,6 +292,16 @@ namespace WoWGuildOrganizer
                         if (result.Groups["equip_iLevel"].Success)
                         {
                             Guildie.EquipediLevel = Convert.ToInt32(result.Groups["equip_iLevel"].Value.ToString());
+                        }
+
+                        if (result.Groups["Profession1"].Success)
+                        {
+                            Guildie.SetProfession1(result.Groups["Profession1"].Value);
+                        }
+
+                        if (result.Groups["Profession2"].Success)
+                        {
+                            Guildie.SetProfession2(result.Groups["Profession2"].Value);
                         }
                     }
 
