@@ -152,6 +152,10 @@ namespace WoWGuildOrganizer
         public Boolean IsLeatherworkingEnchant()
         {
             // Current Leatherworking Enchants:
+            // ID - Enchant Name
+            // TODO - mmb.  Complete this
+
+            // TODO - mmb.  Need to get a full list of 5 enchant ids
             if (_toolTips.Contains(@"enchant"))
             {
                 return true;
@@ -171,7 +175,9 @@ namespace WoWGuildOrganizer
             // ? - Sanctified Spellthread
             // ? - Swordguard Embroidery
 
-            if (_toolTips.Contains("4115") || 
+            // TODO - mmb.  Need to get a full list of 5 enchant ids
+            if (_toolTips.Contains(@"enchant") ||
+                _toolTips.Contains("4115") || 
                 _toolTips.Contains("4115") || 
                 _toolTips.Contains("4115") || 
                 _toolTips.Contains("4115") || 
@@ -202,7 +208,7 @@ namespace WoWGuildOrganizer
             // TODO - mmb.  This is going to be tough
             if (_toolTips != null)
             {
-                if (_toolTips.Contains("Gem"))
+                if (_toolTips.Contains("gem"))
                 {
                     return true;
                 }
@@ -217,7 +223,13 @@ namespace WoWGuildOrganizer
 
         public Boolean IsEngineeringCog()
         {
-            // TODO - mmb.  This is going to be tough
+            // TODO - mmb.  Not sure how to do this...
+            //   I think special engineering helms can have cog wheel sockets
+            //   And only engineers can use them
+            // Almost have to check helm first to see if engineering helm,
+            //   and then check for cog wheels...
+            return true;
+
             if (_toolTips.Contains("1"))
             {
                 return true;
