@@ -263,14 +263,17 @@ namespace WoWGuildOrganizer
                 // Count the missing Jewelcrafting Gems
                 if (Profession1 == "Engineering" || Profession2 == "Engineering")
                 {
+                    /*
+                     * // TODO - mmb
+                        // need to do something more to show this is missing.  but how?
                     if (MissingCogs < 3)
                     {
                         MissingCogs = 3 - MissingCogs;
                         MissingProfs += MissingCogs;
 
-                        // TODO - mmb
-                        // need to do something more to show this is missing.  but how?
+                        
                     }
+                     * */
                 }
 
                 // Count the missing profession specials
