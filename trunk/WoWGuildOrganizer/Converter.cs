@@ -46,9 +46,12 @@ namespace WoWGuildOrganizer
                 case "9":
                     Converted = "Warlock";
                     break;
+                case "10":
+                    Converted = "Monk";
+                    break;
                 case "11":
                     Converted = "Druid";
-                    break;
+                    break;                
                 default:
                     Converted = "error: " + In;
                     break;
@@ -104,6 +107,9 @@ namespace WoWGuildOrganizer
                     break;
                 case "22":
                     Converted = "Worgen";
+                    break;
+                case "26":
+                    Converted = "Panderian";
                     break;
                 default:
                     Converted = "error";
