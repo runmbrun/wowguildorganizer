@@ -109,7 +109,7 @@ namespace WoWGuildOrganizer
                     Converted = "Worgen";
                     break;
                 case "26":
-                    Converted = "Panderian";
+                    Converted = "Pandaren";
                     break;
                 default:
                     Converted = "error";
