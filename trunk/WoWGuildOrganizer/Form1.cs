@@ -1013,30 +1013,38 @@ namespace WoWGuildOrganizer
         private void buttonAddCharacterToRaidData_Click(object sender, EventArgs e)
         {  
             // This is the Web Site to get the character info from...
-            // http://us.battle.net/api/wow/character/Thrall/Purdee/?fields=items
+            // http://us.battle.net/api/wow/character/Thrall/Purdee/?fields=items,professions
 
             GetCharacterInfo charInfo = new GetCharacterInfo();
             GuildMember gm = new GuildMember();
 
-            if (charInfo.CollectFullData(URLWowAPI + "character/" + textBoxCharacterRealm.Text + "/" + textBoxCharacterName.Text + "?fields=items"))
+            if (charInfo.CollectFullData(URLWowAPI + "character/" + textBoxCharacterRealm.Text + "/" + textBoxCharacterName.Text + "?fields=items,professions"))
             {
                 // success!
 
-                // Fill out the data grid with the data we collected                
-                gm = charInfo.Guildie;
+                // check for actual data now...
+                if (charInfo.Guildie.Name != null)
+                {
+                    // Fill out the data grid with the data we collected                
+                    gm = charInfo.Guildie;
 
-                // Clear out the Grid Data Source to get it ready for the new data
-                dataGridViewRaidGroup.DataSource = null;
+                    // Clear out the Grid Data Source to get it ready for the new data
+                    dataGridViewRaidGroup.DataSource = null;
 
-                // Add new character to Raid
-                RaidGroup.RaidGroup.Add(gm);
+                    // Add new character to Raid
+                    RaidGroup.RaidGroup.Add(gm);
 
-                // refresh grid data
-                dataGridViewRaidGroup.DataSource = RaidGroup.RaidGroup;
+                    // refresh grid data
+                    dataGridViewRaidGroup.DataSource = RaidGroup.RaidGroup;
 
-                // refresh the grid data since it's been changed
-                dataGridViewRaidGroup.Refresh();
-
+                    // refresh the grid data since it's been changed
+                    dataGridViewRaidGroup.Refresh();
+                }
+                else
+                {
+                    // no character was matched!
+                    //TODO
+                }
             }
             else
             {
@@ -1078,8 +1086,8 @@ namespace WoWGuildOrganizer
                     GuildMember gm = new GuildMember();
 
                     // This is the Web Site to get the character info from...
-                    // http://us.battle.net/api/wow/character/Thrall/Purdee/?fields=items
-                    if (charInfo.CollectFullData(URLWowAPI + "character/" + textBoxRealm.Text + "/" + oldMember.Name + "/?fields=items"))
+                    // http://us.battle.net/api/wow/character/Thrall/Purdee/?fields=items,professions
+                    if (charInfo.CollectFullData(URLWowAPI + "character/" + textBoxRealm.Text + "/" + oldMember.Name + "?fields=items,professions"))
                     {
                         // success!
 
