@@ -221,9 +221,8 @@ namespace WoWGuildOrganizer
                     */
 
 
-                    String DataString = getSiteData.Data;
+                    string DataString = getSiteData.Data;
                     String Search = @"""name"":""(?<name>\w+)"".*?""class"":(?<class>\d+).*?""race"":(?<race>\d+).*?""level"":(?<level>\d+).*?""achievementPoints"":(?<achs>\d+).*?""averageItemLevel"":(?<avg_iLevel>\d+).*?averageItemLevelEquipped"":(?<equip_iLevel>\d+),.*?primary"":.*?name"":""(?<Profession1>\w+).*?name"":""(?<Profession2>\w+)";
-                    //"name":"(?<name>\w+)".*?"class":(?<class>\d+).*?"race":(?<race>\d+).*?"level":(?<level>\d+).*?"achievementPoints":(?<achs>\d+).*?"averageItemLevel":(?<avg_iLevel>\d+).*?averageItemLevelEquipped":(?<equip_iLevel>\d+)
                     Regex test = new Regex(Search, RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
 
                     #region DEBUG

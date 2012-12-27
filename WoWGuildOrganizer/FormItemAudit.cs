@@ -250,14 +250,16 @@ namespace WoWGuildOrganizer
                 // Count the missing Jewelcrafting Gems
                 if (Profession1 == "Jewelcrafting" || Profession2 == "Jewelcrafting")
                 {
-                    if (MissingJCGems < 3)
-                    {
-                        MissingJCGems = 3 - MissingJCGems;
-                        MissingProfs += MissingJCGems;
+                    // TODO - mmb
+                    // need to do something more to show this is missing.  but how?
 
-                        // TODO - mmb
-                        // need to do something more to show this is missing.  but how?
+                    /*
+                    if (MissingJCGems < 2)
+                    {
+                        MissingJCGems = 2 - MissingJCGems;
+                        MissingProfs += MissingJCGems;
                     }
+                    * */
                 }
 
                 // Count the missing Jewelcrafting Gems
