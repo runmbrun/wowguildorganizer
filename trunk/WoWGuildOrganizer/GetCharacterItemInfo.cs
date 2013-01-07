@@ -170,7 +170,7 @@ namespace WoWGuildOrganizer
                         DataString = DataString.Substring(count + 9);
                     }
 
-                    String Search = @"""(?<Slot>\w+)"":{.*?""id"":(?<Id>\d+).*?""name"":""(?<Name>[A-Za-z ',:-]+?)"",.*?""quality"":(?<Quality>\d+).*?""tooltipParams"":{(?<ToolTips>.*?)}.*?}";
+                    String Search = @"""(?<Slot>\w+)"":{""id"":(?<Id>\d+).*?""name"":""(?<Name>[A-Za-z ',:-]+?)"",.*?""quality"":(?<Quality>\d+).*?,""itemLevel"":(?<ItemLevel>\d+).*?""tooltipParams"":{(?<ToolTips>.*?)}.*?}";
                     Regex test = new Regex(Search, RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
 
                     
@@ -217,7 +217,7 @@ namespace WoWGuildOrganizer
                             else
                             {
                                 audit = ItemAudits[slot];
-
+                                                                                                                              
                                 // First get the item id
                                 if (result.Groups["Id"].Success)
                                 {
@@ -268,12 +268,20 @@ namespace WoWGuildOrganizer
                                     audit.SetQuality(result.Groups["Quality"].Value.ToString());
                                 }
 
+                                if (result.Groups["ItemLevel"].Success)
+                                {
+                                    //audit.SetItemLevel(result.Groups["ItemLevel"].Value.ToString());
+                                    audit.ItemLevel = Convert.ToInt32(result.Groups["ItemLevel"].Value);
+                                }
+
                                 if (result.Groups["ToolTips"].Success)
                                 {
                                     audit.SetToolTips(result.Groups["ToolTips"].Value.ToString());
                                 }
-                               
-                                audit.ItemLevel = item.ItemLevel;
+
+                                // mmb - is this needed any more?  the new character info has the exact item level with each item
+                                //  probably because it is needed with the upgrades...
+                                //audit.ItemLevel = item.ItemLevel;
                             }
                         }
                     }

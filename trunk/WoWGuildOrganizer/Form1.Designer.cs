@@ -37,6 +37,7 @@
             this.buttonRaidGroupRefresh = new System.Windows.Forms.Button();
             this.dataGridViewRaidGroup = new System.Windows.Forms.DataGridView();
             this.tabPageSettings = new System.Windows.Forms.TabPage();
+            this.button1 = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.textBoxCharacterName = new System.Windows.Forms.TextBox();
             this.buttonAddCharacterToRaidData = new System.Windows.Forms.Button();
@@ -56,7 +57,6 @@
             this.textBoxRealm = new System.Windows.Forms.TextBox();
             this.progressBarCollectData = new System.Windows.Forms.ProgressBar();
             this.buttonGetGuildInfo = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPageGuildData.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewGuildData)).BeginInit();
@@ -157,6 +157,7 @@
             this.dataGridViewRaidGroup.Name = "dataGridViewRaidGroup";
             this.dataGridViewRaidGroup.Size = new System.Drawing.Size(718, 237);
             this.dataGridViewRaidGroup.TabIndex = 0;
+            this.dataGridViewRaidGroup.CellMouseDoubleClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridViewRaidGroup_CellMouseDoubleClick);
             // 
             // tabPageSettings
             // 
@@ -172,6 +173,16 @@
             this.tabPageSettings.TabIndex = 1;
             this.tabPageSettings.Text = "Settings";
             this.tabPageSettings.UseVisualStyleBackColor = true;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(294, 202);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 14;
+            this.button1.Text = "Show Errors";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // groupBox4
             // 
@@ -353,16 +364,6 @@
             this.buttonGetGuildInfo.Text = "Get Guild Info";
             this.buttonGetGuildInfo.UseVisualStyleBackColor = true;
             this.buttonGetGuildInfo.Click += new System.EventHandler(this.buttonGetGuildInfo_Click);
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(294, 202);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 14;
-            this.button1.Text = "Show Errors";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // Form1
             // 

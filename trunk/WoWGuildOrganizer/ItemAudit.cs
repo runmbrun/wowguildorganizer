@@ -138,8 +138,14 @@ namespace WoWGuildOrganizer
 
         public Boolean IsInscriptionEnchant()
         {
-            // Current Inscription Enchants:
-            if (_toolTips.Contains(@"enchant"))
+            // There are 4 inscription enchants.
+            //   Current Inscription Enchants for MoP:
+            if (
+                _toolTips.Contains(@"4912") || 
+                _toolTips.Contains(@"4913") || 
+                _toolTips.Contains(@"4914") || 
+                _toolTips.Contains(@"4915")
+                )
             {
                 return true;
             }
@@ -151,12 +157,14 @@ namespace WoWGuildOrganizer
 
         public Boolean IsLeatherworkingEnchant()
         {
-            // Current Leatherworking Enchants:
-            // ID - Enchant Name
-            // TODO - mmb.  Complete this
-
-            // TODO - mmb.  Need to get a full list of 5 enchant ids
-            if (_toolTips.Contains(@"enchant"))
+            // There are 4 current Leatherworking Enchants for the wrists.
+            //   for MoP they are:
+            if (
+                _toolTips.Contains(@"4875") ||
+                _toolTips.Contains(@"4877") ||
+                _toolTips.Contains(@"4878") ||
+                _toolTips.Contains(@"4879")
+                )
             {
                 return true;
             }
@@ -168,20 +176,13 @@ namespace WoWGuildOrganizer
 
         public Boolean IsTailorEnchant()
         {
-            // Current Tailor Enchants:
-            // 4115 - Lightweave Embroidery
-            // ? - Darkglow Embroidery
-            // ? - Master's Spellthread
-            // ? - Sanctified Spellthread
-            // ? - Swordguard Embroidery
-
-            // TODO - mmb.  Need to get a full list of 5 enchant ids
-            if (_toolTips.Contains(@"enchant") ||
-                _toolTips.Contains("4115") || 
-                _toolTips.Contains("4115") || 
-                _toolTips.Contains("4115") || 
-                _toolTips.Contains("4115") || 
-                _toolTips.Contains("4115"))
+            // Tailoring currenlty has 3 enchants for the back
+            //   Here are the 3 enchants for MoP:
+            if (                
+                _toolTips.Contains("4892") ||
+                _toolTips.Contains("4893") ||
+                _toolTips.Contains("4894")
+                )
             {
                 return true;
             }
@@ -205,20 +206,34 @@ namespace WoWGuildOrganizer
 
         public Boolean IsJewelcraftingGem()
         {
-            // TODO - mmb.  This is going to be tough
+            Boolean Found = false;
+
+
+            //  This will change for every expansion!
+            // There are 12 JC Gems for MoP:            
             if (_toolTips != null)
             {
-                if (_toolTips.Contains("gem"))
+                // If the tooltips contains one of them... return true
+                if (
+                    _toolTips.Contains("83141") || 
+                    _toolTips.Contains("83142") || 
+                    _toolTips.Contains("83143") || 
+                    _toolTips.Contains("83144") || 
+                    _toolTips.Contains("83145") || 
+                    _toolTips.Contains("83146") || 
+                    _toolTips.Contains("83147") || 
+                    _toolTips.Contains("83148") ||
+                    _toolTips.Contains("83149") ||
+                    _toolTips.Contains("83150") ||
+                    _toolTips.Contains("83151") || 
+                    _toolTips.Contains("83152")
+                    )
                 {
-                    return true;
-                }
-                else
-                {
-                    return false;
+                    Found = true;
                 }
             }
 
-            return true;
+            return Found;
         }
 
         public Boolean IsEngineeringCog()

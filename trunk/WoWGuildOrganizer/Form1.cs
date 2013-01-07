@@ -1173,5 +1173,63 @@ namespace WoWGuildOrganizer
             WaitCursor(false);
         }
         #endregion
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void dataGridViewRaidGroup_CellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            DataGridViewCell currentCell;
+
+
+            // find out the row... and then try to update the individual chars Armory info and Gear Score
+
+            // Get the current cell.
+            currentCell = dataGridViewRaidGroup.CurrentCell;
+
+            // Get the cell's current row
+            Int32 CurrentRow = currentCell.RowIndex;
+
+
+            // First check to make sure the vars are passed in
+            if (CurrentRow < 0 || textBoxRealm.Text.Length == 0)
+            {
+                MessageBox.Show("Error: No row was selected.");
+            }
+            else
+            {
+                this.Cursor = Cursors.WaitCursor;
+
+                // Create the new form to be used
+                FormItemAudit charAudit = new FormItemAudit();
+
+                // Get the name
+                String CharName = ((GuildMember)(RaidGroup.RaidGroup[CurrentRow])).Name;
+
+                // Pass the name to the new form
+                charAudit.CharacterName = CharName;
+
+                charAudit.EquippediLevel = ((GuildMember)(RaidGroup.RaidGroup[CurrentRow])).EquipediLevel.ToString();
+                charAudit.MaxiLevel = ((GuildMember)(RaidGroup.RaidGroup[CurrentRow])).MaxiLevel.ToString();
+
+                charAudit.Profession1 = ((GuildMember)(RaidGroup.RaidGroup[CurrentRow])).GetProfession1();
+                charAudit.Profession2 = ((GuildMember)(RaidGroup.RaidGroup[CurrentRow])).GetProfession2();
+
+                // Pass the Data to the Form
+                if (charAudit.PassData(URLWowAPI + "character/" + textBoxRealm.Text + "/" + CharName + "?fields=items"))
+                {
+                    // Show the new form
+                    charAudit.Show();
+                }
+                else
+                {
+                    DisplayError("ERROR - Can't Audit Character: " + CharName);
+                }
+            }
+
+            this.Cursor = Cursors.Default;
+        }
     }
 }
