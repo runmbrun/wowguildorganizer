@@ -164,6 +164,10 @@ namespace WoWGuildOrganizer
                             item.Profession = "1";
                             MissingProfs++;
                         }
+                        else
+                        {
+                            item.Profession = "0";
+                        }
                     }
 
                     // Enchanting - Check for enchants on both rings
@@ -174,60 +178,71 @@ namespace WoWGuildOrganizer
                             item.Profession = "1";
                             MissingProfs++;
                         }
+                        else
+                        {
+                            item.Profession = "0";
+                        }
                     }
 
                     // Enchanting - Check for enchants on both rings
                     if ((Profession1 == "Engineering" || Profession2 == "Engineering") && (item.Slot == "head"))
                     {
-                        // TODO - mmb
+                        // TODO - mmb fix this!
                         if (item.IsEngineeringCog())
                         {
                             MissingCogs++;
                         }
                     }
 
-                    // Enchanting - Check for enchants on both rings
-                    if ((Profession1 == "Inscription" || Profession2 == "Inscription") && (item.Slot == "wrist"))
+                    // Enchanting - Check for Inscription Enchant on shoulder
+                    if ((Profession1 == "Inscription" || Profession2 == "Inscription") && (item.Slot == "shoulder"))
                     {
-                        // TODO - mmb
                         if (!item.IsInscriptionEnchant())
                         {
                             item.Profession = "1";
                             MissingProfs++;
                         }
+                        else
+                        {
+                            item.Profession = "0";
+                        }
                     }
 
                     // Leatherworking - Check for Enchant on Bracer
-                    // This should already be covered by regular enchant check... 
-                    //   but should I check to make sure the enchant is a LW one?                    
                     if ((Profession1 == "Leatherworking" || Profession2 == "Leatherworking") && (item.Slot == "wrist"))
                     {
-                        // TODO - mmb
                         if (!item.IsLeatherworkingEnchant())
                         {
                             item.Profession = "1";
                             MissingProfs++;
                         }
+                        else
+                        {
+                            item.Profession = "0";
+                        }
                     }
 
-                    // Jewelcrafting - Check for 3 special gems                    
+                    // Jewelcrafting - Check for 2 special JC gems                    
                     if (Profession1 == "Jewelcrafting" || Profession2 == "Jewelcrafting")
                     {
                         if (item.IsJewelcraftingGem())
                         {
+                            item.Profession = "0";
                             MissingJCGems++;
                         }
                     }
 
                     // Tailor - Check for special enchant on cloak
-                    // This should already be covered by regular enchant check... 
-                    //   but should I check to make sure the enchant is a Tailor one? 
                     if ((Profession1 == "Tailoring" || Profession2 == "Tailoring") && (item.Slot == "back"))
                     {
                         if (!item.IsTailorEnchant())
                         {
                             item.Profession = "1";
                             MissingProfs++;
+                        }
+                        else
+                        {
+                            item.Profession = "0";
                         }
                     }
                 }
@@ -250,19 +265,14 @@ namespace WoWGuildOrganizer
                 // Count the missing Jewelcrafting Gems
                 if (Profession1 == "Jewelcrafting" || Profession2 == "Jewelcrafting")
                 {
-                    // TODO - mmb
-                    // need to do something more to show this is missing.  but how?
-
-                    /*
                     if (MissingJCGems < 2)
                     {
                         MissingJCGems = 2 - MissingJCGems;
                         MissingProfs += MissingJCGems;
                     }
-                    * */
                 }
 
-                // Count the missing Jewelcrafting Gems
+                // Engineering... more research needed!
                 if (Profession1 == "Engineering" || Profession2 == "Engineering")
                 {
                     /*
