@@ -371,7 +371,7 @@ namespace WoWGuildOrganizer
                     break;
                 // off hand frill
                 case 23:
-                    CanEnchant = false;
+                    CanEnchant = true;
                     break;
                 // thrown
                 case 25:
