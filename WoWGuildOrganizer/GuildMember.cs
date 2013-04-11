@@ -58,12 +58,12 @@ namespace WoWGuildOrganizer
             {
                 if (_maxilevel != value)
                 {
-                    _ilevelchanged = true;
+                    _ilevelchangedMax = true;
                     _maxilevel = value;
                 }
                 else
                 {
-                    _ilevelchanged = false;
+                    _ilevelchangedMax = false;
                 }
                 SetItemLevelCheckTime();
             }
@@ -77,12 +77,12 @@ namespace WoWGuildOrganizer
             {
                 if (_equipedilevel != value)
                 {
-                    _ilevelchanged = true;
+                    _ilevelchangedEquip = true;
                     _equipedilevel = value;
                 }
                 else
                 {
-                    _ilevelchanged = false;
+                    _ilevelchangedEquip = false;
                 }
                 SetItemLevelCheckTime();
             }
@@ -115,7 +115,8 @@ namespace WoWGuildOrganizer
 
         private Boolean _levelchanged;
         private Boolean _namechanged;
-        private Boolean _ilevelchanged;
+        private Boolean _ilevelchangedEquip;
+        private Boolean _ilevelchangedMax;
 
         private String _profession1;
         public void SetProfession1 (String prof)
@@ -146,7 +147,8 @@ namespace WoWGuildOrganizer
             _equipedilevel = 0;
             _levelchanged = false;
             _namechanged = false;
-            _ilevelchanged = false;
+            _ilevelchangedEquip = false;
+            _ilevelchangedMax = false;
         }
 
         public Boolean IsLevelChanged()
@@ -163,7 +165,7 @@ namespace WoWGuildOrganizer
 
         public Boolean IsItemLevelChanged()
         {
-            if (_ilevelchanged)
+            if (_ilevelchangedEquip || _ilevelchangedMax)
             {
                 return true;
             }
@@ -190,10 +192,14 @@ namespace WoWGuildOrganizer
             _levelchanged = false;
         }
 
-        public void ClearItemLevelFlag()
+        public void ClearEquipItemLevelFlag()
         {
-            _ilevelchanged = false;
+            _ilevelchangedEquip = false;
         }
-        
+
+        public void ClearMaxItemLevelFlag()
+        {
+            _ilevelchangedMax = false;
+        }
     }
 }
