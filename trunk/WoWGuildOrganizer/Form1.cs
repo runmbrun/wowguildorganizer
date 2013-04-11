@@ -567,7 +567,7 @@ namespace WoWGuildOrganizer
                                             if (newmember.MaxiLevel == 0 && oldmember.MaxiLevel != 0)
                                             {
                                                 newmember.MaxiLevel = oldmember.MaxiLevel;
-                                                newmember.ClearItemLevelFlag();
+                                                newmember.ClearMaxItemLevelFlag();
                                             }
 
                                             // always check to carry over the max iLevel value from old to new
@@ -575,7 +575,7 @@ namespace WoWGuildOrganizer
                                             if (newmember.EquipediLevel == 0 && oldmember.EquipediLevel != 0)
                                             {
                                                 newmember.EquipediLevel = oldmember.EquipediLevel;
-                                                newmember.ClearItemLevelFlag();
+                                                newmember.ClearEquipItemLevelFlag();
                                             }
 
                                             break;
@@ -1171,8 +1171,7 @@ namespace WoWGuildOrganizer
             }
 
             WaitCursor(false);
-        }
-        #endregion
+        }       
 
         /// <summary>
         /// 
@@ -1231,5 +1230,6 @@ namespace WoWGuildOrganizer
 
             this.Cursor = Cursors.Default;
         }
+        #endregion
     }
 }
