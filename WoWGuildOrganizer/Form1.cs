@@ -29,6 +29,7 @@ namespace WoWGuildOrganizer
         private StopWatch sw = new StopWatch();
         static public ItemCache Items;
         ArrayList ErrorLog = new ArrayList();
+        ContextMenuStrip contextMenuCharacter;
 
         #endregion
 
@@ -135,6 +136,14 @@ namespace WoWGuildOrganizer
                 }
             }
 
+            // create context grid popup menu
+            this.contextMenuCharacter = new ContextMenuStrip();
+            this.contextMenuCharacter.Items.Add("Update this Character");
+            this.contextMenuCharacter.Items.Add("Move Character Up");
+            this.contextMenuCharacter.Items.Add("Move Character Down");
+            this.contextMenuCharacter.Items.Add("Delete Character from Grid");            
+            //this.contextMenuCharacter.Items.Add("");  // TODO: more?
+            this.contextMenuCharacter.ItemClicked += this.contextMenuCharacter_ItemClicked;
 
             // Create a background worker thread that Searches and Reports Progress and Supports Cancellation            
             GetGuildInfoAsyncWorker.WorkerReportsProgress = true;
@@ -1229,7 +1238,242 @@ namespace WoWGuildOrganizer
             }
 
             this.Cursor = Cursors.Default;
+        }        
+
+        /// <summary>
+        /// Fires when a mouse right clicks on the raid group grid
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void dataGridViewRaidGroup_MouseClick(object sender, MouseEventArgs e)
+        {
+            // Check for a right click
+            if (e.Button == MouseButtons.Right)
+            {
+                // select the current row
+                int currentMouseOverRow = this.dataGridViewRaidGroup.HitTest(e.X, e.Y).RowIndex;
+
+                if (currentMouseOverRow > -1)
+                {
+                    this.dataGridViewRaidGroup.ClearSelection();
+                    this.dataGridViewRaidGroup.Rows[currentMouseOverRow].Selected = true;
+
+                    // pop up a context menu
+                    this.contextMenuCharacter.Show(this.dataGridViewRaidGroup, new Point(e.X, e.Y));
+                }
+            }
         }
+
+        /// <summary>
+        /// Fires when a context menu item is clicked
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void contextMenuCharacter_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+            ToolStripItem item = e.ClickedItem;
+                        
+            if (item.Text == "Update this Character")
+            {
+                WaitCursor(true);
+
+                try
+                {
+                    ArrayList UpdatedCharacters = new ArrayList();
+
+                    foreach (DataGridViewRow row in this.dataGridViewRaidGroup.SelectedRows)
+                    {
+                        GetCharacterInfo charInfo = new GetCharacterInfo();
+                        GuildMember gm = new GuildMember();
+                        int CurrentRow = row.Index;
+                        GuildMember oldMember = (GuildMember)(RaidGroup.RaidGroup[CurrentRow]);
+
+                        // This is the Web Site to get the character info from...
+                        // http://us.battle.net/api/wow/character/Thrall/Purdee/?fields=items,professions
+                        if (charInfo.CollectFullData(URLWowAPI + "character/" + textBoxRealm.Text + "/" + oldMember.Name + "?fields=items,professions"))
+                        {
+                            // success!
+
+                            // Now we have the new info
+                            gm = charInfo.Guildie;
+
+                            // Compare the new info with the old info
+                            //  And make updates as needed...
+                            Boolean Updated = false;
+
+                            // Level
+                            if (oldMember.Level != gm.Level)
+                            {
+                                oldMember.Level = gm.Level;
+                                Updated = true;
+                            }
+
+                            // Achievement Points
+                            if (oldMember.AchievementPoints != gm.AchievementPoints)
+                            {
+                                oldMember.AchievementPoints = gm.AchievementPoints;
+                                Updated = true;
+                            }
+
+                            // Equiped iLevel
+                            if (oldMember.EquipediLevel != gm.EquipediLevel)
+                            {
+                                oldMember.EquipediLevel = gm.EquipediLevel;
+                                Updated = true;
+                            }
+
+                            // Max iLevel
+                            if (oldMember.MaxiLevel != gm.MaxiLevel)
+                            {
+                                oldMember.MaxiLevel = gm.MaxiLevel;
+                                Updated = true;
+                            }
+
+                            if (Updated)
+                            {
+                                // replace the old with the new...
+                                RaidGroup.RaidGroup[CurrentRow] = gm;
+                                UpdatedCharacters.Add(gm.Name);
+                            }
+                        }
+                        else
+                        {
+                            // Fail!  Save all errors until the end!
+                            //TODO
+                        }
+                    }
+
+                    // Now check to see if the Item Level has changed and if their level has changed
+                    Int32 Count = 0;
+                    foreach (GuildMember gm in RaidGroup.RaidGroup)
+                    {
+                        if (UpdatedCharacters.Contains(gm.Name))
+                        {
+                            dataGridViewRaidGroup.Rows[Count].DefaultCellStyle.BackColor = Color.Aquamarine;
+                        }
+                        else
+                        {
+                            dataGridViewRaidGroup.Rows[Count].DefaultCellStyle.BackColor = Color.White;
+                        }
+
+                        Count++;
+                    }
+
+                    // refresh the grid data since it's been changed
+                    dataGridViewRaidGroup.Refresh();
+
+                }
+                catch (Exception ex)
+                {
+                    Log("Error: " + ex.Message);
+                }
+
+                WaitCursor(false);
+            }
+            else if (item.Text == "Move Character Up")
+            {
+                if (this.dataGridViewRaidGroup.SelectedRows.Count > 0)
+                {
+                    // check to see if the row can to be moved
+                    if (this.dataGridViewRaidGroup.SelectedRows[0].Index != 0)
+                    {
+                        // get the row index that will be moved
+                        int row = this.dataGridViewRaidGroup.SelectedRows[0].Index;
+                        GuildMember gm = (GuildMember)RaidGroup.RaidGroup[row];
+                        RaidGroup.RaidGroup.RemoveAt(row);
+                        RaidGroup.RaidGroup.Insert(row - 1, gm);
+
+                        dataGridViewRaidGroup.Refresh();
+                    }
+                }
+            }
+            else if (item.Text == "Move Character Down")
+            {
+                if (this.dataGridViewRaidGroup.SelectedRows.Count > 0)
+                {
+                    // check to see if the row can to be moved
+                    if (this.dataGridViewRaidGroup.SelectedRows[0].Index != this.dataGridViewRaidGroup.RowCount - 1)
+                    {
+                        // get the row index that will be moved
+                        int row = this.dataGridViewRaidGroup.SelectedRows[0].Index;
+                        GuildMember gm = (GuildMember)RaidGroup.RaidGroup[row];
+                        RaidGroup.RaidGroup.RemoveAt(row);
+                        RaidGroup.RaidGroup.Insert(row + 1, gm);
+
+                        dataGridViewRaidGroup.Refresh();
+                    }
+                }
+            }
+            else if (item.Text == "Delete Character from Grid")
+            {
+                // Delete this character(s) from the Raid Group
+                foreach (DataGridViewRow row in this.dataGridViewRaidGroup.SelectedRows)
+                {
+                    // Remove the character selected
+                    RaidGroup.RaidGroup.RemoveAt(row.Index);
+                }
+
+                // Clear out the Grid Data Source to get it ready for the new data
+                dataGridViewRaidGroup.DataSource = null;
+
+                // refresh grid data
+                dataGridViewRaidGroup.DataSource = RaidGroup.RaidGroup;
+            }
+        }
+
+        private void dataGridViewRaidGroup_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {            
+            if (!(Control.ModifierKeys == Keys.Shift || Control.ModifierKeys == Keys.Control) && 
+                e.Button == MouseButtons.Left && e.Clicks == 1)
+            {
+                // This was a double click on a column header - Sort it!
+                DataGridViewColumn newColumn = dataGridViewRaidGroup.Columns[e.ColumnIndex];
+                string Sorting = newColumn.Name;
+                //newColumn.SortMode = DataGridViewColumnSortMode.Programmatic;
+                                
+                ListSortDirection direction = ListSortDirection.Ascending;
+
+                if (newColumn.HeaderCell.SortGlyphDirection == SortOrder.Ascending)
+                {
+                    direction = ListSortDirection.Descending;
+                    Sorting += " DESC";
+                }
+                else
+                {
+                    Sorting += " ASC";
+                }
+
+                // Sort the selected column.
+                dataGridViewRaidGroup.DataSource = null;
+                //dataGridViewRaidGroup.Sort(newColumn, direction);
+                //dataGridViewRaidGroup.Sort(new ObjectComparer(newColumn.Name, false));
+                //dataGridViewRaidGroup.Sort(new ObjectComparer(Sorting, false));
+                RaidGroup.RaidGroup.Sort(new ObjectComparer(Sorting, false));
+
+                dataGridViewRaidGroup.DataSource = RaidGroup.RaidGroup;
+
+                //newColumn.HeaderCell.SortGlyphDirection = direction == ListSortDirection.Ascending ? SortOrder.Ascending : SortOrder.Descending;
+                dataGridViewRaidGroup.Columns[e.ColumnIndex].HeaderCell.SortGlyphDirection = direction == ListSortDirection.Ascending ? SortOrder.Ascending : SortOrder.Descending;
+            }
+        }
+
         #endregion
+
+        private void dataGridViewRaidGroup_SortCompare(object sender, DataGridViewSortCompareEventArgs e)
+        {
+            // Try to sort based on the cells in the current column.
+            e.SortResult = System.String.Compare(e.CellValue1.ToString(), e.CellValue2.ToString());
+
+            // If the cells are equal, sort based on the ID column. 
+            if (e.SortResult == 0 && e.Column.Name != "ID")
+            {
+                e.SortResult = System.String.Compare(
+                    dataGridViewRaidGroup.Rows[e.RowIndex1].Cells[e.Column.Index].Value.ToString(),
+                    dataGridViewRaidGroup.Rows[e.RowIndex2].Cells[e.Column.Index].Value.ToString());
+            }
+            e.Handled = true;
+        }
+
+        
     }
 }
