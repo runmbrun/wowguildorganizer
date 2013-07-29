@@ -7,14 +7,14 @@ In no particular order...
 =====================
 
 Character Audit:
-1.  Add Professions checks
-2.  Add Average and Max iLevel
-3.  Add sorting to the iLevel so can find the lowest iLevel items for replacing first.
+1.  Tooltip for Item.  Show All item stats!
+2.  Show current spec.
 
 Raid Data tab.
-1.  Will have character audit functionality as Guild Data
-2.  Can sort columns
-3.  Color cells more exactly
+1.  When moving chars up and down, make sure the highlighted row moves too
+2.  Add Average Equipped iLevel value
+3.  Color cells when updated.  Have color persist like in Guild Data 
+4.  Add in Role.  Can order by role... Tanks, then Healers, then DPS.
 
 
 
@@ -22,7 +22,4 @@ Raid Data tab.
 + New Features +
 ================
 
-1.  Add new button to Raid Data and Guild Data Tabs.
-	- Will only be enabled when errors are found during a guild refresh.
-	- Clicking on button will pop up box that shows all the errors.
-	- Now user doesn't need to click on error box all the time
+1.  
