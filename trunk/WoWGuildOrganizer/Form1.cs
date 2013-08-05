@@ -162,6 +162,7 @@ namespace WoWGuildOrganizer
         /// </summary>
         private void SetupDataGridView()
         {
+            // Setup the Main Guild Data Grid
             dataGridViewGuildData.ColumnCount = 0;
 
             dataGridViewGuildData.ColumnHeadersDefaultCellStyle.BackColor = Color.Navy;
@@ -184,9 +185,7 @@ namespace WoWGuildOrganizer
             dataGridViewGuildData.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dataGridViewGuildData.AutoResizeColumns();
 
-
-
-
+            // Now Setup the Raid Data Grid
             dataGridViewRaidGroup.ColumnCount = 0;
 
             dataGridViewRaidGroup.ColumnHeadersDefaultCellStyle.BackColor = Color.Navy;
@@ -211,7 +210,7 @@ namespace WoWGuildOrganizer
         }
 
         /// <summary>
-        /// 
+        /// Update the main grid
         /// </summary>
         private void UpdateGrid()
         {
@@ -219,45 +218,6 @@ namespace WoWGuildOrganizer
             dataGridViewGuildData.RowsDefaultCellStyle.BackColor = Color.White;
             dataGridViewGuildData.AutoResizeColumns();
             dataGridViewGuildData.AutoResizeRows();
-
-
-            // Check the Rows for when the last time the char was checked - color changes 
-            for (Int32 i = 0; i < dataGridViewGuildData.Rows.Count; i++)
-            {
-                if (dataGridViewGuildData.Rows[i].Cells[7].Value != null)
-                {
-                    // Check to see when the ItemLevel was last updated
-                    DateTime CheckAgain = (DateTime)dataGridViewGuildData.Rows[i].Cells[7].Value;
-                    if (DateTime.Now > CheckAgain.AddDays(7))
-                    {
-                        dataGridViewGuildData.Rows[i].Cells[7].Style.BackColor = Color.Red;
-                    }
-                    else if (DateTime.Now > CheckAgain.AddDays(5))
-                    {
-                        dataGridViewGuildData.Rows[i].Cells[7].Style.BackColor = Color.OrangeRed;
-                    }
-                    else if (DateTime.Now > CheckAgain.AddDays(3))
-                    {
-                        dataGridViewGuildData.Rows[i].Cells[7].Style.BackColor = Color.Orange;
-                    }
-                    else if (DateTime.Now > CheckAgain.AddDays(2))
-                    {
-                        dataGridViewGuildData.Rows[i].Cells[7].Style.BackColor = Color.Yellow;
-                    }
-                    else if (DateTime.Now > CheckAgain.AddDays(1))
-                    {
-                        dataGridViewGuildData.Rows[i].Cells[7].Style.BackColor = Color.LightYellow;
-                    }
-                    else
-                    {
-                        dataGridViewGuildData.Rows[i].Cells[7].Style.BackColor = Color.White;
-                    }
-                }
-                else
-                {
-                    dataGridViewGuildData.Rows[i].Cells[7].Style.BackColor = Color.Red;
-                }
-            }            
 
             // Now check to see if the Item Level has changed and if their level has changed
             Int32 Count = 0;
@@ -288,6 +248,40 @@ namespace WoWGuildOrganizer
                 else
                 {
                     dataGridViewGuildData.Rows[Count].Cells[6].Style.BackColor = Color.White;
+                }
+
+                if (dataGridViewGuildData.Rows[Count].Cells[7].Value != null)
+                {
+                    // Check to see when the ItemLevel was last updated
+                    DateTime CheckAgain = (DateTime)dataGridViewGuildData.Rows[Count].Cells[7].Value;
+                    if (DateTime.Now > CheckAgain.AddDays(7))
+                    {
+                        dataGridViewGuildData.Rows[Count].Cells[7].Style.BackColor = Color.Red;
+                    }
+                    else if (DateTime.Now > CheckAgain.AddDays(5))
+                    {
+                        dataGridViewGuildData.Rows[Count].Cells[7].Style.BackColor = Color.OrangeRed;
+                    }
+                    else if (DateTime.Now > CheckAgain.AddDays(3))
+                    {
+                        dataGridViewGuildData.Rows[Count].Cells[7].Style.BackColor = Color.Orange;
+                    }
+                    else if (DateTime.Now > CheckAgain.AddDays(2))
+                    {
+                        dataGridViewGuildData.Rows[Count].Cells[7].Style.BackColor = Color.Yellow;
+                    }
+                    else if (DateTime.Now > CheckAgain.AddDays(1))
+                    {
+                        dataGridViewGuildData.Rows[Count].Cells[7].Style.BackColor = Color.LightYellow;
+                    }
+                    else
+                    {
+                        dataGridViewGuildData.Rows[Count].Cells[7].Style.BackColor = Color.White;
+                    }
+                }
+                else
+                {
+                    dataGridViewGuildData.Rows[Count].Cells[7].Style.BackColor = Color.Red;
                 }
 
                 Count++;
@@ -363,6 +357,9 @@ namespace WoWGuildOrganizer
 
                 charAudit.Profession1 = ((GuildMember)(SavedCharacters.SavedCharacters[CurrentRow])).GetProfession1();
                 charAudit.Profession2 = ((GuildMember)(SavedCharacters.SavedCharacters[CurrentRow])).GetProfession2();
+
+                charAudit.Spec = ((GuildMember)(SavedCharacters.SavedCharacters[CurrentRow])).GetSpec();
+                charAudit.Role = ((GuildMember)(SavedCharacters.SavedCharacters[CurrentRow])).GetRole();
 
                 // Pass the Data to the Form
                 if (charAudit.PassData(URLWowAPI + "character/" + textBoxRealm.Text + "/" + CharName + "?fields=items"))
@@ -618,10 +615,10 @@ namespace WoWGuildOrganizer
                                     if (Convert.ToInt32(gm.Level) >= 10)
                                     {
                                         // This is the Web Site to get the character info from...
-                                        // http://us.battle.net/api/wow/character/Thrall/Purdee/?fields=items
+                                        // http://us.battle.net/api/wow/character/Thrall/Purdee?fields=items,professions,talents
 
                                         GetCharacterInfo charInfo = new GetCharacterInfo();
-                                        if (charInfo.CollectData(URLWowAPI + "character/" + textBoxRealm.Text + "/" + gm.Name + "?fields=items,professions"))
+                                        if (charInfo.CollectData(URLWowAPI + "character/" + textBoxRealm.Text + "/" + gm.Name + "?fields=items,professions,talents"))
                                         {
                                             // success!
 
@@ -630,6 +627,8 @@ namespace WoWGuildOrganizer
                                             gm.EquipediLevel = charInfo.EquipediLevel;
                                             gm.SetProfession1(charInfo.Profession1);
                                             gm.SetProfession2(charInfo.Profession2);
+                                            gm.SetSpec(charInfo.Guildie.GetSpec());
+                                            gm.SetRole(charInfo.Guildie.GetRole());
                                         }
                                         else
                                         {
@@ -652,7 +651,7 @@ namespace WoWGuildOrganizer
                         bwAsync.ReportProgress(100);
 
                         // re-sort by Item Level
-                        SortGridMT("Level DESC, EquipediLevel DESC");
+                        SortGridMT("Level DESC, EquipediLevel DESC, MaxiLevel DESC, AchievementPoints DESC");
 
                         // Stop the stopwatch
                         sw.Stop();
@@ -728,7 +727,7 @@ namespace WoWGuildOrganizer
         }
         #endregion
 
-        #region " Form Functions "
+        #region " Form and Tab Functions "
 
         /// <summary>
         /// Before the form closes, save the important variables
@@ -788,12 +787,29 @@ namespace WoWGuildOrganizer
         /// <param name="e"></param>
         private void Form1_Load(object sender, EventArgs e)
         {
-            SortGrid("Level DESC, EquipediLevel DESC");
+            SortGrid("Level DESC, EquipediLevel DESC, MaxiLevel DESC, AchievementPoints DESC");
 
             // refresh the grid data since it's been changed
             dataGridViewRaidGroup.DataSource = null;
             dataGridViewRaidGroup.DataSource = RaidGroup.RaidGroup;
-            dataGridViewRaidGroup.Refresh();
+            UpdateRaidGrid();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (tabControl1.SelectedIndex == 0)
+            {
+                UpdateGrid();
+            }
+            else if (tabControl1.SelectedIndex == 1)
+            {
+                UpdateRaidGrid();
+            }
         }
 
         #endregion
@@ -833,7 +849,7 @@ namespace WoWGuildOrganizer
                         stream.Close();
 
                         label3.Text = SavedCharacters.SavedCharacters.Count.ToString() + " total characters";
-                        SortGrid("Level DESC, EquipediLevel DESC");
+                        SortGrid("Level DESC, EquipediLevel DESC, MaxiLevel DESC, AchievementPoints DESC");
 
                         // update the text boxes                        
                         textBoxRealm.Text = SavedCharacters.Realm;
@@ -1022,12 +1038,12 @@ namespace WoWGuildOrganizer
         private void buttonAddCharacterToRaidData_Click(object sender, EventArgs e)
         {  
             // This is the Web Site to get the character info from...
-            // http://us.battle.net/api/wow/character/Thrall/Purdee/?fields=items,professions
+            // http://us.battle.net/api/wow/character/Thrall/Purdee?fields=items,professions,talents
 
             GetCharacterInfo charInfo = new GetCharacterInfo();
             GuildMember gm = new GuildMember();
 
-            if (charInfo.CollectFullData(URLWowAPI + "character/" + textBoxCharacterRealm.Text + "/" + textBoxCharacterName.Text + "?fields=items,professions"))
+            if (charInfo.CollectFullData(URLWowAPI + "character/" + textBoxCharacterRealm.Text + "/" + textBoxCharacterName.Text + "?fields=items,professions,talents"))
             {
                 // success!
 
@@ -1047,7 +1063,7 @@ namespace WoWGuildOrganizer
                     dataGridViewRaidGroup.DataSource = RaidGroup.RaidGroup;
 
                     // refresh the grid data since it's been changed
-                    dataGridViewRaidGroup.Refresh();
+                    UpdateRaidGrid();
                 }
                 else
                 {
@@ -1095,8 +1111,8 @@ namespace WoWGuildOrganizer
                     GuildMember gm = new GuildMember();
 
                     // This is the Web Site to get the character info from...
-                    // http://us.battle.net/api/wow/character/Thrall/Purdee/?fields=items,professions
-                    if (charInfo.CollectFullData(URLWowAPI + "character/" + textBoxRealm.Text + "/" + oldMember.Name + "?fields=items,professions"))
+                    // http://us.battle.net/api/wow/character/Thrall/Purdee?fields=items,professions,talents
+                    if (charInfo.CollectFullData(URLWowAPI + "character/" + textBoxRealm.Text + "/" + oldMember.Name + "?fields=items,professions,talents"))
                     {
                         // success!
 
@@ -1135,6 +1151,18 @@ namespace WoWGuildOrganizer
                             Updated = true;
                         }
 
+                        // Spec
+                        if (oldMember.GetSpec() != gm.GetSpec())
+                        {
+                            oldMember.SetSpec(gm.GetSpec());
+                        }
+
+                        // Role
+                        if (oldMember.GetRole() != gm.GetRole())
+                        {
+                            oldMember.SetRole(gm.GetRole());
+                        }
+
                         if (Updated)
                         {
                             UpdatedCharacters.Add(oldMember.Name);
@@ -1156,8 +1184,7 @@ namespace WoWGuildOrganizer
                 // Now check to see if the Item Level has changed and if their level has changed
                 Int32 Count = 0;
                 foreach (GuildMember gm in RaidGroup.RaidGroup)
-                {
-                    //if (gm.IsItemLevelChanged())
+                {                    
                     if (UpdatedCharacters.Contains(gm.Name))
                     {
                         dataGridViewRaidGroup.Rows[Count].DefaultCellStyle.BackColor = Color.Aquamarine;
@@ -1165,13 +1192,14 @@ namespace WoWGuildOrganizer
                     else
                     {
                         dataGridViewRaidGroup.Rows[Count].DefaultCellStyle.BackColor = Color.White;
+                        gm.LastUpdated = DateTime.Now;
                     }
 
                     Count++;
                 }
 
                 // refresh the grid data since it's been changed
-                dataGridViewRaidGroup.Refresh();
+                UpdateRaidGrid();
 
             }
             catch (Exception ex)
@@ -1224,6 +1252,9 @@ namespace WoWGuildOrganizer
 
                 charAudit.Profession1 = ((GuildMember)(RaidGroup.RaidGroup[CurrentRow])).GetProfession1();
                 charAudit.Profession2 = ((GuildMember)(RaidGroup.RaidGroup[CurrentRow])).GetProfession2();
+
+                charAudit.Spec = ((GuildMember)(RaidGroup.RaidGroup[CurrentRow])).GetSpec();
+                charAudit.Role = ((GuildMember)(RaidGroup.RaidGroup[CurrentRow])).GetRole();
 
                 // Pass the Data to the Form
                 if (charAudit.PassData(URLWowAPI + "character/" + textBoxRealm.Text + "/" + CharName + "?fields=items"))
@@ -1289,8 +1320,8 @@ namespace WoWGuildOrganizer
                         GuildMember oldMember = (GuildMember)(RaidGroup.RaidGroup[CurrentRow]);
 
                         // This is the Web Site to get the character info from...
-                        // http://us.battle.net/api/wow/character/Thrall/Purdee/?fields=items,professions
-                        if (charInfo.CollectFullData(URLWowAPI + "character/" + textBoxRealm.Text + "/" + oldMember.Name + "?fields=items,professions"))
+                        // http://us.battle.net/api/wow/character/Thrall/Purdee?fields=items,professions,talents
+                        if (charInfo.CollectFullData(URLWowAPI + "character/" + textBoxRealm.Text + "/" + oldMember.Name + "?fields=items,professions,talents"))
                         {
                             // success!
 
@@ -1307,6 +1338,11 @@ namespace WoWGuildOrganizer
                                 oldMember.Level = gm.Level;
                                 Updated = true;
                             }
+                            else
+                            {
+                                oldMember.ClearFlags();
+                                gm.ClearFlags();
+                            }
 
                             // Achievement Points
                             if (oldMember.AchievementPoints != gm.AchievementPoints)
@@ -1321,12 +1357,34 @@ namespace WoWGuildOrganizer
                                 oldMember.EquipediLevel = gm.EquipediLevel;
                                 Updated = true;
                             }
+                            else
+                            {
+                                oldMember.ClearEquipItemLevelFlag();
+                                gm.ClearEquipItemLevelFlag();
+                            }
 
                             // Max iLevel
                             if (oldMember.MaxiLevel != gm.MaxiLevel)
                             {
                                 oldMember.MaxiLevel = gm.MaxiLevel;
                                 Updated = true;
+                            }
+                            else
+                            {
+                                oldMember.ClearMaxItemLevelFlag();
+                                gm.ClearMaxItemLevelFlag();
+                            }
+
+                            // Spec
+                            if (oldMember.GetSpec() != gm.GetSpec())
+                            {
+                                oldMember.SetSpec(gm.GetSpec());
+                            }
+
+                            // Role
+                            if (oldMember.GetRole() != gm.GetRole())
+                            {
+                                oldMember.SetRole(gm.GetRole());
                             }
 
                             if (Updated)
@@ -1335,6 +1393,8 @@ namespace WoWGuildOrganizer
                                 RaidGroup.RaidGroup[CurrentRow] = gm;
                                 UpdatedCharacters.Add(gm.Name);
                             }
+
+                            oldMember.LastUpdated = DateTime.Now;
                         }
                         else
                         {
@@ -1342,25 +1402,9 @@ namespace WoWGuildOrganizer
                             //TODO
                         }
                     }
-
-                    // Now check to see if the Item Level has changed and if their level has changed
-                    Int32 Count = 0;
-                    foreach (GuildMember gm in RaidGroup.RaidGroup)
-                    {
-                        if (UpdatedCharacters.Contains(gm.Name))
-                        {
-                            dataGridViewRaidGroup.Rows[Count].DefaultCellStyle.BackColor = Color.Aquamarine;
-                        }
-                        else
-                        {
-                            dataGridViewRaidGroup.Rows[Count].DefaultCellStyle.BackColor = Color.White;
-                        }
-
-                        Count++;
-                    }
-
+                    
                     // refresh the grid data since it's been changed
-                    dataGridViewRaidGroup.Refresh();
+                    UpdateRaidGrid();
 
                 }
                 catch (Exception ex)
@@ -1382,8 +1426,9 @@ namespace WoWGuildOrganizer
                         GuildMember gm = (GuildMember)RaidGroup.RaidGroup[row];
                         RaidGroup.RaidGroup.RemoveAt(row);
                         RaidGroup.RaidGroup.Insert(row - 1, gm);
-
-                        dataGridViewRaidGroup.Refresh();
+                        
+                        dataGridViewRaidGroup.ClearSelection();
+                        dataGridViewRaidGroup.Rows[row - 1].Selected = true;
                     }
                 }
             }
@@ -1399,8 +1444,9 @@ namespace WoWGuildOrganizer
                         GuildMember gm = (GuildMember)RaidGroup.RaidGroup[row];
                         RaidGroup.RaidGroup.RemoveAt(row);
                         RaidGroup.RaidGroup.Insert(row + 1, gm);
-
-                        dataGridViewRaidGroup.Refresh();
+                        
+                        dataGridViewRaidGroup.ClearSelection();
+                        dataGridViewRaidGroup.Rows[row+1].Selected = true;
                     }
                 }
             }
@@ -1421,6 +1467,11 @@ namespace WoWGuildOrganizer
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void dataGridViewRaidGroup_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {            
             if (!(Control.ModifierKeys == Keys.Shift || Control.ModifierKeys == Keys.Control) && 
@@ -1429,7 +1480,6 @@ namespace WoWGuildOrganizer
                 // This was a double click on a column header - Sort it!
                 DataGridViewColumn newColumn = dataGridViewRaidGroup.Columns[e.ColumnIndex];
                 string Sorting = newColumn.Name;
-                //newColumn.SortMode = DataGridViewColumnSortMode.Programmatic;
                                 
                 ListSortDirection direction = ListSortDirection.Ascending;
 
@@ -1443,22 +1493,19 @@ namespace WoWGuildOrganizer
                     Sorting += " ASC";
                 }
 
-                // Sort the selected column.
-                dataGridViewRaidGroup.DataSource = null;
-                //dataGridViewRaidGroup.Sort(newColumn, direction);
-                //dataGridViewRaidGroup.Sort(new ObjectComparer(newColumn.Name, false));
-                //dataGridViewRaidGroup.Sort(new ObjectComparer(Sorting, false));
+                // Sort the selected column.                
                 RaidGroup.RaidGroup.Sort(new ObjectComparer(Sorting, false));
-
-                dataGridViewRaidGroup.DataSource = RaidGroup.RaidGroup;
-
-                //newColumn.HeaderCell.SortGlyphDirection = direction == ListSortDirection.Ascending ? SortOrder.Ascending : SortOrder.Descending;
+                dataGridViewRaidGroup.DataSource = RaidGroup.RaidGroup;                                
                 dataGridViewRaidGroup.Columns[e.ColumnIndex].HeaderCell.SortGlyphDirection = direction == ListSortDirection.Ascending ? SortOrder.Ascending : SortOrder.Descending;
+                UpdateRaidGrid();
             }
         }
 
-        #endregion
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void dataGridViewRaidGroup_SortCompare(object sender, DataGridViewSortCompareEventArgs e)
         {
             // Try to sort based on the cells in the current column.
@@ -1471,9 +1518,73 @@ namespace WoWGuildOrganizer
                     dataGridViewRaidGroup.Rows[e.RowIndex1].Cells[e.Column.Index].Value.ToString(),
                     dataGridViewRaidGroup.Rows[e.RowIndex2].Cells[e.Column.Index].Value.ToString());
             }
+
             e.Handled = true;
         }
 
-        
+        /// <summary>
+        /// Update the raid grid
+        /// </summary>
+        private void UpdateRaidGrid()
+        {
+            // Update the grid back color for the rows to white
+            dataGridViewRaidGroup.RowsDefaultCellStyle.BackColor = Color.White;
+            dataGridViewRaidGroup.AutoResizeColumns();
+            dataGridViewRaidGroup.AutoResizeRows();
+
+
+            // Check the Rows for when the last time the char was checked - color changes 
+            for (Int32 i = 0; i < dataGridViewRaidGroup.Rows.Count; i++)
+            {
+                
+            }
+
+            // Now check to see if the Item Level has changed and if their level has changed
+            Int32 Count = 0;
+            Int32 iLevel = 0;
+            foreach (GuildMember gm in RaidGroup.RaidGroup)
+            {
+                // Check for iLevel Changes
+                if (gm.IsItemLevelChanged())
+                {
+                    dataGridViewRaidGroup.Rows[Count].Cells[5].Style.BackColor = Color.Aquamarine;
+                    dataGridViewRaidGroup.Rows[Count].Cells[6].Style.BackColor = Color.Aquamarine;
+                }
+                else
+                {
+                    dataGridViewRaidGroup.Rows[Count].Cells[5].Style.BackColor = Color.White;
+                    dataGridViewRaidGroup.Rows[Count].Cells[6].Style.BackColor = Color.White;
+                }
+
+                // Check for Level Changes
+                if (gm.IsLevelChanged())
+                {
+                    dataGridViewRaidGroup.Rows[Count].Cells[1].Style.BackColor = Color.Aquamarine;
+                }
+                else
+                {
+                    dataGridViewRaidGroup.Rows[Count].Cells[1].Style.BackColor = Color.White;
+                }
+
+                // Sum up the Equipped iLevel
+                if (dataGridViewRaidGroup.Rows[Count].Cells[6].Value != null)
+                {
+                    iLevel += Convert.ToInt32(dataGridViewRaidGroup.Rows[Count].Cells[6].Value);
+                }
+
+                Count++;
+            }
+
+            // Update the AVE Equipped iLevel of the Raid Team
+            if (Count > 0)
+            {
+                labelRaidTab.Text = "Average Raid Team iLevel = " + Convert.ToInt32(Convert.ToDecimal(iLevel) / Convert.ToDecimal(Count)).ToString();
+            }
+
+            // refresh the grid data since it's been changed
+            dataGridViewRaidGroup.Refresh();            
+        }
+
+        #endregion
     }
 }

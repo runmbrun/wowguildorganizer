@@ -111,8 +111,7 @@ namespace WoWGuildOrganizer
 
 
                     String DataString = getSiteData.Data;
-                    //String Search = @"averageItemLevel"":(?<avg_iLevel>\d+).*?averageItemLevelEquipped"":(?<equip_iLevel>\d+)";
-                    String Search = @"averageItemLevel"":(?<avg_iLevel>\d+).*?averageItemLevelEquipped"":(?<equip_iLevel>\d+),.*?primary"":.*?name"":""(?<Profession1>\w+).*?name"":""(?<Profession2>\w+)";
+                    String Search = @"averageItemLevel"":(?<avg_iLevel>\d+).*?averageItemLevelEquipped"":(?<equip_iLevel>\d+),.*?primary"":.*?name"":""(?<Profession1>\w+).*?name"":""(?<Profession2>\w+).*?""selected"":true,.*?""spec"":{""name"":""(?<Spec>\w+)"".*?,""role"":""(?<Role>\w+)""";
                     Regex test = new Regex(Search, RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
 
                     #region DEBUG
@@ -156,6 +155,16 @@ namespace WoWGuildOrganizer
                         if (result.Groups["Profession2"].Success)
                         {
                             Profession2 = result.Groups["Profession2"].Value;
+                        }
+
+                        if (result.Groups["Spec"].Success)
+                        {
+                            Guildie.SetSpec(result.Groups["Spec"].Value);
+                        }
+
+                        if (result.Groups["Role"].Success)
+                        {
+                            Guildie.SetRole(result.Groups["Role"].Value);
                         }
                     }
 
@@ -222,7 +231,7 @@ namespace WoWGuildOrganizer
 
 
                     string DataString = getSiteData.Data;
-                    String Search = @"""name"":""(?<name>\w+)"".*?""class"":(?<class>\d+).*?""race"":(?<race>\d+).*?""level"":(?<level>\d+).*?""achievementPoints"":(?<achs>\d+).*?""averageItemLevel"":(?<avg_iLevel>\d+).*?averageItemLevelEquipped"":(?<equip_iLevel>\d+),.*?primary"":.*?name"":""(?<Profession1>\w+).*?name"":""(?<Profession2>\w+)";
+                    String Search = @"""name"":""(?<name>\w+)"".*?""class"":(?<class>\d+).*?""race"":(?<race>\d+).*?""level"":(?<level>\d+).*?""achievementPoints"":(?<achs>\d+).*?""averageItemLevel"":(?<avg_iLevel>\d+).*?averageItemLevelEquipped"":(?<equip_iLevel>\d+),.*?primary"":.*?name"":""(?<Profession1>\w+).*?name"":""(?<Profession2>\w+).*?""selected"":true,.*?""spec"":{""name"":""(?<Spec>\w+)"".*?,""role"":""(?<Role>\w+)""";
                     Regex test = new Regex(Search, RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
 
                     #region DEBUG
@@ -301,6 +310,16 @@ namespace WoWGuildOrganizer
                         if (result.Groups["Profession2"].Success)
                         {
                             Guildie.SetProfession2(result.Groups["Profession2"].Value);
+                        }
+
+                        if (result.Groups["Spec"].Success)
+                        {
+                            Guildie.SetSpec(result.Groups["Spec"].Value);
+                        }
+
+                        if (result.Groups["Role"].Success)
+                        {
+                            Guildie.SetRole(result.Groups["Role"].Value);
                         }
                     }
 

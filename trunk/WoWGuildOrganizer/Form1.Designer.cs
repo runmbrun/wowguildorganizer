@@ -57,6 +57,7 @@
             this.textBoxRealm = new System.Windows.Forms.TextBox();
             this.progressBarCollectData = new System.Windows.Forms.ProgressBar();
             this.buttonGetGuildInfo = new System.Windows.Forms.Button();
+            this.labelRaidTab = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabPageGuildData.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewGuildData)).BeginInit();
@@ -82,6 +83,7 @@
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(722, 307);
             this.tabControl1.TabIndex = 0;
+            this.tabControl1.SelectedIndexChanged += new System.EventHandler(this.tabControl1_SelectedIndexChanged);
             // 
             // tabPageGuildData
             // 
@@ -130,6 +132,7 @@
             // 
             // tabPageRaidData
             // 
+            this.tabPageRaidData.Controls.Add(this.labelRaidTab);
             this.tabPageRaidData.Controls.Add(this.buttonRaidGroupRefresh);
             this.tabPageRaidData.Controls.Add(this.dataGridViewRaidGroup);
             this.tabPageRaidData.Location = new System.Drawing.Point(4, 22);
@@ -371,6 +374,14 @@
             this.buttonGetGuildInfo.UseVisualStyleBackColor = true;
             this.buttonGetGuildInfo.Click += new System.EventHandler(this.buttonGetGuildInfo_Click);
             // 
+            // labelRaidTab
+            // 
+            this.labelRaidTab.AutoSize = true;
+            this.labelRaidTab.Location = new System.Drawing.Point(8, 16);
+            this.labelRaidTab.Name = "labelRaidTab";
+            this.labelRaidTab.Size = new System.Drawing.Size(0, 13);
+            this.labelRaidTab.TabIndex = 2;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -386,6 +397,7 @@
             this.tabPageGuildData.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewGuildData)).EndInit();
             this.tabPageRaidData.ResumeLayout(false);
+            this.tabPageRaidData.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewRaidGroup)).EndInit();
             this.tabPageSettings.ResumeLayout(false);
             this.groupBox4.ResumeLayout(false);
@@ -429,6 +441,7 @@
         private System.Windows.Forms.Button buttonRaidGroupRefresh;
         private System.Windows.Forms.DataGridView dataGridViewRaidGroup;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Label labelRaidTab;
     }
 }
 
