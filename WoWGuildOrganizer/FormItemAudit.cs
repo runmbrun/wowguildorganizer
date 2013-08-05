@@ -49,6 +49,20 @@ namespace WoWGuildOrganizer
             set { _profession2 = value; }
         }
 
+        private String _spec;
+        public String Spec
+        {
+            get { return _spec; }
+            set { _spec = value; }
+        }
+
+        private String _role;
+        public String Role
+        {
+            get { return _role; }
+            set { _role = value; }
+        }
+
         ArrayList ItemAuditList = null;
 
 
@@ -89,6 +103,12 @@ namespace WoWGuildOrganizer
 
                 // Fill out the profession information
                 textBoxProfessions.Text = Profession1 + ", " + Profession2;
+
+                // Fill out the spec information
+                labelSpec.Text = "Spec: " + Spec;
+
+                // Fill out the role information
+                labelRole.Text = "Role: " + Role;
 
                 
                 // Do AUDIT stuff here!                
@@ -444,6 +464,36 @@ namespace WoWGuildOrganizer
         private void FormItemAudit_Load(object sender, EventArgs e)
         {
             UpdateGridData();
+        }
+
+        #endregion
+
+        #region " Tool Tips "
+
+        private void dataGridViewItemAudit_CellToolTipTextNeeded(object sender, DataGridViewCellToolTipTextNeededEventArgs e)
+        {
+            if (e.ColumnIndex == 1 && e.RowIndex > 0 && e.RowIndex < dataGridViewItemAudit.Rows.Count)
+            {
+                string tooltip = string.Empty;
+
+                if (dataGridViewItemAudit.Rows[e.RowIndex].Cells[e.ColumnIndex].Value != null)
+                {
+                    string name = dataGridViewItemAudit.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString();
+
+                    // Check each item that the character has equiped
+                    foreach (ItemAudit item in ItemAuditList)
+                    {
+                        // Figure out if the mainHand is a two handed weapon
+                        if (item.Name == name)
+                        {
+                            // put more stats on tool tip!
+                            tooltip = item.Name + "\n" + item.ItemLevel + "\n" + item.Slot;
+                        }
+                    }
+                }
+
+                e.ToolTipText = tooltip;
+            }
         }
 
         #endregion

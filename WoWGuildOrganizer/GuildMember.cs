@@ -95,11 +95,17 @@ namespace WoWGuildOrganizer
             set { _lastupdated = value; }
         }        
 
-
         // These are variables but are hidden from the grid.
         private DateTime _lastarmorycheck;        
         private DateTime _lastilevelcheck;
+        private string _role;
+        private string _spec;
+        private Boolean _levelchanged;
+        private Boolean _namechanged;
+        private Boolean _ilevelchangedEquip;
+        private Boolean _ilevelchangedMax;
         
+
         public void SetArmoryCheckTime()
         {
             _lastarmorycheck = DateTime.Now;
@@ -111,12 +117,6 @@ namespace WoWGuildOrganizer
             _lastilevelcheck = DateTime.Now;
             _lastupdated = _lastilevelcheck;
         }
-
-
-        private Boolean _levelchanged;
-        private Boolean _namechanged;
-        private Boolean _ilevelchangedEquip;
-        private Boolean _ilevelchangedMax;
 
         private String _profession1;
         public void SetProfession1 (String prof)
@@ -137,6 +137,23 @@ namespace WoWGuildOrganizer
             return _profession2;
         }
 
+        public void SetSpec(String spec)
+        {
+            _spec = spec;
+        }
+        public String GetSpec()
+        {
+            return _spec;
+        }
+
+        public void SetRole(String role)
+        {
+            _role = role;
+        }
+        public String GetRole()
+        {
+            return _role;
+        }
 
         /// <summary>
         /// Here is the constructor
