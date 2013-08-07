@@ -87,7 +87,6 @@
             this.dataGridViewItemAudit.Name = "dataGridViewItemAudit";
             this.dataGridViewItemAudit.Size = new System.Drawing.Size(777, 404);
             this.dataGridViewItemAudit.TabIndex = 2;
-            this.dataGridViewItemAudit.CellToolTipTextNeeded += new System.Windows.Forms.DataGridViewCellToolTipTextNeededEventHandler(this.dataGridViewItemAudit_CellToolTipTextNeeded);
             // 
             // panel1
             // 

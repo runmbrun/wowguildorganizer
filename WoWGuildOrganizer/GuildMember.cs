@@ -1,26 +1,58 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-
-
+using System.Text.RegularExpressions;
+using System.ComponentModel;
 
 namespace WoWGuildOrganizer
 {
     [Serializable]
-    class GuildMember
+    public class GuildMember
     {
+        #region " Class Variables "
+
+        // These are the variables that will show up in the grid
+        //  as they are the class Properties
         private String _name;
+        private Int32 _level;
+        private String _class;
+        private String _race;
+        private Int32 _achievementpoints;
+        private Int32 _maxilevel;
+        private Int32 _equipedilevel;
+        private DateTime _lastupdated;
+                
+        // These are variables but are hidden from the grid.
+        private DateTime _lastarmorycheck;
+        private DateTime _lastilevelcheck;
+        private string _role;
+        private string _spec;
+        private Boolean _levelchanged;
+        private Boolean _namechanged;
+        private Boolean _ilevelchangedEquip;
+        private Boolean _ilevelchangedMax;
+        private String _profession1;
+        private String _profession2;
+        private Dictionary<string, ItemAudit> _items;
+        private String _realm;
+
+        #endregion
+
+        #region " Class Properties "
+
         public String Name
         {
             get { return _name; }
             set { _name = value; }
         }
-
-        private Int32 _level;
+        
         public Int32 Level
         {
-            get { return _level; }
+            get 
+            { 
+                return _level; 
+            }
+
             set 
             { 
                 _level = value; 
@@ -28,29 +60,25 @@ namespace WoWGuildOrganizer
                 SetArmoryCheckTime();
             }
         }
-
-        private String _class;
+        
         public String Class
         {
             get { return _class; }
             set { _class = value; }
         }
 
-        private String _race;
         public String Race
         {
             get { return _race; }
             set { _race = value; }
         }
-
-        private Int32 _achievementpoints;
+        
         public Int32 AchievementPoints
         {
             get { return _achievementpoints; }
             set { _achievementpoints = value; SetArmoryCheckTime(); }
-        }
+        }        
         
-        private Int32 _maxilevel;
         public Int32 MaxiLevel
         {
             get { return _maxilevel; }
@@ -69,7 +97,6 @@ namespace WoWGuildOrganizer
             }
         }
 
-        private Int32 _equipedilevel;
         public Int32 EquipediLevel
         {
             get { return _equipedilevel; }
@@ -88,72 +115,57 @@ namespace WoWGuildOrganizer
             }
         }
 
-        private DateTime _lastupdated;
         public DateTime LastUpdated
         {
             get { return _lastupdated; }
             set { _lastupdated = value; }
-        }        
+        }
 
-        // These are variables but are hidden from the grid.
-        private DateTime _lastarmorycheck;        
-        private DateTime _lastilevelcheck;
-        private string _role;
-        private string _spec;
-        private Boolean _levelchanged;
-        private Boolean _namechanged;
-        private Boolean _ilevelchangedEquip;
-        private Boolean _ilevelchangedMax;
+        [Browsable(false)]
+        public string Profession1
+        {
+            get { return _profession1; }
+            set { _profession1 = value; }
+        }
+
+        [Browsable(false)]
+        public string Profession2
+        {
+            get { return _profession2; }
+            set { _profession2 = value; }
+        }
+
+        [Browsable(false)]
+        public string Spec
+        {
+            get { return _spec; }
+            set { _spec = value; }
+        }
+
+        [Browsable(false)]
+        public string Role
+        {
+            get { return _role; }
+            set { _role = value; }
+        }
+
+        [Browsable(false)]
+        public Dictionary<string, ItemAudit> ItemAudits
+        {
+            get { return _items; }
+            set { _items = value; }
+        }
+
+        [Browsable(false)]
+        public string Realm
+        {
+            get { return _realm; }
+            set { _realm = value; }
+        }
+
+        #endregion
         
-
-        public void SetArmoryCheckTime()
-        {
-            _lastarmorycheck = DateTime.Now;
-            _lastupdated = _lastarmorycheck;
-        }
-
-        public void SetItemLevelCheckTime()
-        {
-            _lastilevelcheck = DateTime.Now;
-            _lastupdated = _lastilevelcheck;
-        }
-
-        private String _profession1;
-        public void SetProfession1 (String prof)
-        {
-            _profession1 = prof;
-        }
-        public String GetProfession1()
-        {
-            return _profession1;
-        }
-        private String _profession2;
-        public void SetProfession2(String prof)
-        {
-            _profession2 = prof;
-        }
-        public String GetProfession2()
-        {
-            return _profession2;
-        }
-
-        public void SetSpec(String spec)
-        {
-            _spec = spec;
-        }
-        public String GetSpec()
-        {
-            return _spec;
-        }
-
-        public void SetRole(String role)
-        {
-            _role = role;
-        }
-        public String GetRole()
-        {
-            return _role;
-        }
+        #region " Class Constructor "
 
         /// <summary>
         /// Here is the constructor
@@ -166,7 +178,10 @@ namespace WoWGuildOrganizer
             _namechanged = false;
             _ilevelchangedEquip = false;
             _ilevelchangedMax = false;
+            _items = new Dictionary<string, ItemAudit>();
         }
+
+        #endregion
 
         public Boolean IsLevelChanged()
         {
@@ -217,6 +232,18 @@ namespace WoWGuildOrganizer
         public void ClearMaxItemLevelFlag()
         {
             _ilevelchangedMax = false;
+        }
+
+        public void SetArmoryCheckTime()
+        {
+            _lastarmorycheck = DateTime.Now;
+            _lastupdated = _lastarmorycheck;
+        }
+
+        public void SetItemLevelCheckTime()
+        {
+            _lastilevelcheck = DateTime.Now;
+            _lastupdated = _lastilevelcheck;
         }
     }
 }
