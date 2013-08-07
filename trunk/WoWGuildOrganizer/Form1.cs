@@ -22,7 +22,7 @@ namespace WoWGuildOrganizer
     {
         #region " Variables "
 
-        public String URLWowAPI = @"http://us.battle.net/api/wow/";
+        static public String URLWowAPI = @"http://us.battle.net/api/wow/";
         GuildMemberGroup SavedCharacters;
         RaidMemberGroup RaidGroup;
         private BackgroundWorker GetGuildInfoAsyncWorker = new BackgroundWorker();
@@ -34,6 +34,7 @@ namespace WoWGuildOrganizer
         #endregion
 
         #region " Constructor "
+
         public Form1()
         {
             InitializeComponent();
@@ -97,9 +98,6 @@ namespace WoWGuildOrganizer
 
                     RaidGroup = (RaidMemberGroup)bformatter.Deserialize(stream);
                     stream.Close();
-
-                    //TODO - need to get a label ready
-                    //label3.Text = RaidGroup.RaidGroup.Count.ToString() + " total characters";
                 }
             }
             catch (Exception ex)
@@ -136,6 +134,9 @@ namespace WoWGuildOrganizer
                 }
             }
 
+            // Add Raid Loot Drop Items
+            toolStripComboBoxRaidLootDropRaid.Items.Add("Mogu'shan Vaults");
+
             // create context grid popup menu
             this.contextMenuCharacter = new ContextMenuStrip();
             this.contextMenuCharacter.Items.Add("Update this Character");
@@ -153,6 +154,7 @@ namespace WoWGuildOrganizer
             GetGuildInfoAsyncWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(GetGuildInfoAsync_RunWorkerCompleted);
             GetGuildInfoAsyncWorker.DoWork += new DoWorkEventHandler(GetGuildInfoAsync_DoWork);
         }
+
         #endregion
 
         #region " DataGrid Functions "
@@ -355,14 +357,17 @@ namespace WoWGuildOrganizer
                 charAudit.EquippediLevel = ((GuildMember)(SavedCharacters.SavedCharacters[CurrentRow])).EquipediLevel.ToString();
                 charAudit.MaxiLevel = ((GuildMember)(SavedCharacters.SavedCharacters[CurrentRow])).MaxiLevel.ToString();
 
-                charAudit.Profession1 = ((GuildMember)(SavedCharacters.SavedCharacters[CurrentRow])).GetProfession1();
-                charAudit.Profession2 = ((GuildMember)(SavedCharacters.SavedCharacters[CurrentRow])).GetProfession2();
+                charAudit.Profession1 = ((GuildMember)(SavedCharacters.SavedCharacters[CurrentRow])).Profession1;
+                charAudit.Profession2 = ((GuildMember)(SavedCharacters.SavedCharacters[CurrentRow])).Profession2;
 
-                charAudit.Spec = ((GuildMember)(SavedCharacters.SavedCharacters[CurrentRow])).GetSpec();
-                charAudit.Role = ((GuildMember)(SavedCharacters.SavedCharacters[CurrentRow])).GetRole();
+                charAudit.Spec = ((GuildMember)(SavedCharacters.SavedCharacters[CurrentRow])).Spec;
+                charAudit.Role = ((GuildMember)(SavedCharacters.SavedCharacters[CurrentRow])).Role;
+
+                GuildMember Char = (GuildMember)(SavedCharacters.SavedCharacters[CurrentRow]);
 
                 // Pass the Data to the Form
-                if (charAudit.PassData(URLWowAPI + "character/" + textBoxRealm.Text + "/" + CharName + "?fields=items"))
+                //if (charAudit.PassData(URLWowAPI + "character/" + textBoxRealm.Text + "/" + CharName + "?fields=items"))
+                if (charAudit.PassData(Char))
                 {
                     // Show the new form
                     charAudit.Show();
@@ -522,7 +527,7 @@ namespace WoWGuildOrganizer
                     try
                     {
                         // This is the Web Site to get the guild info from...
-                        //http://us.battle.net/api/wow/guild/Thrall/Secondnorth?fields=members
+                        // http://us.battle.net/api/wow/guild/Thrall/Secondnorth?fields=members
 
                         // Reset the Counter
                         bwAsync.ReportProgress(0);
@@ -617,18 +622,25 @@ namespace WoWGuildOrganizer
                                         // This is the Web Site to get the character info from...
                                         // http://us.battle.net/api/wow/character/Thrall/Purdee?fields=items,professions,talents
 
-                                        GetCharacterInfo charInfo = new GetCharacterInfo();
-                                        if (charInfo.CollectData(URLWowAPI + "character/" + textBoxRealm.Text + "/" + gm.Name + "?fields=items,professions,talents"))
+                                        //GetCharacterInfo charInfo = new GetCharacterInfo();
+                                        //if (charInfo.CollectData(URLWowAPI + "character/" + textBoxRealm.Text + "/" + gm.Name + "?fields=items,professions,talents"))
+                                        GuildMember charInfo = GetCharacterInformation(gm.Name, SavedCharacters.Realm);
+                                        if (charInfo != null)
                                         {
                                             // success!
 
                                             // Fill out the data grid with the data we collected
+                                            //*
                                             gm.MaxiLevel = charInfo.MaxiLevel;
                                             gm.EquipediLevel = charInfo.EquipediLevel;
-                                            gm.SetProfession1(charInfo.Profession1);
-                                            gm.SetProfession2(charInfo.Profession2);
-                                            gm.SetSpec(charInfo.Guildie.GetSpec());
-                                            gm.SetRole(charInfo.Guildie.GetRole());
+                                            gm.Profession1 = charInfo.Profession1;
+                                            gm.Profession2 = charInfo.Profession2;
+                                            gm.Spec = charInfo.Spec;
+                                            gm.Role = charInfo.Role;
+                                            gm.ItemAudits = charInfo.ItemAudits;
+                                            //*/
+
+                                            //gm = charInfo;
                                         }
                                         else
                                         {
@@ -725,6 +737,7 @@ namespace WoWGuildOrganizer
             // Stop updating the Grid until the end
             SuspendGrid(false);
         }
+
         #endregion
 
         #region " Form and Tab Functions "
@@ -815,6 +828,7 @@ namespace WoWGuildOrganizer
         #endregion
 
         #region " Save and Load Functions "
+
         /// <summary>
         /// Loads a saved guild file
         /// </summary>
@@ -904,6 +918,7 @@ namespace WoWGuildOrganizer
         #endregion
 
         #region " Logging Functions " 
+
         /// <summary>
         /// Place holder for future logging mechanism
         /// </summary>
@@ -942,6 +957,17 @@ namespace WoWGuildOrganizer
         #endregion
 
         #region " Button Functions "
+
+        /// <summary>
+        /// Refresh the Guild Data 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void buttonRefreshGuildData_Click(object sender, EventArgs e)
+        {
+            // Simply Callthe buttonGetGuildInfo click 
+            buttonGetGuildInfo_Click(sender, e);
+        }
 
         /// <summary>
         /// 
@@ -1030,29 +1056,26 @@ namespace WoWGuildOrganizer
         #endregion        
 
         #region " Raid Tab Functionality "
+
         /// <summary>
-        /// 
+        /// Fires when Add Character button is pressed on the Raid Tab
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void buttonAddCharacterToRaidData_Click(object sender, EventArgs e)
-        {  
-            // This is the Web Site to get the character info from...
-            // http://us.battle.net/api/wow/character/Thrall/Purdee?fields=items,professions,talents
-
-            GetCharacterInfo charInfo = new GetCharacterInfo();
-            GuildMember gm = new GuildMember();
-
-            if (charInfo.CollectFullData(URLWowAPI + "character/" + textBoxCharacterRealm.Text + "/" + textBoxCharacterName.Text + "?fields=items,professions,talents"))
+        {
+            if (textBoxCharacterName.Text.Length == 0 || textBoxCharacterRealm.Text.Length == 0)
             {
-                // success!
+                MessageBox.Show("Error: Both Character Name and Realm need to be filled out.");
+            }
+            else
+            {
+                WaitCursor(true);
 
-                // check for actual data now...
-                if (charInfo.Guildie.Name != null)
+                GuildMember gm = GetCharacterInformation(textBoxCharacterName.Text, textBoxCharacterRealm.Text);
+
+                if (gm != null)
                 {
-                    // Fill out the data grid with the data we collected                
-                    gm = charInfo.Guildie;
-
                     // Clear out the Grid Data Source to get it ready for the new data
                     dataGridViewRaidGroup.DataSource = null;
 
@@ -1065,28 +1088,53 @@ namespace WoWGuildOrganizer
                     // refresh the grid data since it's been changed
                     UpdateRaidGrid();
                 }
+
+                WaitCursor(false);
+            }
+        }
+
+        /// <summary>
+        /// Grabs all the information about 1 character
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="realm"></param>
+        /// <returns></returns>
+        public GuildMember GetCharacterInformation(string name, string realm)
+        {
+            // This is the Web Site to get the character info from...
+            // http://us.battle.net/api/wow/character/Thrall/Purdee?fields=items,professions,talents
+
+            GetCharacterInfo charInfo = new GetCharacterInfo();
+            GuildMember gm = new GuildMember();
+
+            if (charInfo.CollectFullData(URLWowAPI + "character/" + realm + "/" + name + "?fields=items,professions,talents"))
+            {
+                // success!
+
+                // check for actual data now...
+                if (charInfo.Guildie.Name != null)
+                {
+                    // Fill out the data grid with the data we collected                
+                    gm = charInfo.Guildie;
+
+                    // Add on the realm
+                    gm.Realm = realm;
+                }
                 else
                 {
                     // no character was matched!
-                    //TODO
+                    Log(String.Format("Failed to get information about {0}", textBoxCharacterName.Text));
+                    gm = null;
                 }
             }
             else
             {
                 // Fail!  Save all errors until the end!
-                //TODO
+                Log(String.Format("Failed to get information about {0}", textBoxCharacterName.Text));
+                gm = null;
             }
-        }
 
-        /// <summary>
-        /// Refresh the Guild Data 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void buttonRefreshGuildData_Click(object sender, EventArgs e)
-        {
-            // Simply Callthe buttonGetGuildInfo click 
-            buttonGetGuildInfo_Click(sender, e);
+            return gm;
         }
 
         /// <summary>
@@ -1096,38 +1144,31 @@ namespace WoWGuildOrganizer
         /// <param name="e"></param>
         private void buttonRaidGroupRefresh_Click(object sender, EventArgs e)
         {
-            // TODO
-            // 1. Cycle through all the character individually and refresh each one.
-
             WaitCursor(true);
 
             try
             {
-                ArrayList UpdatedCharacters = new ArrayList();
-
                 foreach (GuildMember oldMember in RaidGroup.RaidGroup)
                 {
-                    GetCharacterInfo charInfo = new GetCharacterInfo();
-                    GuildMember gm = new GuildMember();
+                    GuildMember gm = GetCharacterInformation(oldMember.Name, oldMember.Realm);
 
-                    // This is the Web Site to get the character info from...
-                    // http://us.battle.net/api/wow/character/Thrall/Purdee?fields=items,professions,talents
-                    if (charInfo.CollectFullData(URLWowAPI + "character/" + textBoxRealm.Text + "/" + oldMember.Name + "?fields=items,professions,talents"))
+                    if (gm != null)
                     {
-                        // success!
-
-                        // Now we have the new info
-                        gm = charInfo.Guildie;
-
+                        // Success! Now we have the new info
                         // Compare the new info with the old info
                         //  And make updates as needed...
                         Boolean Updated = false;
-                        
+
                         // Level
                         if (oldMember.Level != gm.Level)
                         {
                             oldMember.Level = gm.Level;
                             Updated = true;
+                        }
+                        else
+                        {
+                            oldMember.ClearFlags();
+                            gm.ClearFlags();
                         }
 
                         // Achievement Points
@@ -1143,6 +1184,11 @@ namespace WoWGuildOrganizer
                             oldMember.EquipediLevel = gm.EquipediLevel;
                             Updated = true;
                         }
+                        else
+                        {
+                            oldMember.ClearEquipItemLevelFlag();
+                            gm.ClearEquipItemLevelFlag();
+                        }
 
                         // Max iLevel
                         if (oldMember.MaxiLevel != gm.MaxiLevel)
@@ -1150,28 +1196,34 @@ namespace WoWGuildOrganizer
                             oldMember.MaxiLevel = gm.MaxiLevel;
                             Updated = true;
                         }
+                        else
+                        {
+                            oldMember.ClearMaxItemLevelFlag();
+                            gm.ClearMaxItemLevelFlag();
+                        }
 
                         // Spec
-                        if (oldMember.GetSpec() != gm.GetSpec())
+                        if (oldMember.Spec != gm.Spec)
                         {
-                            oldMember.SetSpec(gm.GetSpec());
+                            oldMember.Spec = gm.Spec;
                         }
 
                         // Role
-                        if (oldMember.GetRole() != gm.GetRole())
+                        if (oldMember.Role != gm.Role)
                         {
-                            oldMember.SetRole(gm.GetRole());
+                            oldMember.Role = gm.Role;
                         }
+
+                        // ItemAudit - always update, just in case
+                        oldMember.ItemAudits = gm.ItemAudits;
 
                         if (Updated)
                         {
-                            UpdatedCharacters.Add(oldMember.Name);
+                            // replace the old with the new...
+                            //RaidGroup.RaidGroup[CurrentRow] = gm;
                         }
-                    }
-                    else
-                    {
-                        // Fail!  Save all errors until the end!
-                        //TODO
+
+                        oldMember.LastUpdated = DateTime.Now;
                     }
                 }
 
@@ -1180,23 +1232,6 @@ namespace WoWGuildOrganizer
 
                 // refresh grid data
                 dataGridViewRaidGroup.DataSource = RaidGroup.RaidGroup;
-
-                // Now check to see if the Item Level has changed and if their level has changed
-                Int32 Count = 0;
-                foreach (GuildMember gm in RaidGroup.RaidGroup)
-                {                    
-                    if (UpdatedCharacters.Contains(gm.Name))
-                    {
-                        dataGridViewRaidGroup.Rows[Count].DefaultCellStyle.BackColor = Color.Aquamarine;
-                    }
-                    else
-                    {
-                        dataGridViewRaidGroup.Rows[Count].DefaultCellStyle.BackColor = Color.White;
-                        gm.LastUpdated = DateTime.Now;
-                    }
-
-                    Count++;
-                }
 
                 // refresh the grid data since it's been changed
                 UpdateRaidGrid();
@@ -1211,7 +1246,7 @@ namespace WoWGuildOrganizer
         }       
 
         /// <summary>
-        /// 
+        /// Update the individual chars Armory info and Gear Score
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -1219,15 +1254,11 @@ namespace WoWGuildOrganizer
         {
             DataGridViewCell currentCell;
 
-
-            // find out the row... and then try to update the individual chars Armory info and Gear Score
-
             // Get the current cell.
             currentCell = dataGridViewRaidGroup.CurrentCell;
 
             // Get the cell's current row
             Int32 CurrentRow = currentCell.RowIndex;
-
 
             // First check to make sure the vars are passed in
             if (CurrentRow < 0 || textBoxRealm.Text.Length == 0)
@@ -1241,30 +1272,17 @@ namespace WoWGuildOrganizer
                 // Create the new form to be used
                 FormItemAudit charAudit = new FormItemAudit();
 
-                // Get the name
-                String CharName = ((GuildMember)(RaidGroup.RaidGroup[CurrentRow])).Name;
-
-                // Pass the name to the new form
-                charAudit.CharacterName = CharName;
-
-                charAudit.EquippediLevel = ((GuildMember)(RaidGroup.RaidGroup[CurrentRow])).EquipediLevel.ToString();
-                charAudit.MaxiLevel = ((GuildMember)(RaidGroup.RaidGroup[CurrentRow])).MaxiLevel.ToString();
-
-                charAudit.Profession1 = ((GuildMember)(RaidGroup.RaidGroup[CurrentRow])).GetProfession1();
-                charAudit.Profession2 = ((GuildMember)(RaidGroup.RaidGroup[CurrentRow])).GetProfession2();
-
-                charAudit.Spec = ((GuildMember)(RaidGroup.RaidGroup[CurrentRow])).GetSpec();
-                charAudit.Role = ((GuildMember)(RaidGroup.RaidGroup[CurrentRow])).GetRole();
+                GuildMember Char = (GuildMember)(RaidGroup.RaidGroup[CurrentRow]);
 
                 // Pass the Data to the Form
-                if (charAudit.PassData(URLWowAPI + "character/" + textBoxRealm.Text + "/" + CharName + "?fields=items"))
+                if (charAudit.PassData(Char))
                 {
                     // Show the new form
                     charAudit.Show();
                 }
                 else
                 {
-                    DisplayError("ERROR - Can't Audit Character: " + CharName);
+                    DisplayError("ERROR - Can't Audit Character: " + Char.Name);
                 }
             }
 
@@ -1310,24 +1328,15 @@ namespace WoWGuildOrganizer
 
                 try
                 {
-                    ArrayList UpdatedCharacters = new ArrayList();
-
                     foreach (DataGridViewRow row in this.dataGridViewRaidGroup.SelectedRows)
                     {
-                        GetCharacterInfo charInfo = new GetCharacterInfo();
-                        GuildMember gm = new GuildMember();
-                        int CurrentRow = row.Index;
+                        int CurrentRow = row.Index;                        
                         GuildMember oldMember = (GuildMember)(RaidGroup.RaidGroup[CurrentRow]);
+                        GuildMember gm = GetCharacterInformation(oldMember.Name, oldMember.Realm);                        
 
-                        // This is the Web Site to get the character info from...
-                        // http://us.battle.net/api/wow/character/Thrall/Purdee?fields=items,professions,talents
-                        if (charInfo.CollectFullData(URLWowAPI + "character/" + textBoxRealm.Text + "/" + oldMember.Name + "?fields=items,professions,talents"))
+                        if (gm != null)
                         {
-                            // success!
-
-                            // Now we have the new info
-                            gm = charInfo.Guildie;
-
+                            // Success! Now we have the new info
                             // Compare the new info with the old info
                             //  And make updates as needed...
                             Boolean Updated = false;
@@ -1376,30 +1385,27 @@ namespace WoWGuildOrganizer
                             }
 
                             // Spec
-                            if (oldMember.GetSpec() != gm.GetSpec())
+                            if (oldMember.Spec != gm.Spec)
                             {
-                                oldMember.SetSpec(gm.GetSpec());
+                                oldMember.Spec = gm.Spec;
                             }
 
                             // Role
-                            if (oldMember.GetRole() != gm.GetRole())
+                            if (oldMember.Role != gm.Role)
                             {
-                                oldMember.SetRole(gm.GetRole());
+                                oldMember.Role = gm.Role;
                             }
+
+                            // ItemAudit - always update, just in case
+                            oldMember.ItemAudits = gm.ItemAudits;
 
                             if (Updated)
                             {
                                 // replace the old with the new...
-                                RaidGroup.RaidGroup[CurrentRow] = gm;
-                                UpdatedCharacters.Add(gm.Name);
+                                //RaidGroup.RaidGroup[CurrentRow] = gm;                                
                             }
 
                             oldMember.LastUpdated = DateTime.Now;
-                        }
-                        else
-                        {
-                            // Fail!  Save all errors until the end!
-                            //TODO
                         }
                     }
                     
@@ -1468,7 +1474,7 @@ namespace WoWGuildOrganizer
         }
 
         /// <summary>
-        /// 
+        /// Sort the grid according to the column clicked
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -1502,7 +1508,7 @@ namespace WoWGuildOrganizer
         }
 
         /// <summary>
-        /// 
+        /// The sort compare for the RaidGroup
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -1531,19 +1537,17 @@ namespace WoWGuildOrganizer
             dataGridViewRaidGroup.RowsDefaultCellStyle.BackColor = Color.White;
             dataGridViewRaidGroup.AutoResizeColumns();
             dataGridViewRaidGroup.AutoResizeRows();
-
-
-            // Check the Rows for when the last time the char was checked - color changes 
-            for (Int32 i = 0; i < dataGridViewRaidGroup.Rows.Count; i++)
-            {
-                
-            }
-
-            // Now check to see if the Item Level has changed and if their level has changed
+                        
             Int32 Count = 0;
             Int32 iLevel = 0;
-            foreach (GuildMember gm in RaidGroup.RaidGroup)
+
+            // Now check to see if the Item Level has changed and if their level has changed
+            //foreach (GuildMember gm in RaidGroup.RaidGroup)
+            for (Int32 i = 0; i < dataGridViewRaidGroup.Rows.Count; i++)
             {
+                // Get the guild member
+                GuildMember gm = ((GuildMember)(RaidGroup.RaidGroup[i]));
+
                 // Check for iLevel Changes
                 if (gm.IsItemLevelChanged())
                 {
@@ -1578,11 +1582,505 @@ namespace WoWGuildOrganizer
             // Update the AVE Equipped iLevel of the Raid Team
             if (Count > 0)
             {
-                labelRaidTab.Text = "Average Raid Team iLevel = " + Convert.ToInt32(Convert.ToDecimal(iLevel) / Convert.ToDecimal(Count)).ToString();
+                //label ready
+                labelRaidTab.Text = "Average Raid Team iLevel = " + Convert.ToInt32(Convert.ToDecimal(iLevel) / Convert.ToDecimal(Count)).ToString() + " for " + RaidGroup.RaidGroup.Count.ToString() + " total characters";
             }
 
             // refresh the grid data since it's been changed
             dataGridViewRaidGroup.Refresh();            
+        }
+
+        #endregion
+
+        /* TODO: 
+         * Evenually will need to be able to Add this all in programmatically.
+         * But for now, I will hard code in what we need, and get the ranking functionality in place to use.
+         * */
+        #region " Raid Loot Drop "
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void toolStripComboBoxRaidLootDropRaid_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // Clear out the results first
+            dataGridViewRaidLootDrop.DataSource = null;
+
+            if (toolStripComboBoxRaidLootDropRaid.SelectedItem.ToString() == "Mogu'shan Vaults")
+            {
+                // Fill out bosses now
+                toolStripComboBoxRaidLootDropBoss.Items.Add("The Stone Guard");
+                toolStripComboBoxRaidLootDropBoss.Items.Add("Feng the Accursed");
+                toolStripComboBoxRaidLootDropBoss.Items.Add("Gara'jal the Spiritbinder");
+                //toolStripComboBoxRaidLootDropBoss.Items.Add("Next Boss");
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void toolStripComboBoxRaidLootDropBoss_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            WaitCursor(true);
+
+            // Clear out the results first
+            dataGridViewRaidLootDrop.DataSource = null;
+
+            // Create data table for all the new data
+            DataTable loot = new DataTable();
+            
+            // Add Columns
+            loot.Columns.Add("Upgrade");
+            loot.Columns[0].DataType = typeof(int);
+            loot.Columns.Add("CharacterName");
+            loot.Columns.Add("ItemId");
+            loot.Columns.Add("ItemName");
+            loot.Columns.Add("ItemSlot");
+            loot.Columns.Add("ItemILevel");
+            loot.Columns.Add("OldItemILevel");
+
+            int[] itemIds = null;
+
+            // Fill out the results
+            if (toolStripComboBoxRaidLootDropBoss.SelectedItem.ToString() == "The Stone Guard")
+            {
+                // Here is a list of items for this boss:
+                itemIds = new int[] { 85922, 85979, 89768, 85924, 85975, 85978, 85925, 89767, 85976, 86134, 85977, 89766, 85926, 85923 };
+            }
+            else if (toolStripComboBoxRaidLootDropBoss.SelectedItem.ToString() == "Feng the Accursed")
+            {
+                // Here is a list of items for this boss:
+                itemIds = new int[] { 85986, 86082, 85983, 85987, 85985, 89424, 89803, 89802, 85989, 85990, 85988, 85984, 85982, 85980 };
+            }
+            else if (toolStripComboBoxRaidLootDropBoss.SelectedItem.ToString() == "Gara'jal the Spiritbinder")
+            {
+                // Here is a list of items for this boss:
+                itemIds = new int[] { 86027, 89817, 86038, 85996, 85993, 85994, 86040, 85995, 85997, 86041, 85992, 85991, 86039 };
+            }
+            else
+            {
+                MessageBox.Show("No data for this raid boss.");
+            }
+
+            if (itemIds != null && itemIds.Length > 0)
+            {
+                // Go through all item ids
+                foreach (int itemId in itemIds)
+                {
+                    ItemInfo item = null;
+
+                    // does this item currently exist in the item cache?
+                    if (!Items.Contains(itemId))
+                    {
+                        // Need to add in this item to the Item Cache
+
+                        // First fetch the data
+                        GetItemInfo get = new GetItemInfo();
+                        if (get.CollectData(itemId))
+                        {
+                            item = get.Item;
+                            item.Id = itemId;
+                            Items.AddItem(item);
+                        }
+                    }
+                    else
+                    {
+                        item = Items.GetItem(itemId);
+                    }
+
+                    if (item != null)
+                    {
+                        // Now we have the item in the item cache
+
+                        // Check against each member in the Raid Group
+                        foreach (GuildMember gm in RaidGroup.RaidGroup)
+                        {
+                            string charName = string.Empty;
+
+                            // can this member use it?
+                            if (Converter.ConvertItemClass(item.ItemClass) == "Armor")
+                            {
+                                // TODO: this needs lots more to finish... TANKING Armor, Weapons
+
+                                // Death Knight - Blood, Frost, Unholy
+                                // Druid
+                                // Hunter
+                                // Mage
+                                // Monk
+                                // Paladin
+                                // Priest                                
+                                // Rogue
+                                // Shaman
+                                // Warlock
+                                // Warrior
+
+                                // Armor
+                                if (Converter.ConvertItemSubClass(item.ItemClass, item.ItemSubClass) == "Micellaneous")
+                                {
+                                    if (item.HasIntellect())
+                                    {
+                                        if (item.HasSpirit())
+                                        {
+                                            // Healer Classes
+                                            if (gm.Role == "HEALING" ||
+                                                (gm.Role == "DPS" && (gm.Spec == "Balance" || gm.Spec == "Shadow" || gm.Spec == "Elemental"))
+                                                )
+                                            {
+                                                charName = gm.Name;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if ((!item.HasHit() && gm.Role == "HEALING") ||
+                                                (gm.Role == "DPS" && (gm.Spec == "Balance" || gm.Class == "Mage" || gm.Class == "Shadow" || gm.Spec == "Elemental" || gm.Class == "Warlock"))
+                                                )
+                                            {
+                                                charName = gm.Name;
+                                            }
+                                        }
+                                    }
+                                    else if (item.HasTankingStat())
+                                    {
+                                        if (gm.Role == "TANKING")
+                                        {
+                                            charName = gm.Name;
+                                        }
+                                    }
+                                    else if (item.HasStrength())
+                                    {
+                                        if ((gm.Class == "Paladin" && gm.Spec != "Holy") || gm.Class == "Warrior" || gm.Class == "Death Knight")
+                                        {
+                                            charName = gm.Name;
+                                        }
+                                    }
+                                    else if (item.HasAgility())
+                                    {
+                                        if ((gm.Class == "Monk" && gm.Role != "HEALING") || gm.Class == "Rogue" || gm.Class == "Hunter" || (gm.Class == "Druid" && (gm.Spec == "Feral" || gm.Spec == "Guardian")) || (gm.Class == "Shaman" && gm.Spec == "Enhancement"))
+                                        {
+                                            charName = gm.Name;
+                                        }
+                                    }
+                                }
+                                else if (Converter.ConvertItemSubClass(item.ItemClass, item.ItemSubClass) == "Plate")
+                                {
+                                    if (item.HasIntellect() && gm.Class == "Paladin" && gm.Spec == "Holy")
+                                    {
+                                        charName = gm.Name;
+                                    }
+                                    else if (item.HasTankingStat())
+                                    {
+                                        if (gm.Role == "TANKING")
+                                        {
+                                            charName = gm.Name;
+                                        }
+                                    }
+                                    else if (!item.HasIntellect() && ((gm.Class == "Paladin" && gm.Spec != "Holy") || gm.Class == "Warrior" || gm.Class == "Death Knight"))
+                                    {
+                                        charName = gm.Name;
+                                    }
+                                }
+                                else if (Converter.ConvertItemSubClass(item.ItemClass, item.ItemSubClass) == "Mail")
+                                {
+                                    if (item.HasIntellect() && gm.Class == "Shaman" && (gm.Spec == "Elemental" || gm.Spec == "Restoration"))
+                                    {
+                                        charName = gm.Name;
+                                    }
+                                    else if (!item.HasIntellect() && ((gm.Class == "Shaman" && gm.Spec == "Enhancement") || gm.Class == "Hunter"))
+                                    {
+                                        charName = gm.Name;
+                                    }
+                                }
+                                else if (Converter.ConvertItemSubClass(item.ItemClass, item.ItemSubClass) == "Leather")
+                                {
+                                    if (item.HasIntellect() && (gm.Class == "Druid" && (gm.Spec == "Balance" || gm.Spec == "Restoration")) && (gm.Class == "Monk" && gm.Role == "HEALING"))
+                                    {
+                                        charName = gm.Name;
+                                    }
+                                    else if (!item.HasIntellect() && (gm.Class == "Rogue" || (gm.Class == "Druid" && (gm.Spec == "Guardian" || gm.Spec == "Feral")) || (gm.Class == "Monk" && gm.Role != "HEALING")))
+                                    {
+                                        charName = gm.Name;
+                                    }
+                                }
+                                else if (Converter.ConvertItemSubClass(item.ItemClass, item.ItemSubClass) == "Cloth")
+                                {
+                                    // check to see if it's a back slot first... very different checks...
+                                    if (Converter.ConvertInventoryType(item.InventoryType) == "back")
+                                    {
+                                        if (item.HasIntellect())
+                                        {
+                                            if (item.HasSpirit())
+                                            {
+                                                // Healer Classes
+                                                if (gm.Role == "HEALING" ||
+                                                    (gm.Role == "DPS" && (gm.Spec == "Balance" || gm.Spec == "Shadow" || gm.Spec == "Elemental"))
+                                                    )
+                                                {
+                                                    charName = gm.Name;
+                                                }
+                                            }
+                                            else
+                                            {
+                                                if ((!item.HasHit() && gm.Role == "HEALING") ||
+                                                    (gm.Role == "DPS" && (gm.Spec == "Balance" || gm.Class == "Mage" || gm.Class == "Shadow" || gm.Spec == "Elemental" || gm.Class == "Warlock"))
+                                                    )
+                                                {
+                                                    charName = gm.Name;
+                                                }
+                                            }
+                                        }
+                                        else if (item.HasTankingStat())
+                                        {
+                                            if (gm.Role == "TANKING")
+                                            {
+                                                charName = gm.Name;
+                                            }
+                                        }
+                                        else if (item.HasStrength())
+                                        {
+                                            if ((gm.Class == "Paladin" && gm.Spec != "Holy") || gm.Class == "Warrior" || gm.Class == "Death Knight")
+                                            {
+                                                charName = gm.Name;
+                                            }
+                                        }
+                                        else if (item.HasAgility())
+                                        {
+                                            if ((gm.Class == "Monk" && gm.Role != "HEALING") || gm.Class == "Rogue" || gm.Class == "Hunter" || (gm.Class == "Druid" && (gm.Spec == "Feral" || gm.Spec == "Guardian")) || (gm.Class == "Shaman" && gm.Spec == "Enhancement"))
+                                            {
+                                                charName = gm.Name;
+                                            }
+                                        }
+                                    }
+                                    // else it's a regular non-back cloth piece
+                                    else if (item.HasSpirit() && (gm.Role == "HEALING" || gm.Class == "Priest"))
+                                    {
+                                        charName = gm.Name;
+                                    }
+                                    else if (!item.HasSpirit() && (gm.Class == "Mage" || gm.Class == "Warlock" || (gm.Class == "Priest" && gm.Spec == "Shadow")))
+                                    {
+                                        charName = gm.Name;
+                                    }
+                                }
+                            }
+                            else if (Converter.ConvertItemClass(item.ItemClass) == "Weapon")
+                            {
+                                // TODO: add Int and Spirit checks...
+
+
+                                // Weapon
+                                string weapon = Converter.ConvertItemSubClass(item.ItemClass, item.ItemSubClass);
+
+                                if (weapon == "1 Axe")
+                                {
+                                    // (gm.Class == "Death Knight" || gm.Class == "Monk" || gm.Class == "Paladin" || gm.Class == "Rogue" || gm.Class == "Shaman" || gm.Class == "Warrior")
+                                    if (item.HasStrength())
+                                    {
+                                        if (item.HasTankingStat() && gm.Role == "TANKING")
+                                        {
+                                            charName = gm.Name;
+                                        }
+                                        else if (gm.Class == "Death Knight" || (gm.Class == "Paladin" && gm.Role != "HEALING") || gm.Class == "Warrior")
+                                        {
+                                            charName = gm.Name;
+                                        }
+                                    }
+                                    else if (item.HasAgility())
+                                    {
+                                        if (gm.Class == "Monk" || gm.Class == "Rogue" || gm.Class == "Shaman")
+                                        {
+                                            charName = gm.Name;
+                                        }
+                                    }
+                                    else if (item.HasIntellect())
+                                    {
+                                        if (gm.Class == "Monk" || gm.Class == "Paladin" || gm.Class == "Shaman")
+                                        {
+                                            charName = gm.Name;
+                                        }
+                                    }
+                                }
+                                else if (weapon == "2 Axe")
+                                {
+                                    if (gm.Class == "Death Knight" || gm.Class == "Paladin" || gm.Class == "Shaman" || gm.Class == "Warrior")
+                                    {
+                                        charName = gm.Name;
+                                    }
+                                }
+                                else if (weapon == "1 Mace")
+                                {
+                                    if (gm.Class == "Death Knight" || gm.Class == "Druid" || gm.Class == "Monk" || gm.Class == "Paladin" || gm.Class == "Priest" || gm.Class == "Rogue" || gm.Class == "Shaman" || gm.Class == "Warrior")
+                                    {
+                                        charName = gm.Name;
+                                    }
+                                }
+                                else if (weapon == "2 Mace")
+                                {
+                                    if (gm.Class == "Death Knight" || gm.Class == "Druid" || gm.Class == "Paladin" || gm.Class == "Shaman" || gm.Class == "Warrior")
+                                    {
+                                        charName = gm.Name;
+                                    }
+                                }
+                                else if (weapon == "Polearm")
+                                {
+                                    if (gm.Class == "Death Knight" || gm.Class == "Druid" || gm.Class == "Monk" || gm.Class == "Paladin" || gm.Class == "Warrior")
+                                    {
+                                        charName = gm.Name;
+                                    }
+                                }
+                                else if (weapon == "1 Sword")
+                                {
+                                    if (gm.Class == "Death Knight" || gm.Class == "Mage" || gm.Class == "Monk" || gm.Class == "Paladin" || gm.Class == "Rogue" || gm.Class == "Warlock" || gm.Class == "Warrior")
+                                    {
+                                        charName = gm.Name;
+                                    }
+                                }
+                                else if (weapon == "2 Sword")
+                                {
+                                    if (gm.Class == "Death Knight" || gm.Class == "Paladin" || gm.Class == "Warrior")
+                                    {
+                                        charName = gm.Name;
+                                    }
+                                }
+                                else if (weapon == "Staff")
+                                {
+                                    if (gm.Class == "Druid" || gm.Class == "Mage" || gm.Class == "Monk" || gm.Class == "Priest" || gm.Class == "Shaman" || gm.Class == "Warlock")
+                                    {
+                                        charName = gm.Name;
+                                    }
+                                }
+                                else if (weapon == "Fist Weapon")
+                                {
+                                    if (gm.Class == "Druid" || gm.Class == "Monk" || gm.Class == "Rogue" || gm.Class == "Shaman" || gm.Class == "Warrior")
+                                    {
+                                        charName = gm.Name;
+                                    }
+                                }
+                                else if (weapon == "Dagger")
+                                {
+                                    if (item.HasIntellect() && ((gm.Class == "Druid" && (gm.Spec == "Balance" || gm.Spec == "Restoration")) || gm.Class == "Mage" || gm.Class == "Priest" || (gm.Class == "Shaman" && (gm.Spec == "Elemental" || gm.Spec == "Restoration")) || gm.Class == "Warlock"))
+                                    {
+                                        charName = gm.Name;
+                                    }
+                                    else if (!item.HasIntellect() && ((gm.Class == "Druid" && (gm.Spec == "Guardian" || gm.Spec == "Feral")) || gm.Class == "Rogue" || (gm.Class == "Shaman" && gm.Spec == "Enhancement") || gm.Class == "Warrior"))
+                                    {
+                                        charName = gm.Name;
+                                    }
+                                }
+                                else if (weapon == "Wand")
+                                {
+                                    if (gm.Class == "Mage" || gm.Class == "Warlock" || gm.Class == "Priest")
+                                    {
+                                        charName = gm.Name;
+                                    }
+                                }
+                                else if (weapon == "Bow" || weapon == "Rifle" || weapon == "Thrown" || weapon == "Crossbow")
+                                {
+                                    if (gm.Class == "Hunter")
+                                    {
+                                        charName = gm.Name;
+                                    }
+                                }                                
+                                else
+                                {
+                                    MessageBox.Show("Weapon [" + weapon + "] not found!");
+                                }
+                            }
+
+                            // Can the row be added to data table?
+                            if (charName.ToString() != string.Empty)
+                            {
+                                string slot = Converter.ConvertInventoryType(item.InventoryType);
+                                bool pass = false;
+                                int iLevelOld = 0;
+                                int iLevelNew = 0;
+
+                                if (slot == "finger")
+                                {
+                                    pass |= gm.ItemAudits.ContainsKey("finger1");
+                                    pass |= gm.ItemAudits.ContainsKey("finger2");
+                                }
+                                else if (slot == "trinket")
+                                {
+                                    pass |= gm.ItemAudits.ContainsKey("trinket1");
+                                    pass |= gm.ItemAudits.ContainsKey("trinket2");
+                                }
+                                else
+                                {
+                                    pass = gm.ItemAudits.ContainsKey(slot);                                    
+                                }
+
+                                if (pass)
+                                {                                    
+                                    iLevelNew = item.ItemLevel;
+
+                                    if (slot == "finger")
+                                    {
+                                        iLevelOld = gm.ItemAudits["finger1"].ItemLevel;
+                                        iLevelOld = gm.ItemAudits["finger2"].ItemLevel > iLevelOld ? gm.ItemAudits["finger2"].ItemLevel : iLevelOld;
+                                    }
+                                    else if (slot == "trinket")
+                                    {
+                                        iLevelOld = gm.ItemAudits["trinket1"].ItemLevel;
+                                        iLevelOld = gm.ItemAudits["trinket2"].ItemLevel > iLevelOld ? gm.ItemAudits["trinket2"].ItemLevel : iLevelOld;
+                                    }
+                                    else
+                                    {
+                                        iLevelOld = gm.ItemAudits[Converter.ConvertInventoryType(item.InventoryType)].ItemLevel;
+                                    }
+
+                                    if (iLevelNew >= iLevelOld)
+                                    {
+                                        DataRow dr = loot.NewRow();
+                                        dr["Upgrade"] = iLevelNew - iLevelOld;
+                                        dr["ItemId"] = item.Id;
+                                        dr["ItemName"] = item.Name;
+                                        dr["ItemSlot"] = slot;
+                                        dr["CharacterName"] = charName;
+                                        dr["ItemILevel"] = iLevelNew;
+                                        dr["OldItemILevel"] = iLevelOld;
+                                        loot.Rows.Add(dr);
+                                    }
+                                    else
+                                    {
+                                        DataRow dr = loot.NewRow();
+                                        dr["Upgrade"] = -1;
+                                        dr["ItemId"] = item.Id;
+                                        dr["ItemName"] = item.Name;
+                                        dr["ItemSlot"] = slot;
+                                        dr["CharacterName"] = "n/a";
+                                        dr["ItemILevel"] = iLevelNew;
+                                        dr["OldItemILevel"] = 0;
+                                        loot.Rows.Add(dr);
+                                    }
+                                }
+                                else
+                                {
+                                    MessageBox.Show("slot #" + item.InventoryType + "[" + slot + "] not found!");
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (loot.Rows.Count > 0)
+            {
+                dataGridViewRaidLootDrop.DataSource = loot.Select("upgrade > 0", "upgrade desc").CopyToDataTable();
+                dataGridViewRaidLootDrop.Columns["ItemId"].Visible = false;
+                dataGridViewRaidLootDrop.AutoResizeColumns();
+
+                foreach (DataGridViewRow row in dataGridViewRaidLootDrop.Rows)
+                {
+                    int id = Convert.ToInt32(row.Cells["ItemId"].Value);
+                    ItemInfo item = Items.GetItem(id);
+                    row.Cells["ItemName"].ToolTipText = item.CreateTooltip();
+                }
+            }
+
+            WaitCursor(false);
         }
 
         #endregion

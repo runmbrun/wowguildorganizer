@@ -81,34 +81,56 @@ namespace WoWGuildOrganizer
         /// </summary>
         /// <param name="Website"></param>
         /// <returns></returns>
-        public Boolean PassData(String Website)
+        public Boolean PassData(GuildMember Character)
         {
             Boolean Success = false;
 
-
             try
             {
-                GetCharacterItemInfo itemAudit = new GetCharacterItemInfo();
-                if (itemAudit.CollectData(Website))
+                // fill out the character information
+                this.CharacterName = Character.Name;
+                this.EquippediLevel = Character.EquipediLevel.ToString();
+                this.MaxiLevel = Character.MaxiLevel.ToString();
+                this.Profession1 = Character.Profession1;
+                this.Profession2 = Character.Profession2;
+                this.Spec = Character.Spec;
+                this.Role = Character.Role;
+
+                // Now fill out the item audit information
+                if (Character.ItemAudits.Count <= 0)
                 {
-                    foreach(ItemAudit a in itemAudit.ItemAudits.Values)
+                    MessageBox.Show("This character hasn't been updated in a while... please update soon.");
+
+                    GetCharacterItemInfo itemAudit = new GetCharacterItemInfo();
+                    string Website = WoWGuildOrganizer.Form1.URLWowAPI + "character/" + Character.Realm + "/" + Character.Name + "?fields=items";
+
+                    if (itemAudit.CollectData(Website))
                     {
-                        ItemAuditList.Add(a);
+                        foreach (ItemAudit a in itemAudit.ItemAudits.Values)
+                        {
+                            this.ItemAuditList.Add(a);
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (ItemAudit a in Character.ItemAudits.Values)
+                    {
+                        this.ItemAuditList.Add(a);
                     }
                 }
 
-
                 // Fill out the Max iLevel information                
-                textBoxMaxiLevel.Text = MaxiLevel;
+                textBoxMaxiLevel.Text = Character.MaxiLevel.ToString();
 
                 // Fill out the profession information
-                textBoxProfessions.Text = Profession1 + ", " + Profession2;
+                textBoxProfessions.Text = Character.Profession1 + ", " + Character.Profession2;
 
                 // Fill out the spec information
-                labelSpec.Text = "Spec: " + Spec;
+                labelSpec.Text = "Spec: " + Character.Spec;
 
                 // Fill out the role information
-                labelRole.Text = "Role: " + Role;
+                labelRole.Text = "Role: " + Character.Role;
 
                 
                 // Do AUDIT stuff here!                
@@ -131,8 +153,8 @@ namespace WoWGuildOrganizer
                     if (item.Slot == "mainHand")
                     {
                         // Check to see if weapon is two handed
-                        if (Form1.Items.GetItem(item.GetId()).InventoryType == 17 ||
-                            Form1.Items.GetItem(item.GetId()).InventoryType == 26)
+                        if (Form1.Items.GetItem(item.Id).InventoryType == 17 ||
+                            Form1.Items.GetItem(item.Id).InventoryType == 26)
                         {
                             TwoHanded = true;
                         }
@@ -358,7 +380,7 @@ namespace WoWGuildOrganizer
             for (Int32 i = 0; i < dataGridViewItemAudit.Rows.Count; i++)
             {
                 // Color Item Name text according to Item Qualtiy
-                switch (((ItemAudit)ItemAuditList[i]).GetQuality())
+                switch (((ItemAudit)ItemAuditList[i]).Quality)
                 {
                     // Heirloom = brown
                     case 7:
@@ -438,6 +460,11 @@ namespace WoWGuildOrganizer
                     dataGridViewItemAudit.Rows[i].Cells[6].Style.BackColor = Color.Red;
                 }
 
+                // Create tooltips
+                ItemAudit audit = (ItemAudit)ItemAuditList[i];
+                ItemInfo info = Form1.Items.GetItem(audit.Id);
+                dataGridViewItemAudit.Rows[i].Cells[1].ToolTipText = info.CreateTooltip();
+
                 // Passed or Failed!
                 //   - Red = Failed!
                 //   - ?   - Passed!
@@ -464,36 +491,6 @@ namespace WoWGuildOrganizer
         private void FormItemAudit_Load(object sender, EventArgs e)
         {
             UpdateGridData();
-        }
-
-        #endregion
-
-        #region " Tool Tips "
-
-        private void dataGridViewItemAudit_CellToolTipTextNeeded(object sender, DataGridViewCellToolTipTextNeededEventArgs e)
-        {
-            if (e.ColumnIndex == 1 && e.RowIndex > 0 && e.RowIndex < dataGridViewItemAudit.Rows.Count)
-            {
-                string tooltip = string.Empty;
-
-                if (dataGridViewItemAudit.Rows[e.RowIndex].Cells[e.ColumnIndex].Value != null)
-                {
-                    string name = dataGridViewItemAudit.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString();
-
-                    // Check each item that the character has equiped
-                    foreach (ItemAudit item in ItemAuditList)
-                    {
-                        // Figure out if the mainHand is a two handed weapon
-                        if (item.Name == name)
-                        {
-                            // put more stats on tool tip!
-                            tooltip = item.Name + "\n" + item.ItemLevel + "\n" + item.Slot;
-                        }
-                    }
-                }
-
-                e.ToolTipText = tooltip;
-            }
         }
 
         #endregion

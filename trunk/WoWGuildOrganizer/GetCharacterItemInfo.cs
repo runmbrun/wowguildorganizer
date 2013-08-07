@@ -160,7 +160,6 @@ namespace WoWGuildOrganizer
                         },    
                     */
 
-
                     String DataString = getSiteData.Data;
 
                     // clear out the first part...
@@ -221,8 +220,8 @@ namespace WoWGuildOrganizer
                                 // First get the item id
                                 if (result.Groups["Id"].Success)
                                 {
-                                    audit.SetId(Convert.ToInt32(result.Groups["Id"].Value));
-                                    Id = audit.GetId();
+                                    audit.Id = Convert.ToInt32(result.Groups["Id"].Value);
+                                    Id = audit.Id;
                                 }
 
                                 // Now check for the item in the item cache
@@ -255,7 +254,7 @@ namespace WoWGuildOrganizer
 
                                 if (result.Groups["Id"].Success)
                                 {
-                                    audit.SetId(Convert.ToInt32(result.Groups["Id"].Value));
+                                    audit.Id = Convert.ToInt32(result.Groups["Id"].Value);
                                 }
 
                                 if (result.Groups["Name"].Success)
@@ -265,12 +264,11 @@ namespace WoWGuildOrganizer
 
                                 if (result.Groups["Quality"].Success)
                                 {
-                                    audit.SetQuality(result.Groups["Quality"].Value.ToString());
+                                    audit.Quality = Convert.ToInt32(result.Groups["Quality"].Value);
                                 }
 
                                 if (result.Groups["ItemLevel"].Success)
-                                {
-                                    //audit.SetItemLevel(result.Groups["ItemLevel"].Value.ToString());
+                                {                                    
                                     audit.ItemLevel = Convert.ToInt32(result.Groups["ItemLevel"].Value);
                                 }
 

@@ -122,11 +122,8 @@ namespace WoWGuildOrganizer
 
                         if (result.Groups["AchPts"].Success)
                         {
-                            //TODO:  This is current broke on Blizzard's side... always returns 0.
                             member.AchievementPoints = Convert.ToInt32(result.Groups["AchPts"].Value);
                         }
-
-                        // todo - can also get guild rank and lifetime/weekly guild contribution points
 
                         member.EquipediLevel = 0;
                         member.MaxiLevel = 0;

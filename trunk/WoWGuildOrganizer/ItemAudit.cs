@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.ComponentModel;
 
 namespace WoWGuildOrganizer
 {
-    class ItemAudit
+    [Serializable]
+    public class ItemAudit
     {
         //  The Audit Table will show the following things:
         //  1. One line for each character slot
@@ -65,37 +67,37 @@ namespace WoWGuildOrganizer
             get { return _professions; }
             set { _professions = value; }
         }
+
         #endregion
 
         #region " Constructor "
+
         public ItemAudit()
         {
             MissingItem = "0";
             MissingEnchant = "0";
             MissingGem = "0";
-            _quality = "0";
+            _quality = 0;
         }
+
         #endregion
-
-
+        
         private Int32 _id;
-        public Int32 GetId()
+
+        [Browsable(false)]
+        public Int32 Id
         {
-            return _id; 
-        }
-        public void SetId(Int32 i)
-        { 
-            _id = i;
+            get { return _id; }
+            set { _id = value; }
         }
 
-        private String _quality;
-        public void SetQuality(String q)
-        {   
-            _quality = q;
-        }
-        public Int32 GetQuality()
+        private Int32 _quality;
+
+        [Browsable(false)]
+        public Int32 Quality
         {
-            return Convert.ToInt32(_quality);
+            get { return _quality; }
+            set { _quality = value; }
         }
 
         private Boolean _canenchant;
@@ -245,6 +247,7 @@ namespace WoWGuildOrganizer
             //   and then check for cog wheels...
             return true;
 
+            /*
             if (_toolTips.Contains("1"))
             {
                 return true;
@@ -252,7 +255,7 @@ namespace WoWGuildOrganizer
             else
             {
                 return false;
-            }
+            }*/
         }  
 
         private String _toolTips;

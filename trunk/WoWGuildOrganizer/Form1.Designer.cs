@@ -34,8 +34,17 @@
             this.label3 = new System.Windows.Forms.Label();
             this.dataGridViewGuildData = new System.Windows.Forms.DataGridView();
             this.tabPageRaidData = new System.Windows.Forms.TabPage();
+            this.labelRaidTab = new System.Windows.Forms.Label();
             this.buttonRaidGroupRefresh = new System.Windows.Forms.Button();
             this.dataGridViewRaidGroup = new System.Windows.Forms.DataGridView();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
+            this.toolStripComboBoxRaidLootDropRaid = new System.Windows.Forms.ToolStripComboBox();
+            this.toolStripLabel2 = new System.Windows.Forms.ToolStripLabel();
+            this.toolStripComboBoxRaidLootDropBoss = new System.Windows.Forms.ToolStripComboBox();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.dataGridViewRaidLootDrop = new System.Windows.Forms.DataGridView();
             this.tabPageSettings = new System.Windows.Forms.TabPage();
             this.button1 = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
@@ -57,12 +66,15 @@
             this.textBoxRealm = new System.Windows.Forms.TextBox();
             this.progressBarCollectData = new System.Windows.Forms.ProgressBar();
             this.buttonGetGuildInfo = new System.Windows.Forms.Button();
-            this.labelRaidTab = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabPageGuildData.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewGuildData)).BeginInit();
             this.tabPageRaidData.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewRaidGroup)).BeginInit();
+            this.tabPage1.SuspendLayout();
+            this.toolStrip1.SuspendLayout();
+            this.tableLayoutPanel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewRaidLootDrop)).BeginInit();
             this.tabPageSettings.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -77,6 +89,7 @@
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControl1.Controls.Add(this.tabPageGuildData);
             this.tabControl1.Controls.Add(this.tabPageRaidData);
+            this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPageSettings);
             this.tabControl1.Location = new System.Drawing.Point(0, 1);
             this.tabControl1.Name = "tabControl1";
@@ -143,6 +156,14 @@
             this.tabPageRaidData.Text = "Raid Data";
             this.tabPageRaidData.UseVisualStyleBackColor = true;
             // 
+            // labelRaidTab
+            // 
+            this.labelRaidTab.AutoSize = true;
+            this.labelRaidTab.Location = new System.Drawing.Point(8, 16);
+            this.labelRaidTab.Name = "labelRaidTab";
+            this.labelRaidTab.Size = new System.Drawing.Size(0, 13);
+            this.labelRaidTab.TabIndex = 2;
+            // 
             // buttonRaidGroupRefresh
             // 
             this.buttonRaidGroupRefresh.Location = new System.Drawing.Point(630, 6);
@@ -167,6 +188,89 @@
             this.dataGridViewRaidGroup.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridViewRaidGroup_ColumnHeaderMouseClick);
             this.dataGridViewRaidGroup.SortCompare += new System.Windows.Forms.DataGridViewSortCompareEventHandler(this.dataGridViewRaidGroup_SortCompare);
             this.dataGridViewRaidGroup.MouseClick += new System.Windows.Forms.MouseEventHandler(this.dataGridViewRaidGroup_MouseClick);
+            // 
+            // tabPage1
+            // 
+            this.tabPage1.Controls.Add(this.toolStrip1);
+            this.tabPage1.Controls.Add(this.tableLayoutPanel1);
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(714, 281);
+            this.tabPage1.TabIndex = 3;
+            this.tabPage1.Text = "Raid Loot Drop";
+            this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // toolStrip1
+            // 
+            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripLabel1,
+            this.toolStripComboBoxRaidLootDropRaid,
+            this.toolStripLabel2,
+            this.toolStripComboBoxRaidLootDropBoss});
+            this.toolStrip1.Location = new System.Drawing.Point(3, 3);
+            this.toolStrip1.Name = "toolStrip1";
+            this.toolStrip1.Size = new System.Drawing.Size(708, 25);
+            this.toolStrip1.TabIndex = 6;
+            this.toolStrip1.Text = "toolStrip1";
+            // 
+            // toolStripLabel1
+            // 
+            this.toolStripLabel1.Name = "toolStripLabel1";
+            this.toolStripLabel1.Size = new System.Drawing.Size(58, 22);
+            this.toolStripLabel1.Text = "Pick Raid:";
+            // 
+            // toolStripComboBoxRaidLootDropRaid
+            // 
+            this.toolStripComboBoxRaidLootDropRaid.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.toolStripComboBoxRaidLootDropRaid.Name = "toolStripComboBoxRaidLootDropRaid";
+            this.toolStripComboBoxRaidLootDropRaid.Size = new System.Drawing.Size(121, 25);
+            this.toolStripComboBoxRaidLootDropRaid.SelectedIndexChanged += new System.EventHandler(this.toolStripComboBoxRaidLootDropRaid_SelectedIndexChanged);
+            // 
+            // toolStripLabel2
+            // 
+            this.toolStripLabel2.Name = "toolStripLabel2";
+            this.toolStripLabel2.Size = new System.Drawing.Size(59, 22);
+            this.toolStripLabel2.Text = "Pick Boss:";
+            // 
+            // toolStripComboBoxRaidLootDropBoss
+            // 
+            this.toolStripComboBoxRaidLootDropBoss.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.toolStripComboBoxRaidLootDropBoss.Name = "toolStripComboBoxRaidLootDropBoss";
+            this.toolStripComboBoxRaidLootDropBoss.Size = new System.Drawing.Size(121, 25);
+            this.toolStripComboBoxRaidLootDropBoss.SelectedIndexChanged += new System.EventHandler(this.toolStripComboBoxRaidLootDropBoss_SelectedIndexChanged);
+            // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.ColumnCount = 2;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.Controls.Add(this.dataGridViewRaidLootDrop, 0, 0);
+            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 3);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.Padding = new System.Windows.Forms.Padding(0, 26, 0, 0);
+            this.tableLayoutPanel1.RowCount = 2;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(708, 275);
+            this.tableLayoutPanel1.TabIndex = 5;
+            // 
+            // dataGridViewRaidLootDrop
+            // 
+            this.dataGridViewRaidLootDrop.AllowUserToAddRows = false;
+            this.dataGridViewRaidLootDrop.AllowUserToDeleteRows = false;
+            this.dataGridViewRaidLootDrop.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.tableLayoutPanel1.SetColumnSpan(this.dataGridViewRaidLootDrop, 2);
+            this.dataGridViewRaidLootDrop.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataGridViewRaidLootDrop.Location = new System.Drawing.Point(3, 29);
+            this.dataGridViewRaidLootDrop.MultiSelect = false;
+            this.dataGridViewRaidLootDrop.Name = "dataGridViewRaidLootDrop";
+            this.dataGridViewRaidLootDrop.ReadOnly = true;
+            this.tableLayoutPanel1.SetRowSpan(this.dataGridViewRaidLootDrop, 2);
+            this.dataGridViewRaidLootDrop.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dataGridViewRaidLootDrop.Size = new System.Drawing.Size(702, 243);
+            this.dataGridViewRaidLootDrop.TabIndex = 4;
             // 
             // tabPageSettings
             // 
@@ -374,14 +478,6 @@
             this.buttonGetGuildInfo.UseVisualStyleBackColor = true;
             this.buttonGetGuildInfo.Click += new System.EventHandler(this.buttonGetGuildInfo_Click);
             // 
-            // labelRaidTab
-            // 
-            this.labelRaidTab.AutoSize = true;
-            this.labelRaidTab.Location = new System.Drawing.Point(8, 16);
-            this.labelRaidTab.Name = "labelRaidTab";
-            this.labelRaidTab.Size = new System.Drawing.Size(0, 13);
-            this.labelRaidTab.TabIndex = 2;
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -399,6 +495,12 @@
             this.tabPageRaidData.ResumeLayout(false);
             this.tabPageRaidData.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewRaidGroup)).EndInit();
+            this.tabPage1.ResumeLayout(false);
+            this.tabPage1.PerformLayout();
+            this.toolStrip1.ResumeLayout(false);
+            this.toolStrip1.PerformLayout();
+            this.tableLayoutPanel1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewRaidLootDrop)).EndInit();
             this.tabPageSettings.ResumeLayout(false);
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
@@ -442,6 +544,14 @@
         private System.Windows.Forms.DataGridView dataGridViewRaidGroup;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Label labelRaidTab;
+        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.ToolStrip toolStrip1;
+        private System.Windows.Forms.ToolStripLabel toolStripLabel1;
+        private System.Windows.Forms.ToolStripComboBox toolStripComboBoxRaidLootDropRaid;
+        private System.Windows.Forms.ToolStripLabel toolStripLabel2;
+        private System.Windows.Forms.ToolStripComboBox toolStripComboBoxRaidLootDropBoss;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.DataGridView dataGridViewRaidLootDrop;
     }
 }
 
