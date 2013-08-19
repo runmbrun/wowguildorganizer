@@ -99,18 +99,7 @@ namespace WoWGuildOrganizer
                 // Now fill out the item audit information
                 if (Character.ItemAudits.Count <= 0)
                 {
-                    MessageBox.Show("This character hasn't been updated in a while... please update soon.");
-
-                    GetCharacterItemInfo itemAudit = new GetCharacterItemInfo();
-                    string Website = WoWGuildOrganizer.Form1.URLWowAPI + "character/" + Character.Realm + "/" + Character.Name + "?fields=items";
-
-                    if (itemAudit.CollectData(Website))
-                    {
-                        foreach (ItemAudit a in itemAudit.ItemAudits.Values)
-                        {
-                            this.ItemAuditList.Add(a);
-                        }
-                    }
+                    MessageBox.Show("This character can't be updated... please redo entire guild or raid group.");
                 }
                 else
                 {

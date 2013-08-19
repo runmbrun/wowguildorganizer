@@ -175,7 +175,7 @@ namespace WoWGuildOrganizer
             }
         }
 
-        public bool HasTankingStat()
+        public bool HasTankStats()
         {
             // Does it contain dodge or parry?
             if (_stats.ContainsKey(13) || _stats.ContainsKey(14))

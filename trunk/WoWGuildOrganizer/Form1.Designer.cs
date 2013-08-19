@@ -264,7 +264,6 @@
             this.tableLayoutPanel1.SetColumnSpan(this.dataGridViewRaidLootDrop, 2);
             this.dataGridViewRaidLootDrop.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridViewRaidLootDrop.Location = new System.Drawing.Point(3, 29);
-            this.dataGridViewRaidLootDrop.MultiSelect = false;
             this.dataGridViewRaidLootDrop.Name = "dataGridViewRaidLootDrop";
             this.dataGridViewRaidLootDrop.ReadOnly = true;
             this.tableLayoutPanel1.SetRowSpan(this.dataGridViewRaidLootDrop, 2);

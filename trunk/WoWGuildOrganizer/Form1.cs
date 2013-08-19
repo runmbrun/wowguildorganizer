@@ -30,6 +30,7 @@ namespace WoWGuildOrganizer
         static public ItemCache Items;
         ArrayList ErrorLog = new ArrayList();
         ContextMenuStrip contextMenuCharacter;
+        Dictionary<string, Dictionary<string, int[]>> RaidLoot = new Dictionary<string, Dictionary<string, int[]>>();
 
         #endregion
 
@@ -134,8 +135,14 @@ namespace WoWGuildOrganizer
                 }
             }
 
+            // Create the Raid Loot Data
+            CreateRaidLootData();
+
             // Add Raid Loot Drop Items
-            toolStripComboBoxRaidLootDropRaid.Items.Add("Mogu'shan Vaults");
+            foreach (string key in RaidLoot.Keys)
+            {
+                toolStripComboBoxRaidLootDropRaid.Items.Add(key);
+            }
 
             // create context grid popup menu
             this.contextMenuCharacter = new ContextMenuStrip();
@@ -143,7 +150,6 @@ namespace WoWGuildOrganizer
             this.contextMenuCharacter.Items.Add("Move Character Up");
             this.contextMenuCharacter.Items.Add("Move Character Down");
             this.contextMenuCharacter.Items.Add("Delete Character from Grid");            
-            //this.contextMenuCharacter.Items.Add("");  // TODO: more?
             this.contextMenuCharacter.ItemClicked += this.contextMenuCharacter_ItemClicked;
 
             // Create a background worker thread that Searches and Reports Progress and Supports Cancellation            
@@ -614,45 +620,41 @@ namespace WoWGuildOrganizer
                             // Go through all the guild members
                             foreach (GuildMember gm in SavedCharacters.SavedCharacters)
                             {
-                               
-                                    // Only check for Item Level for characters over level 10
-                                    //  Otherwise these characters won't be in the Armory
-                                    if (Convert.ToInt32(gm.Level) >= 10)
+                                // Only check for Item Level for characters over level 10
+                                //  Otherwise these characters won't be in the Armory
+                                if (Convert.ToInt32(gm.Level) >= 10)
+                                {
+                                    // This is the Web Site to get the character info from...
+                                    // http://us.battle.net/api/wow/character/Thrall/Purdee?fields=items,professions,talents
+                                    
+                                    GuildMember charInfo = GetCharacterInformation(gm.Name, SavedCharacters.Realm);
+                                    if (charInfo != null)
                                     {
-                                        // This is the Web Site to get the character info from...
-                                        // http://us.battle.net/api/wow/character/Thrall/Purdee?fields=items,professions,talents
+                                        // success!
 
-                                        //GetCharacterInfo charInfo = new GetCharacterInfo();
-                                        //if (charInfo.CollectData(URLWowAPI + "character/" + textBoxRealm.Text + "/" + gm.Name + "?fields=items,professions,talents"))
-                                        GuildMember charInfo = GetCharacterInformation(gm.Name, SavedCharacters.Realm);
-                                        if (charInfo != null)
-                                        {
-                                            // success!
-
-                                            // Fill out the data grid with the data we collected
-                                            //*
-                                            gm.MaxiLevel = charInfo.MaxiLevel;
-                                            gm.EquipediLevel = charInfo.EquipediLevel;
-                                            gm.Profession1 = charInfo.Profession1;
-                                            gm.Profession2 = charInfo.Profession2;
-                                            gm.Spec = charInfo.Spec;
-                                            gm.Role = charInfo.Role;
-                                            gm.ItemAudits = charInfo.ItemAudits;
-                                            //*/
-
-                                            //gm = charInfo;
-                                        }
-                                        else
-                                        {
-                                            // Fail!  Save all errors until the end!
-                                            Errors.Add("      " + gm.Name + "\t\t" + gm.Level);
-                                        }
+                                        // Fill out the data grid with the data we collected
+                                        gm.MaxiLevel = charInfo.MaxiLevel;
+                                        gm.EquipediLevel = charInfo.EquipediLevel;
+                                        gm.Profession1 = charInfo.Profession1;
+                                        gm.Profession2 = charInfo.Profession2;
+                                        gm.Spec = charInfo.Spec;
+                                        gm.Role = charInfo.Role;
+                                        gm.ItemAudits = charInfo.ItemAudits;
                                     }
-
-                                    // Progress update
-                                    Double tempNum = (Double)Count++ / (Double)Total * 100;
-                                    bwAsync.ReportProgress((Int32)tempNum);
+                                    else
+                                    {
+                                        // Fail!  Save all errors until the end!
+                                        Errors.Add("      " + gm.Name + "\t\t" + gm.Level);
+                                    }
                                 }
+
+                                // Progress update
+                                UpdateLabelMT(SavedCharacters.SavedCharacters.Count.ToString() + " total characters - On Character #" + Count);
+
+                                // Progress update for Progress Bar
+                                Double tempNum = (Double)Count++ / (Double)Total * 100;
+                                bwAsync.ReportProgress((Int32)tempNum);
+                            }
                          }
                         catch (Exception ex)
                         {
@@ -817,10 +819,12 @@ namespace WoWGuildOrganizer
         {
             if (tabControl1.SelectedIndex == 0)
             {
+                // Guild Members Tab
                 UpdateGrid();
             }
             else if (tabControl1.SelectedIndex == 1)
             {
+                // Raid Group Tab
                 UpdateRaidGrid();
             }
         }
@@ -1217,12 +1221,7 @@ namespace WoWGuildOrganizer
                         // ItemAudit - always update, just in case
                         oldMember.ItemAudits = gm.ItemAudits;
 
-                        if (Updated)
-                        {
-                            // replace the old with the new...
-                            //RaidGroup.RaidGroup[CurrentRow] = gm;
-                        }
-
+                        // Fill out the last Update time with the current time and date
                         oldMember.LastUpdated = DateTime.Now;
                     }
                 }
@@ -1399,12 +1398,7 @@ namespace WoWGuildOrganizer
                             // ItemAudit - always update, just in case
                             oldMember.ItemAudits = gm.ItemAudits;
 
-                            if (Updated)
-                            {
-                                // replace the old with the new...
-                                //RaidGroup.RaidGroup[CurrentRow] = gm;                                
-                            }
-
+                            // Update the last updated time with the current date and time
                             oldMember.LastUpdated = DateTime.Now;
                         }
                     }
@@ -1608,13 +1602,17 @@ namespace WoWGuildOrganizer
             // Clear out the results first
             dataGridViewRaidLootDrop.DataSource = null;
 
-            if (toolStripComboBoxRaidLootDropRaid.SelectedItem.ToString() == "Mogu'shan Vaults")
+            if (RaidLoot.ContainsKey(toolStripComboBoxRaidLootDropRaid.SelectedItem.ToString()))
             {
                 // Fill out bosses now
-                toolStripComboBoxRaidLootDropBoss.Items.Add("The Stone Guard");
-                toolStripComboBoxRaidLootDropBoss.Items.Add("Feng the Accursed");
-                toolStripComboBoxRaidLootDropBoss.Items.Add("Gara'jal the Spiritbinder");
-                //toolStripComboBoxRaidLootDropBoss.Items.Add("Next Boss");
+                foreach (string value in RaidLoot[toolStripComboBoxRaidLootDropRaid.SelectedItem.ToString()].Keys)
+                {
+                    toolStripComboBoxRaidLootDropBoss.Items.Add(value);
+                }
+            }
+            else
+            {
+                MessageBox.Show("No data found for this raid.");
             }
         }
 
@@ -1646,24 +1644,13 @@ namespace WoWGuildOrganizer
             int[] itemIds = null;
 
             // Fill out the results
-            if (toolStripComboBoxRaidLootDropBoss.SelectedItem.ToString() == "The Stone Guard")
+            if (RaidLoot[toolStripComboBoxRaidLootDropRaid.SelectedItem.ToString()].ContainsKey(toolStripComboBoxRaidLootDropBoss.SelectedItem.ToString()))
             {
-                // Here is a list of items for this boss:
-                itemIds = new int[] { 85922, 85979, 89768, 85924, 85975, 85978, 85925, 89767, 85976, 86134, 85977, 89766, 85926, 85923 };
-            }
-            else if (toolStripComboBoxRaidLootDropBoss.SelectedItem.ToString() == "Feng the Accursed")
-            {
-                // Here is a list of items for this boss:
-                itemIds = new int[] { 85986, 86082, 85983, 85987, 85985, 89424, 89803, 89802, 85989, 85990, 85988, 85984, 85982, 85980 };
-            }
-            else if (toolStripComboBoxRaidLootDropBoss.SelectedItem.ToString() == "Gara'jal the Spiritbinder")
-            {
-                // Here is a list of items for this boss:
-                itemIds = new int[] { 86027, 89817, 86038, 85996, 85993, 85994, 86040, 85995, 85997, 86041, 85992, 85991, 86039 };
+                itemIds = RaidLoot[toolStripComboBoxRaidLootDropRaid.SelectedItem.ToString()][toolStripComboBoxRaidLootDropBoss.SelectedItem.ToString()];
             }
             else
             {
-                MessageBox.Show("No data for this raid boss.");
+                MessageBox.Show("No data found for this raid boss.");
             }
 
             if (itemIds != null && itemIds.Length > 0)
@@ -1699,25 +1686,23 @@ namespace WoWGuildOrganizer
                         // Check against each member in the Raid Group
                         foreach (GuildMember gm in RaidGroup.RaidGroup)
                         {
+                            //   Here are the different Classes:
+                            // Death Knight
+                            // Druid
+                            // Hunter
+                            // Mage
+                            // Monk
+                            // Paladin
+                            // Priest                                
+                            // Rogue
+                            // Shaman
+                            // Warlock
+                            // Warrior
                             string charName = string.Empty;
 
                             // can this member use it?
                             if (Converter.ConvertItemClass(item.ItemClass) == "Armor")
                             {
-                                // TODO: this needs lots more to finish... TANKING Armor, Weapons
-
-                                // Death Knight - Blood, Frost, Unholy
-                                // Druid
-                                // Hunter
-                                // Mage
-                                // Monk
-                                // Paladin
-                                // Priest                                
-                                // Rogue
-                                // Shaman
-                                // Warlock
-                                // Warrior
-
                                 // Armor
                                 if (Converter.ConvertItemSubClass(item.ItemClass, item.ItemSubClass) == "Micellaneous")
                                 {
@@ -1743,9 +1728,9 @@ namespace WoWGuildOrganizer
                                             }
                                         }
                                     }
-                                    else if (item.HasTankingStat())
+                                    else if (item.HasTankStats())
                                     {
-                                        if (gm.Role == "TANKING")
+                                        if (gm.Role == "TANK")
                                         {
                                             charName = gm.Name;
                                         }
@@ -1771,9 +1756,9 @@ namespace WoWGuildOrganizer
                                     {
                                         charName = gm.Name;
                                     }
-                                    else if (item.HasTankingStat())
+                                    else if (item.HasTankStats())
                                     {
-                                        if (gm.Role == "TANKING")
+                                        if (gm.Role == "TANK" && (gm.Class == "Paladin" || gm.Class == "Warrior" || gm.Class == "Death Knight"))
                                         {
                                             charName = gm.Name;
                                         }
@@ -1832,9 +1817,9 @@ namespace WoWGuildOrganizer
                                                 }
                                             }
                                         }
-                                        else if (item.HasTankingStat())
+                                        else if (item.HasTankStats())
                                         {
-                                            if (gm.Role == "TANKING")
+                                            if (gm.Role == "TANK")
                                             {
                                                 charName = gm.Name;
                                             }
@@ -1864,12 +1849,31 @@ namespace WoWGuildOrganizer
                                         charName = gm.Name;
                                     }
                                 }
+                                else if (Converter.ConvertItemSubClass(item.ItemClass, item.ItemSubClass) == "Shield")
+                                {
+                                    if (item.HasIntellect())
+                                    {        
+                                        if ((gm.Class == "Paladin" && gm.Spec == "Holy") || (gm.Class == "Shaman" && gm.Spec == "Elemental"))
+                                        {
+                                            // Holy Paladin or Elemental Shaman
+                                            charName = gm.Name;
+                                        }                                        
+                                    }
+                                    else
+                                    {
+                                        if (gm.Role == "TANK" && (gm.Class == "Paladin" || gm.Class == "Warrior"))
+                                        {
+                                            charName = gm.Name;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    MessageBox.Show("Armor [" + item.ItemSubClass + "] not found!");
+                                }
                             }
                             else if (Converter.ConvertItemClass(item.ItemClass) == "Weapon")
                             {
-                                // TODO: add Int and Spirit checks...
-
-
                                 // Weapon
                                 string weapon = Converter.ConvertItemSubClass(item.ItemClass, item.ItemSubClass);
 
@@ -1878,7 +1882,7 @@ namespace WoWGuildOrganizer
                                     // (gm.Class == "Death Knight" || gm.Class == "Monk" || gm.Class == "Paladin" || gm.Class == "Rogue" || gm.Class == "Shaman" || gm.Class == "Warrior")
                                     if (item.HasStrength())
                                     {
-                                        if (item.HasTankingStat() && gm.Role == "TANKING")
+                                        if (item.HasTankStats() && gm.Role == "TANK")
                                         {
                                             charName = gm.Name;
                                         }
@@ -1904,13 +1908,18 @@ namespace WoWGuildOrganizer
                                 }
                                 else if (weapon == "2 Axe")
                                 {
-                                    if (gm.Class == "Death Knight" || gm.Class == "Paladin" || gm.Class == "Shaman" || gm.Class == "Warrior")
+                                    if (item.HasStrength() && (gm.Class == "Death Knight" || gm.Class == "Paladin" || gm.Class == "Warrior"))
+                                    {
+                                        charName = gm.Name;
+                                    }
+                                    else if (item.HasAgility() && gm.Class == "Shaman")
                                     {
                                         charName = gm.Name;
                                     }
                                 }
                                 else if (weapon == "1 Mace")
                                 {
+                                    // TODO: fix
                                     if (gm.Class == "Death Knight" || gm.Class == "Druid" || gm.Class == "Monk" || gm.Class == "Paladin" || gm.Class == "Priest" || gm.Class == "Rogue" || gm.Class == "Shaman" || gm.Class == "Warrior")
                                     {
                                         charName = gm.Name;
@@ -1918,20 +1927,29 @@ namespace WoWGuildOrganizer
                                 }
                                 else if (weapon == "2 Mace")
                                 {
-                                    if (gm.Class == "Death Knight" || gm.Class == "Druid" || gm.Class == "Paladin" || gm.Class == "Shaman" || gm.Class == "Warrior")
+                                    if (item.HasStrength() && (gm.Class == "Death Knight" || gm.Class == "Paladin" || gm.Class == "Warrior"))
+                                    {
+                                        charName = gm.Name;
+                                    }
+                                    else if (item.HasAgility() && (gm.Class == "Shaman" || gm.Class == "Druid"))
                                     {
                                         charName = gm.Name;
                                     }
                                 }
                                 else if (weapon == "Polearm")
                                 {
-                                    if (gm.Class == "Death Knight" || gm.Class == "Druid" || gm.Class == "Monk" || gm.Class == "Paladin" || gm.Class == "Warrior")
+                                    if (item.HasStrength() && (gm.Class == "Death Knight" || gm.Class == "Paladin" || gm.Class == "Warrior"))
+                                    {
+                                        charName = gm.Name;
+                                    }
+                                    else if (item.HasAgility() && (gm.Class == "Druid" || gm.Class == "Monk"))
                                     {
                                         charName = gm.Name;
                                     }
                                 }
                                 else if (weapon == "1 Sword")
                                 {
+                                    // TODO: fix
                                     if (gm.Class == "Death Knight" || gm.Class == "Mage" || gm.Class == "Monk" || gm.Class == "Paladin" || gm.Class == "Rogue" || gm.Class == "Warlock" || gm.Class == "Warrior")
                                     {
                                         charName = gm.Name;
@@ -1946,6 +1964,7 @@ namespace WoWGuildOrganizer
                                 }
                                 else if (weapon == "Staff")
                                 {
+                                    // TODO: fix
                                     if (gm.Class == "Druid" || gm.Class == "Mage" || gm.Class == "Monk" || gm.Class == "Priest" || gm.Class == "Shaman" || gm.Class == "Warlock")
                                     {
                                         charName = gm.Name;
@@ -1953,7 +1972,11 @@ namespace WoWGuildOrganizer
                                 }
                                 else if (weapon == "Fist Weapon")
                                 {
-                                    if (gm.Class == "Druid" || gm.Class == "Monk" || gm.Class == "Rogue" || gm.Class == "Shaman" || gm.Class == "Warrior")
+                                    if (item.HasAgility() && (gm.Class == "Druid" || gm.Class == "Monk" || gm.Class == "Rogue" || gm.Class == "Shaman"))
+                                    {
+                                        charName = gm.Name;
+                                    }
+                                    else if (item.HasStrength() && gm.Class == "Warrior")
                                     {
                                         charName = gm.Name;
                                     }
@@ -2080,7 +2103,47 @@ namespace WoWGuildOrganizer
                 }
             }
 
-            WaitCursor(false);
+            WaitCursor(false);            
+        }
+
+        /// <summary>
+        /// Fill out the raid boss loot data here
+        /// </summary>
+        private void CreateRaidLootData()
+        {            
+            Dictionary<string, int[]> tempLoot = new Dictionary<string, int[]>();
+            string RaidName = string.Empty;
+            string RaidBoss = string.Empty;
+            int[] BossLoot;
+            
+            // 1st Tier 14 Raid
+            RaidName = "Mogu'shan Vaults";
+
+            RaidBoss = "The Stone Guard";
+            BossLoot = new int[] { 85922, 85979, 89768, 85924, 85975, 85978, 85925, 89767, 85976, 86134, 85977, 89766, 85926, 85923 };
+            tempLoot.Add(RaidBoss, BossLoot);            
+
+            RaidBoss = "Feng the Accursed";
+            BossLoot = new int[] { 85986, 86082, 85983, 85987, 85985, 89424, 89803, 89802, 85989, 85990, 85988, 85984, 85982, 85980 };
+            tempLoot.Add(RaidBoss, BossLoot);
+            
+            RaidBoss = "Gara'jal the Spiritbinder";
+            BossLoot = new int[] { 86027, 89817, 86038, 85996, 85993, 85994, 86040, 85995, 85997, 86041, 85992, 85991, 86039 };
+            tempLoot.Add(RaidBoss, BossLoot);
+
+            RaidBoss = "The Spirit Kings";
+            BossLoot = new int[] { 86047, 86081, 86076, 86071, 86075, 89818, 86080, 86127, 86086, 86129, 86084, 89819, 86128, 86083 };
+            tempLoot.Add(RaidBoss, BossLoot);
+
+            RaidBoss = "Elegon";
+            BossLoot = new int[] { 86133, 86140, 86132, 89822, 86139, 86137, 86136, 86131, 86135, 86141, 86138, 89821, 86130, 89824 };
+            tempLoot.Add(RaidBoss, BossLoot);
+
+            RaidBoss = "Will of the Emperor";
+            BossLoot = new int[] { 86144, 86145, 86146, 87827, 89823, 86142, 89820, 89825, 86151, 86150, 86147, 86148, 86149, 86152 };
+            tempLoot.Add(RaidBoss, BossLoot);
+
+            RaidLoot.Add(RaidName, tempLoot);
         }
 
         #endregion

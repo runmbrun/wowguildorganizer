@@ -353,15 +353,18 @@ namespace WoWGuildOrganizer
                     break;
                 case 14:
                     Converted = "off hand";
+                    Converted = "offHand";
                     break;
                 case 15:
                     Converted = "bow";
+                    Converted = "mainHand";
                     break;
                 case 16:
                     Converted = "back";
                     break;
                 case 17:
                     Converted = "two hand";
+                    Converted = "mainHand";
                     break;
                 case 18:
                     Converted = "bag"; // incl. quivers
@@ -391,6 +394,7 @@ namespace WoWGuildOrganizer
                     break;
                 case 26:
                     Converted = "gun";
+                    Converted = "mainHand";
                     break;
             }
 
