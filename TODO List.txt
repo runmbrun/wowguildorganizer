@@ -6,16 +6,9 @@ In no particular order...
 + Updates and Fixes +
 =====================
 
-Character Audit:
-1.  Tooltip for Item.  Show All item stats!
-2.  Show current spec.
-
 Raid Data tab.
-1.  When moving chars up and down, make sure the highlighted row moves too
-2.  Add Average Equipped iLevel value
-3.  Color cells when updated.  Have color persist like in Guild Data 
-4.  Add in Role.  Can order by role... Tanks, then Healers, then DPS.
-
+1.  Add in Role.  Can order by role... Tanks, then Healers, then DPS.
+2.  
 
 
 ================
