@@ -1601,6 +1601,7 @@ namespace WoWGuildOrganizer
         {
             // Clear out the results first
             dataGridViewRaidLootDrop.DataSource = null;
+            toolStripComboBoxRaidLootDropBoss.Items.Clear();
 
             if (RaidLoot.ContainsKey(toolStripComboBoxRaidLootDropRaid.SelectedItem.ToString()))
             {
@@ -1617,7 +1618,7 @@ namespace WoWGuildOrganizer
         }
 
         /// <summary>
-        /// 
+        /// TODO: This has a lot of work left to do...
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -1879,6 +1880,7 @@ namespace WoWGuildOrganizer
 
                                 if (weapon == "1 Axe")
                                 {
+                                    // TODO: 
                                     // (gm.Class == "Death Knight" || gm.Class == "Monk" || gm.Class == "Paladin" || gm.Class == "Rogue" || gm.Class == "Shaman" || gm.Class == "Warrior")
                                     if (item.HasStrength())
                                     {
@@ -1964,8 +1966,11 @@ namespace WoWGuildOrganizer
                                 }
                                 else if (weapon == "Staff")
                                 {
-                                    // TODO: fix
-                                    if (gm.Class == "Druid" || gm.Class == "Mage" || gm.Class == "Monk" || gm.Class == "Priest" || gm.Class == "Shaman" || gm.Class == "Warlock")
+                                    if (item.HasIntellect() && ((gm.Class == "Druid" && (gm.Spec == "Balance" || gm.Spec == "Restoration")) || (gm.Class == "Monk" && gm.Spec == "Mistweaver") || gm.Class == "Mage" || gm.Class == "Priest" || (gm.Class == "Shaman" && (gm.Spec == "Elemental" || gm.Spec == "Restoration")) || gm.Class == "Warlock"))
+                                    {
+                                        charName = gm.Name;
+                                    }
+                                    else if (item.HasAgility() && ((gm.Class == "Druid" && (gm.Spec == "Guardian" || gm.Spec == "Feral")) || (gm.Class == "Monk" && (gm.Spec == "Brewmaster" || gm.Spec == "Windwalker")) || (gm.Class == "Shaman" && gm.Spec == "Enhancement")))
                                     {
                                         charName = gm.Name;
                                     }
@@ -1987,7 +1992,11 @@ namespace WoWGuildOrganizer
                                     {
                                         charName = gm.Name;
                                     }
-                                    else if (!item.HasIntellect() && ((gm.Class == "Druid" && (gm.Spec == "Guardian" || gm.Spec == "Feral")) || gm.Class == "Rogue" || (gm.Class == "Shaman" && gm.Spec == "Enhancement") || gm.Class == "Warrior"))
+                                    else if (item.HasAgility() && ((gm.Class == "Druid" && (gm.Spec == "Guardian" || gm.Spec == "Feral")) || gm.Class == "Rogue" || (gm.Class == "Shaman" && gm.Spec == "Enhancement")))
+                                    {
+                                        charName = gm.Name;
+                                    }
+                                    else if (item.HasStrength() && gm.Class == "Warrior")
                                     {
                                         charName = gm.Name;
                                     }
@@ -2117,7 +2126,7 @@ namespace WoWGuildOrganizer
             int[] BossLoot;
             
             // 1st Tier 14 Raid
-            RaidName = "Mogu'shan Vaults";
+            RaidName = "Mogu'shan Vaults - 10N";
 
             RaidBoss = "The Stone Guard";
             BossLoot = new int[] { 85922, 85979, 89768, 85924, 85975, 85978, 85925, 89767, 85976, 86134, 85977, 89766, 85926, 85923 };
@@ -2143,7 +2152,37 @@ namespace WoWGuildOrganizer
             BossLoot = new int[] { 86144, 86145, 86146, 87827, 89823, 86142, 89820, 89825, 86151, 86150, 86147, 86148, 86149, 86152 };
             tempLoot.Add(RaidBoss, BossLoot);
 
+            RaidLoot.Add(RaidName, tempLoot);            
+
+            // 2nd Tier 14 Raid - Hearts of Fire            
+            RaidName = "Heart of Fear - 10N";
+            tempLoot = new Dictionary<string, int[]>();
+
+            RaidBoss = "Imperial Vizier Zor'lok";
+            BossLoot = new int[] { 86156, 89827, 86157, 89829, 86154, 86153, 89826, 87824, 86158, 86159, 86161, 86160, 86203, 86155 };
+            tempLoot.Add(RaidBoss, BossLoot);
+
             RaidLoot.Add(RaidName, tempLoot);
+
+            // 1st Tier 15 Raid
+            RaidName = "Throne of Thunder - 10N";
+            tempLoot = new Dictionary<string, int[]>();
+
+            RaidBoss = "Jin'rokh the Breaker";
+            BossLoot = new int[] { 94738, 95510, 94512, 94739, 94726, 94723, 94735, 94733, 94724, 94737, 94730, 94725, 94728, 94722, 94736, 94732, 94734, 94729, 94731, 94727, 95064, 97126, 95066, 95503, 95063, 95069, 95065, 95500, 95504, 95498 };
+            tempLoot.Add(RaidBoss, BossLoot);
+
+            RaidLoot.Add(RaidName, tempLoot);            
+
+            // 1st Tier 16 Raid
+            RaidName = "Siege of Orgrimmar - Flex";
+            tempLoot = new Dictionary<string, int[]>();
+
+            RaidBoss = "Immerseus";
+            BossLoot = new int[] { 104671, 104678, 104688, 104664, 104665, 104674, 104666, 104670, 104680, 104662, 104673, 104672, 104660, 104669, 104663, 104675, 104677, 104676, 104679, 104667, 104661, 104681 };
+            tempLoot.Add(RaidBoss, BossLoot);
+
+            RaidLoot.Add(RaidName, tempLoot);            
         }
 
         #endregion

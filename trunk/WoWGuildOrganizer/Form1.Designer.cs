@@ -222,9 +222,11 @@
             // 
             // toolStripComboBoxRaidLootDropRaid
             // 
+            this.toolStripComboBoxRaidLootDropRaid.AutoToolTip = true;
             this.toolStripComboBoxRaidLootDropRaid.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.toolStripComboBoxRaidLootDropRaid.DropDownWidth = 175;
             this.toolStripComboBoxRaidLootDropRaid.Name = "toolStripComboBoxRaidLootDropRaid";
-            this.toolStripComboBoxRaidLootDropRaid.Size = new System.Drawing.Size(121, 25);
+            this.toolStripComboBoxRaidLootDropRaid.Size = new System.Drawing.Size(175, 25);
             this.toolStripComboBoxRaidLootDropRaid.SelectedIndexChanged += new System.EventHandler(this.toolStripComboBoxRaidLootDropRaid_SelectedIndexChanged);
             // 
             // toolStripLabel2
@@ -236,8 +238,9 @@
             // toolStripComboBoxRaidLootDropBoss
             // 
             this.toolStripComboBoxRaidLootDropBoss.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.toolStripComboBoxRaidLootDropBoss.DropDownWidth = 150;
             this.toolStripComboBoxRaidLootDropBoss.Name = "toolStripComboBoxRaidLootDropBoss";
-            this.toolStripComboBoxRaidLootDropBoss.Size = new System.Drawing.Size(121, 25);
+            this.toolStripComboBoxRaidLootDropBoss.Size = new System.Drawing.Size(150, 25);
             this.toolStripComboBoxRaidLootDropBoss.SelectedIndexChanged += new System.EventHandler(this.toolStripComboBoxRaidLootDropBoss_SelectedIndexChanged);
             // 
             // tableLayoutPanel1
