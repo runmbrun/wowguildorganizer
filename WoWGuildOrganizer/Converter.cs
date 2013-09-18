@@ -533,6 +533,9 @@ namespace WoWGuildOrganizer
                 case 37:
                     stat = "Expertise";
                     break;
+                case 45:
+                    stat = "Spell Power";
+                    break;
                 case 49:
                     stat = "Mastery";
                     break;

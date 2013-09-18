@@ -333,8 +333,6 @@ namespace WoWGuildOrganizer
             {
                 this.Cursor = Cursors.WaitCursor;
 
-                //TODO - Add the new functionality here...
-
                 // This will be a audit function.
                 //  So if a character is double clicked, an audit table will pop up.
                 //  The Audit Table will show the following things:
@@ -930,7 +928,6 @@ namespace WoWGuildOrganizer
         public void Log(String Message)
         {
             // Add to the Error Log
-            // mmb - todo
             ErrorLog.Add(Message);
         }
 
@@ -1581,10 +1578,6 @@ namespace WoWGuildOrganizer
 
         #endregion
 
-        /* TODO: 
-         * Evenually will need to be able to Add this all in programmatically.
-         * But for now, I will hard code in what we need, and get the ranking functionality in place to use.
-         * */
         #region " Raid Loot Drop "
 
         /// <summary>
@@ -1613,7 +1606,8 @@ namespace WoWGuildOrganizer
         }
 
         /// <summary>
-        /// TODO: This has a lot of work left to do...
+        /// When a boss is selected, go through his entire loot table and compare with everyone in the raid group 
+        ///   and figure out how needs which item
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -2055,10 +2049,30 @@ namespace WoWGuildOrganizer
                                 }
                                 else if (weapon == "Staff")
                                 {
-                                    // TODO: spirit vs hit
-                                    if (item.HasIntellect() && ((gm.Class == "Druid" && (gm.Spec == "Balance" || gm.Spec == "Restoration")) || (gm.Class == "Monk" && gm.Spec == "Mistweaver") || gm.Class == "Mage" || gm.Class == "Priest" || (gm.Class == "Shaman" && (gm.Spec == "Elemental" || gm.Spec == "Restoration")) || gm.Class == "Warlock"))
+                                    if (item.HasIntellect())
                                     {
-                                        charName = gm.Name;
+                                        if (item.HasSpirit())
+                                        {
+                                            if (gm.Role == "HEALING" && ((gm.Class == "Druid" && gm.Spec == "Restoration") || (gm.Class == "Monk" && gm.Spec == "Mistweaver") || (gm.Class == "Priest" && gm.Spec != "Shadow") || (gm.Class == "Shaman" && gm.Spec == "Restoration")))
+                                            {
+                                                charName = gm.Name;
+                                            }
+                                            else if (gm.Role == "DPS" && ((gm.Class == "Druid" && gm.Spec == "Balance") || (gm.Class == "Priest" && gm.Spec == "Shadow") || (gm.Class == "Shaman" && gm.Spec == "Elemental")))
+                                            {
+                                                charName = gm.Name;
+                                            }
+                                        }
+                                        else if (item.HasHit())
+                                        {
+                                            if (gm.Role == "DPS" && ((gm.Class == "Druid" && gm.Spec == "Balance") || gm.Class == "Mage" || (gm.Class == "Priest" && gm.Spec == "Shadow") || (gm.Class == "Shaman" && gm.Spec == "Elemental") || gm.Class == "Warlock"))
+                                            {
+                                                charName = gm.Name;
+                                            }
+                                        }
+                                        else if ((gm.Class == "Druid" && (gm.Spec == "Balance" || gm.Spec == "Restoration")) || (gm.Class == "Monk" && gm.Spec == "Mistweaver") || gm.Class == "Mage" || gm.Class == "Priest" || (gm.Class == "Shaman" && (gm.Spec == "Elemental" || gm.Spec == "Restoration")) || gm.Class == "Warlock")
+                                        {
+                                            charName = gm.Name;
+                                        }
                                     }
                                     else if (item.HasAgility() && ((gm.Class == "Druid" && (gm.Spec == "Guardian" || gm.Spec == "Feral")) || (gm.Class == "Monk" && (gm.Spec == "Brewmaster" || gm.Spec == "Windwalker"))))
                                     {
@@ -2078,10 +2092,30 @@ namespace WoWGuildOrganizer
                                 }
                                 else if (weapon == "Dagger")
                                 {
-                                    // TODO: spirit vs hit
-                                    if (item.HasIntellect() && ((gm.Class == "Druid" && (gm.Spec == "Balance" || gm.Spec == "Restoration")) || gm.Class == "Mage" || gm.Class == "Priest" || (gm.Class == "Shaman" && (gm.Spec == "Elemental" || gm.Spec == "Restoration")) || gm.Class == "Warlock"))
+                                    if (item.HasIntellect())
                                     {
-                                        charName = gm.Name;
+                                        if (item.HasSpirit())
+                                        {
+                                            if (gm.Role == "HEALING" && ((gm.Class == "Druid" && gm.Spec == "Restoration") || gm.Class == "Priest" || (gm.Class == "Shaman" && gm.Spec == "Restoration")))
+                                            {
+                                                charName = gm.Name;
+                                            }
+                                            else if (gm.Role == "DPS" && ((gm.Class == "Druid" && gm.Spec == "Balance") || gm.Class == "Priest" || (gm.Class == "Shaman" && gm.Spec == "Elemental")))
+                                            {
+                                                charName = gm.Name;
+                                            }
+                                        }
+                                        else if (item.HasHit())
+                                        {
+                                            if (gm.Role == "DPS" && ((gm.Class == "Druid" && gm.Spec == "Balance") || gm.Class == "Mage" || (gm.Class == "Priest" && gm.Spec == "Shadow") || (gm.Class == "Shaman" && gm.Spec == "Elemental") || gm.Class == "Warlock"))
+                                            {
+                                                charName = gm.Name;
+                                            }
+                                        }
+                                        else if (((gm.Class == "Druid" && (gm.Spec == "Balance" || gm.Spec == "Restoration")) || gm.Class == "Mage" || gm.Class == "Priest" || (gm.Class == "Shaman" && (gm.Spec == "Elemental" || gm.Spec == "Restoration")) || gm.Class == "Warlock"))
+                                        {
+                                            charName = gm.Name;
+                                        }
                                     }
                                     else if (item.HasAgility() && ((gm.Class == "Druid" && (gm.Spec == "Guardian" || gm.Spec == "Feral")) || gm.Class == "Rogue" || (gm.Class == "Shaman" && gm.Spec == "Enhancement")))
                                     {
@@ -2094,10 +2128,26 @@ namespace WoWGuildOrganizer
                                 }
                                 else if (weapon == "Wand")
                                 {
-                                    // TODO: spirit vs hit
-                                    if (gm.Class == "Mage" || gm.Class == "Warlock" || gm.Class == "Priest")
+                                    if (item.HasIntellect())
                                     {
-                                        charName = gm.Name;
+                                        if (item.HasSpirit())
+                                        {
+                                            if (gm.Class == "Priest")
+                                            {
+                                                charName = gm.Name;
+                                            }
+                                        }
+                                        else if (item.HasHit())
+                                        {
+                                            if (gm.Class == "Mage" || gm.Class == "Warlock" || (gm.Class == "Priest" && gm.Spec == "Shadow"))
+                                            {
+                                                charName = gm.Name;
+                                            }
+                                        }
+                                        else if (gm.Class == "Mage" || gm.Class == "Warlock" || gm.Class == "Priest")
+                                        {
+                                            charName = gm.Name;
+                                        }
                                     }
                                 }
                                 else if (weapon == "Bow" || weapon == "Rifle" || weapon == "Thrown" || weapon == "Crossbow")
@@ -2212,6 +2262,9 @@ namespace WoWGuildOrganizer
 
         /// <summary>
         /// Fill out the raid boss loot data here
+        /// TODO: 
+        ///   Evenually will need to be able to Add this all in programmatically.
+        ///   But for now, I will hard code in what we need, and get the ranking functionality in place to use.
         /// </summary>
         private void CreateRaidLootData()
         {            
@@ -2310,16 +2363,17 @@ namespace WoWGuildOrganizer
             {
                 // select the current row                
                 int currentMouseOverRow = this.dataGridViewRaidLootDrop.HitTest(e.X, e.Y).RowIndex;
+                int currentMouseOverColumn = this.dataGridViewRaidLootDrop.HitTest(e.X, e.Y).ColumnIndex;
 
                 if (currentMouseOverRow > -1)
                 {
-                    string name = this.dataGridViewRaidLootDrop.Rows[currentMouseOverRow].Cells["CharacterName"].Value.ToString();
+                    string value = this.dataGridViewRaidLootDrop.Rows[currentMouseOverRow].Cells[currentMouseOverColumn].Value.ToString();
                     
                     this.dataGridViewRaidLootDrop.ClearSelection();
 
                     foreach (DataGridViewRow row in dataGridViewRaidLootDrop.Rows)
                     {
-                        if (row.Cells["CharacterName"].Value.ToString() == name)
+                        if (row.Cells[currentMouseOverColumn].Value.ToString() == value)
                         {
                             row.Selected = true;
                         }
