@@ -115,6 +115,13 @@ namespace WoWGuildOrganizer
             set { _itemsubclass = value; }
         }
 
+        private Int32 _armor;
+        public Int32 Armor
+        {
+            get { return _armor; }
+            set { _armor = value; }
+        }
+
         public bool HasIntellect()
         {
             if (_stats.ContainsKey(5))
@@ -274,14 +281,28 @@ namespace WoWGuildOrganizer
                 // ...
 
 
+                // Name and iLevel of item
                 tooltip +=
                     this.Name + "\n" +
-                    this.ItemLevel + "\n" +
-                    Converter.ConvertInventoryType(this.InventoryType) + "\t\t" + Converter.ConvertItemSubClass(this.ItemClass, this.ItemSubClass) + "\n" +
-                    "0 Armor \n";
+                    this.ItemLevel + "\n";
 
+                // Slot and Type
+                //   TODO: Need to convert Inventory Type to a nicer looking format
+                tooltip +=
+                    Converter.ConvertInventoryType(this.InventoryType) + "\t\t" + Converter.ConvertItemSubClass(this.ItemClass, this.ItemSubClass) + "\n";
+
+                // Armor if applicatable
+                if (Armor > 0)
+                {
+                    tooltip += Armor.ToString() + " Armor \n";
+                }
+
+                // Blank Line
                 string line = "";
 
+                // Add Stats here...
+
+                // Primary Stat
                 if (GetStrength() != "")
                 {
                     line = "+" + GetStrength() + " Strength \n";
@@ -295,12 +316,15 @@ namespace WoWGuildOrganizer
                     line = "+" + GetIntellect() + " Intellect \n";
                 }
 
+                // Stamina Stat
                 tooltip +=
                     line + 
                     "+" + GetStamina() + " Stamina \n";
 
+                // Blank Line
                 line = "";
 
+                // All Secondary stats
                 foreach (int stat in _stats.Keys)
                 {
                     if (stat != 3 && stat != 4 && stat != 5 && stat != 7)
@@ -367,7 +391,8 @@ namespace WoWGuildOrganizer
         // Hit = 31
         // Haste = 36
         // Mastery = 49
+        // Dodge = 13
 
-        // Dodge = ?
+        // PVP Power = ?
     }
 }

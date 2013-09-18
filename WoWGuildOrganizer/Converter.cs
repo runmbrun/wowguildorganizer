@@ -30,6 +30,11 @@ namespace WoWGuildOrganizer
             offhand = 17
         }
 
+        enum WoWClass
+        {
+
+        }
+
         /// <summary>
         /// Converts a number from Blizzard's web site into a class type
         /// </summary>
