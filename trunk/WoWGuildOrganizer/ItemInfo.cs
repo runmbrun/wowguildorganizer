@@ -392,6 +392,7 @@ namespace WoWGuildOrganizer
         // Haste = 36
         // Mastery = 49
         // Dodge = 13
+        // Spell Power = 45
 
         // PVP Power = ?
     }
