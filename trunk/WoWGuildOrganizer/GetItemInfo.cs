@@ -278,18 +278,37 @@ namespace WoWGuildOrganizer
                         item.CanSocket = true;
 
                         // TODO: is this the best way to do this?
+                        //   capture the number of sockets
+                        int i = 0;
 
-                        //if (result.Groups["socketInfo"].Success)
+                        while ((i = data.IndexOf(@"""type"":""", i + 1)) != -1)
                         {
-                            //   capture the number of sockets
-                            int i = 0;
-                            //string SearchSocket = result.Groups["socketInfo"].Value;
-                            //while ((i = SearchSocket.IndexOf("type", i + 1)) != -1)
-                            while ((i = data.IndexOf(@"""type"":""", i + 1)) != -1)
-                            {
-                                item.SocketCount += 1;
-                            }
+                            item.SocketCount += 1;
                         }
+                    }
+                }
+
+                // Get the armor if it exists:
+                item.Armor = 0;
+                string searchArmorString = "\"armor\":";
+                int locBegin = data.IndexOf(searchArmorString);
+
+                if (locBegin > -1)
+                {
+                    try
+                    {
+                        int locEnd = data.IndexOf(",", locBegin + searchArmorString.Length);
+
+                        // armor has been found, grab it
+                        string testArmor = data.Substring(locBegin + searchArmorString.Length, locEnd - (locBegin + searchArmorString.Length));
+
+                        // Convert armor to a int
+                        item.Armor = Convert.ToInt32(testArmor);
+                    }
+                    catch (Exception ex)
+                    {
+                        // TODO: how to handle this error?
+                        string message = ex.Message;
                     }
                 }
 

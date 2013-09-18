@@ -1161,13 +1161,11 @@ namespace WoWGuildOrganizer
                         // Success! Now we have the new info
                         // Compare the new info with the old info
                         //  And make updates as needed...
-                        Boolean Updated = false;
 
                         // Level
                         if (oldMember.Level != gm.Level)
                         {
                             oldMember.Level = gm.Level;
-                            Updated = true;
                         }
                         else
                         {
@@ -1179,14 +1177,12 @@ namespace WoWGuildOrganizer
                         if (oldMember.AchievementPoints != gm.AchievementPoints)
                         {
                             oldMember.AchievementPoints = gm.AchievementPoints;
-                            Updated = true;
                         }
 
                         // Equiped iLevel
                         if (oldMember.EquipediLevel != gm.EquipediLevel)
                         {
                             oldMember.EquipediLevel = gm.EquipediLevel;
-                            Updated = true;
                         }
                         else
                         {
@@ -1198,7 +1194,6 @@ namespace WoWGuildOrganizer
                         if (oldMember.MaxiLevel != gm.MaxiLevel)
                         {
                             oldMember.MaxiLevel = gm.MaxiLevel;
-                            Updated = true;
                         }
                         else
                         {
@@ -1841,7 +1836,7 @@ namespace WoWGuildOrganizer
                                         }
                                     }
                                     // else it's a regular non-back cloth piece
-                                    else if (item.HasSpirit() && (gm.Role == "HEALING" || gm.Class == "Priest"))
+                                    else if (item.HasSpirit() && (gm.Role == "HEALING" && gm.Class == "Priest"))
                                     {
                                         charName = gm.Name;
                                     }
@@ -1854,9 +1849,9 @@ namespace WoWGuildOrganizer
                                 {
                                     if (item.HasIntellect())
                                     {        
-                                        if ((gm.Class == "Paladin" && gm.Spec == "Holy") || (gm.Class == "Shaman" && gm.Spec == "Elemental"))
+                                        if ((gm.Class == "Paladin" && gm.Spec == "Holy") || (gm.Class == "Shaman" && (gm.Spec == "Elemental" || gm.Spec == "Restoration")))
                                         {
-                                            // Holy Paladin or Elemental Shaman
+                                            // Holy Paladin or Elemental Shaman or Restoration Shaman
                                             charName = gm.Name;
                                         }                                        
                                     }
@@ -1880,29 +1875,47 @@ namespace WoWGuildOrganizer
 
                                 if (weapon == "1 Axe")
                                 {
-                                    // TODO: 
                                     // (gm.Class == "Death Knight" || gm.Class == "Monk" || gm.Class == "Paladin" || gm.Class == "Rogue" || gm.Class == "Shaman" || gm.Class == "Warrior")
-                                    if (item.HasStrength())
+                                    if (item.HasTankStats())
                                     {
-                                        if (item.HasTankStats() && gm.Role == "TANK")
+                                        // STR vs AGI
+                                        if (gm.Role == "TANK")
                                         {
-                                            charName = gm.Name;
+                                            if (item.HasStrength() && (gm.Class == "Paladin" || gm.Class == "Death Knight" || gm.Class == "Warrior"))
+                                            {
+                                                charName = gm.Name;
+                                            }
+                                            else if (item.HasAgility() && gm.Class == "Monk")
+                                            {
+                                                charName = gm.Name;
+                                            }
                                         }
-                                        else if (gm.Class == "Death Knight" || (gm.Class == "Paladin" && gm.Role != "HEALING") || gm.Class == "Warrior")
+                                    }
+                                    else if (item.HasStrength())
+                                    {
+                                        if (gm.Class == "Death Knight" || (gm.Class == "Paladin" && gm.Role != "HEALING") || gm.Class == "Warrior")
                                         {
                                             charName = gm.Name;
                                         }
                                     }
                                     else if (item.HasAgility())
                                     {
-                                        if (gm.Class == "Monk" || gm.Class == "Rogue" || gm.Class == "Shaman")
+                                        if ((gm.Class == "Monk" && gm.Role != "HEALING") || gm.Class == "Rogue" || (gm.Class == "Shaman" && gm.Spec == "Enhancement"))
                                         {
                                             charName = gm.Name;
                                         }
                                     }
                                     else if (item.HasIntellect())
                                     {
-                                        if (gm.Class == "Monk" || gm.Class == "Paladin" || gm.Class == "Shaman")
+                                        if (item.HasSpirit() && gm.Role == "HEALING" && (gm.Class == "Paladin" || gm.Class == "Shaman" || gm.Class == "Monk"))
+                                        {
+                                            charName = gm.Name;
+                                        }
+                                        else if (item.HasHit() && gm.Role == "DPS" && gm.Class == "Shaman")
+                                        {
+                                            charName = gm.Name;
+                                        }
+                                        else if ((gm.Class == "Monk" && gm.Role == "HEALING") || (gm.Class == "Paladin" && gm.Role == "HEALING") || (gm.Class == "Shaman" && (gm.Spec == "Elemental" || gm.Spec == "Restoration")))
                                         {
                                             charName = gm.Name;
                                         }
@@ -1914,17 +1927,53 @@ namespace WoWGuildOrganizer
                                     {
                                         charName = gm.Name;
                                     }
-                                    else if (item.HasAgility() && gm.Class == "Shaman")
-                                    {
-                                        charName = gm.Name;
-                                    }
                                 }
                                 else if (weapon == "1 Mace")
                                 {
-                                    // TODO: fix
-                                    if (gm.Class == "Death Knight" || gm.Class == "Druid" || gm.Class == "Monk" || gm.Class == "Paladin" || gm.Class == "Priest" || gm.Class == "Rogue" || gm.Class == "Shaman" || gm.Class == "Warrior")
+                                    //if (gm.Class == "Death Knight" || gm.Class == "Druid" || gm.Class == "Monk" || gm.Class == "Paladin" || gm.Class == "Priest" || gm.Class == "Rogue" || gm.Class == "Shaman" || gm.Class == "Warrior")
+                                    if (item.HasTankStats())
                                     {
-                                        charName = gm.Name;
+                                        // STR vs AGI
+                                        if (gm.Role == "TANK")
+                                        {
+                                            if (item.HasStrength() && (gm.Class == "Paladin" || gm.Class == "Death Knight" || gm.Class == "Warrior"))
+                                            {
+                                                charName = gm.Name;
+                                            }
+                                            else if (item.HasAgility() && (gm.Class == "Monk" || gm.Class == "Druid"))
+                                            {
+                                                charName = gm.Name;
+                                            }
+                                        }
+                                    }
+                                    else if (item.HasStrength())
+                                    {
+                                        if (gm.Class == "Death Knight" || (gm.Class == "Paladin" && gm.Role != "HEALING") || gm.Class == "Warrior")
+                                        {
+                                            charName = gm.Name;
+                                        }
+                                    }
+                                    else if (item.HasAgility())
+                                    {
+                                        if ((gm.Class == "Monk" && gm.Role != "HEALING") || gm.Class == "Rogue" || (gm.Class == "Shaman" && gm.Spec == "Enhancement") || (gm.Class == "Druid" && (gm.Spec == "Feral" || gm.Spec == "Guardian")))
+                                        {
+                                            charName = gm.Name;
+                                        }
+                                    }
+                                    else if (item.HasIntellect())
+                                    {
+                                        if (item.HasSpirit() && gm.Role == "HEALING" && (gm.Class == "Paladin" || gm.Class == "Shaman" || gm.Class == "Monk" || gm.Class == "Druid" || gm.Class == "Priest"))
+                                        {
+                                            charName = gm.Name;
+                                        }
+                                        else if (item.HasHit() && gm.Role == "DPS" && (gm.Class == "Druid" || gm.Class == "Priest" || gm.Class == "Shaman"))
+                                        {
+                                            charName = gm.Name;
+                                        }
+                                        else if ((gm.Class == "Monk" && gm.Role == "HEALING") || (gm.Class == "Paladin" && gm.Role == "HEALING") || (gm.Class == "Shaman" && (gm.Spec == "Elemental" || gm.Spec == "Restoration")) || gm.Class == "Priest")
+                                        {
+                                            charName = gm.Name;
+                                        }
                                     }
                                 }
                                 else if (weapon == "2 Mace")
@@ -1933,7 +1982,7 @@ namespace WoWGuildOrganizer
                                     {
                                         charName = gm.Name;
                                     }
-                                    else if (item.HasAgility() && (gm.Class == "Shaman" || gm.Class == "Druid"))
+                                    else if (item.HasAgility() && gm.Class == "Druid")
                                     {
                                         charName = gm.Name;
                                     }
@@ -1951,10 +2000,50 @@ namespace WoWGuildOrganizer
                                 }
                                 else if (weapon == "1 Sword")
                                 {
-                                    // TODO: fix
-                                    if (gm.Class == "Death Knight" || gm.Class == "Mage" || gm.Class == "Monk" || gm.Class == "Paladin" || gm.Class == "Rogue" || gm.Class == "Warlock" || gm.Class == "Warrior")
+                                    //if (gm.Class == "Death Knight" || gm.Class == "Mage" || gm.Class == "Monk" || gm.Class == "Paladin" || gm.Class == "Rogue" || gm.Class == "Warlock" || gm.Class == "Warrior")
+                                    if (item.HasTankStats())
                                     {
-                                        charName = gm.Name;
+                                        // STR vs AGI
+                                        if (gm.Role == "TANK")
+                                        {
+                                            if (item.HasStrength() && (gm.Class == "Paladin" || gm.Class == "Death Knight" || gm.Class == "Warrior"))
+                                            {
+                                                charName = gm.Name;
+                                            }
+                                            else if (item.HasAgility() && gm.Class == "Monk")
+                                            {
+                                                charName = gm.Name;
+                                            }
+                                        }
+                                    }
+                                    else if (item.HasStrength())
+                                    {
+                                        if (gm.Class == "Death Knight" || (gm.Class == "Paladin" && gm.Role != "HEALING") || gm.Class == "Warrior")
+                                        {
+                                            charName = gm.Name;
+                                        }
+                                    }
+                                    else if (item.HasAgility())
+                                    {
+                                        if ((gm.Class == "Monk" && gm.Role != "HEALING") || gm.Class == "Rogue")
+                                        {
+                                            charName = gm.Name;
+                                        }
+                                    }
+                                    else if (item.HasIntellect())
+                                    {
+                                        if (item.HasSpirit() && gm.Role == "HEALING" && (gm.Class == "Paladin" || gm.Class == "Shaman" || gm.Class == "Monk"))
+                                        {
+                                            charName = gm.Name;
+                                        }
+                                        else if (item.HasHit() && gm.Role == "DPS" && (gm.Class == "Mage" || gm.Class == "Warlock"))
+                                        {
+                                            charName = gm.Name;
+                                        }
+                                        else if ((gm.Class == "Monk" && gm.Role == "HEALING") || (gm.Class == "Paladin" && gm.Role == "HEALING") || gm.Class == "Mage" || gm.Class == "Warlock")
+                                        {
+                                            charName = gm.Name;
+                                        }
                                     }
                                 }
                                 else if (weapon == "2 Sword")
@@ -1966,11 +2055,12 @@ namespace WoWGuildOrganizer
                                 }
                                 else if (weapon == "Staff")
                                 {
+                                    // TODO: spirit vs hit
                                     if (item.HasIntellect() && ((gm.Class == "Druid" && (gm.Spec == "Balance" || gm.Spec == "Restoration")) || (gm.Class == "Monk" && gm.Spec == "Mistweaver") || gm.Class == "Mage" || gm.Class == "Priest" || (gm.Class == "Shaman" && (gm.Spec == "Elemental" || gm.Spec == "Restoration")) || gm.Class == "Warlock"))
                                     {
                                         charName = gm.Name;
                                     }
-                                    else if (item.HasAgility() && ((gm.Class == "Druid" && (gm.Spec == "Guardian" || gm.Spec == "Feral")) || (gm.Class == "Monk" && (gm.Spec == "Brewmaster" || gm.Spec == "Windwalker")) || (gm.Class == "Shaman" && gm.Spec == "Enhancement")))
+                                    else if (item.HasAgility() && ((gm.Class == "Druid" && (gm.Spec == "Guardian" || gm.Spec == "Feral")) || (gm.Class == "Monk" && (gm.Spec == "Brewmaster" || gm.Spec == "Windwalker"))))
                                     {
                                         charName = gm.Name;
                                     }
@@ -1988,6 +2078,7 @@ namespace WoWGuildOrganizer
                                 }
                                 else if (weapon == "Dagger")
                                 {
+                                    // TODO: spirit vs hit
                                     if (item.HasIntellect() && ((gm.Class == "Druid" && (gm.Spec == "Balance" || gm.Spec == "Restoration")) || gm.Class == "Mage" || gm.Class == "Priest" || (gm.Class == "Shaman" && (gm.Spec == "Elemental" || gm.Spec == "Restoration")) || gm.Class == "Warlock"))
                                     {
                                         charName = gm.Name;
@@ -2003,6 +2094,7 @@ namespace WoWGuildOrganizer
                                 }
                                 else if (weapon == "Wand")
                                 {
+                                    // TODO: spirit vs hit
                                     if (gm.Class == "Mage" || gm.Class == "Warlock" || gm.Class == "Priest")
                                     {
                                         charName = gm.Name;
@@ -2050,13 +2142,16 @@ namespace WoWGuildOrganizer
 
                                     if (slot == "finger")
                                     {
-                                        iLevelOld = gm.ItemAudits["finger1"].ItemLevel;
-                                        iLevelOld = gm.ItemAudits["finger2"].ItemLevel > iLevelOld ? gm.ItemAudits["finger2"].ItemLevel : iLevelOld;
+                                        iLevelOld = gm.ItemAudits["finger1"].ItemLevel > gm.ItemAudits["finger2"].ItemLevel ? gm.ItemAudits["finger2"].ItemLevel : gm.ItemAudits["finger1"].ItemLevel;
                                     }
                                     else if (slot == "trinket")
                                     {
-                                        iLevelOld = gm.ItemAudits["trinket1"].ItemLevel;
-                                        iLevelOld = gm.ItemAudits["trinket2"].ItemLevel > iLevelOld ? gm.ItemAudits["trinket2"].ItemLevel : iLevelOld;
+                                        iLevelOld = gm.ItemAudits["trinket2"].ItemLevel > gm.ItemAudits["trinket1"].ItemLevel ? gm.ItemAudits["trinket2"].ItemLevel : gm.ItemAudits["trinket1"].ItemLevel;
+                                    }
+                                    else if (slot == "mainHand")
+                                    {
+                                        // TODO: Need to check for dual hands vs 2 hands vs one hand + off hand...
+                                        iLevelOld = gm.ItemAudits[Converter.ConvertInventoryType(item.InventoryType)].ItemLevel;
                                     }
                                     else
                                     {
@@ -2164,7 +2259,7 @@ namespace WoWGuildOrganizer
 
             RaidLoot.Add(RaidName, tempLoot);
 
-            // 1st Tier 15 Raid
+            // Tier 15 Raid
             RaidName = "Throne of Thunder - 10N";
             tempLoot = new Dictionary<string, int[]>();
 
@@ -2172,9 +2267,23 @@ namespace WoWGuildOrganizer
             BossLoot = new int[] { 94738, 95510, 94512, 94739, 94726, 94723, 94735, 94733, 94724, 94737, 94730, 94725, 94728, 94722, 94736, 94732, 94734, 94729, 94731, 94727, 95064, 97126, 95066, 95503, 95063, 95069, 95065, 95500, 95504, 95498 };
             tempLoot.Add(RaidBoss, BossLoot);
 
+            RaidLoot.Add(RaidName, tempLoot);
+
+            // Tier 16 Raid - LFR
+            RaidName = "Siege of Orgrimmar - LFR";
+            tempLoot = new Dictionary<string, int[]>();
+
+            RaidBoss = "Immerseus";
+            BossLoot = new int[] { 104920, 104927, 104917, 104913, 104914, 104923, 104915, 104919, 104929, 104911, 104922, 104921, 104909, 104918, 104912, 104924, 104926, 104925, 104928, 104916, 104910, 104930 };
+            tempLoot.Add(RaidBoss, BossLoot);
+
+            RaidBoss = "The Fallen Protectors";
+            BossLoot = new int[] { 104936, 104931, 104951, 104939, 104950, 104934, 104944, 104945, 104935, 104946, 104942, 104940, 104948, 104941, 104937, 104949, 104943, 104947, 104932, 104938, 104933 };
+            tempLoot.Add(RaidBoss, BossLoot);
+
             RaidLoot.Add(RaidName, tempLoot);            
 
-            // 1st Tier 16 Raid
+            // Tier 16 Raid - Flex
             RaidName = "Siege of Orgrimmar - Flex";
             tempLoot = new Dictionary<string, int[]>();
 
@@ -2182,7 +2291,56 @@ namespace WoWGuildOrganizer
             BossLoot = new int[] { 104671, 104678, 104688, 104664, 104665, 104674, 104666, 104670, 104680, 104662, 104673, 104672, 104660, 104669, 104663, 104675, 104677, 104676, 104679, 104667, 104661, 104681 };
             tempLoot.Add(RaidBoss, BossLoot);
 
+            RaidBoss = "The Fallen Protectors";
+            BossLoot = new int[] { 104687, 104682, 104702, 104690, 104701, 104685, 104695, 104696, 104686, 104697, 104693, 104691, 104699, 104692, 104688, 104700, 104694, 104698, 104683, 104689, 104684 };
+            tempLoot.Add(RaidBoss, BossLoot);
+
             RaidLoot.Add(RaidName, tempLoot);            
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void dataGridViewRaidLootDrop_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            // Check for a right click
+            if (e.Button == MouseButtons.Left)
+            {
+                // select the current row                
+                int currentMouseOverRow = this.dataGridViewRaidLootDrop.HitTest(e.X, e.Y).RowIndex;
+
+                if (currentMouseOverRow > -1)
+                {
+                    string name = this.dataGridViewRaidLootDrop.Rows[currentMouseOverRow].Cells["CharacterName"].Value.ToString();
+                    
+                    this.dataGridViewRaidLootDrop.ClearSelection();
+
+                    foreach (DataGridViewRow row in dataGridViewRaidLootDrop.Rows)
+                    {
+                        if (row.Cells["CharacterName"].Value.ToString() == name)
+                        {
+                            row.Selected = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void dataGridViewRaidLootDrop_CellToolTipTextNeeded(object sender, DataGridViewCellToolTipTextNeededEventArgs e)
+        {
+            if (e.ColumnIndex == 3 && e.RowIndex >= 0 && dataGridViewRaidLootDrop.Rows.Count > 0)
+            {
+                int id = Convert.ToInt32(dataGridViewRaidLootDrop.Rows[e.RowIndex].Cells["ItemId"].Value);
+                ItemInfo item = Items.GetItem(id);
+                dataGridViewRaidLootDrop.Rows[e.RowIndex].Cells["ItemName"].ToolTipText = item.CreateTooltip();
+            }
         }
 
         #endregion
