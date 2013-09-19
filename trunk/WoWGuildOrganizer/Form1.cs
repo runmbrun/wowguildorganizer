@@ -1972,11 +1972,21 @@ namespace WoWGuildOrganizer
                                 }
                                 else if (weapon == "2 Mace")
                                 {
-                                    if (item.HasStrength() && (gm.Class == "Death Knight" || gm.Class == "Paladin" || gm.Class == "Warrior"))
+                                    if (item.HasStrength())
                                     {
-                                        charName = gm.Name;
+                                        if (item.HasTankStats())
+                                        {
+                                            if (gm.Role == "TANK" && gm.Class == "Death Knight")
+                                            {
+                                                charName = gm.Name;
+                                            }
+                                        }
+                                        else if (gm.Role == "DPS" && (gm.Class == "Death Knight" || gm.Class == "Paladin" || gm.Class == "Warrior"))
+                                        {
+                                            charName = gm.Name;
+                                        }
                                     }
-                                    else if (item.HasAgility() && gm.Class == "Druid")
+                                    else if (item.HasAgility() && gm.Class == "Druid" && gm.Role != "HEALING")
                                     {
                                         charName = gm.Name;
                                     }
@@ -2042,7 +2052,14 @@ namespace WoWGuildOrganizer
                                 }
                                 else if (weapon == "2 Sword")
                                 {
-                                    if (gm.Class == "Death Knight" || gm.Class == "Paladin" || gm.Class == "Warrior")
+                                    if (item.HasTankStats())
+                                    {
+                                        if (gm.Role == "TANK" && gm.Class == "Death Knight")
+                                        {
+                                            charName = gm.Name;
+                                        }
+                                    }
+                                    else if (gm.Role == "DPS" && (gm.Class == "Death Knight" || gm.Class == "Paladin" || gm.Class == "Warrior"))
                                     {
                                         charName = gm.Name;
                                     }
@@ -2253,11 +2270,11 @@ namespace WoWGuildOrganizer
                 {
                     int id = Convert.ToInt32(row.Cells["ItemId"].Value);
                     ItemInfo item = Items.GetItem(id);
-                    row.Cells["ItemName"].ToolTipText = item.CreateTooltip();
+                    row.Cells["ItemName"].ToolTipText = item.Tooltip;
                 }
             }
 
-            WaitCursor(false);            
+            WaitCursor(false);
         }
 
         /// <summary>
@@ -2334,6 +2351,14 @@ namespace WoWGuildOrganizer
             BossLoot = new int[] { 104936, 104931, 104951, 104939, 104950, 104934, 104944, 104945, 104935, 104946, 104942, 104940, 104948, 104941, 104937, 104949, 104943, 104947, 104932, 104938, 104933 };
             tempLoot.Add(RaidBoss, BossLoot);
 
+            RaidBoss = "Norushen";
+            BossLoot = new int[] { 104964, 104969, 104958, 104963, 104971, 104970, 104960, 104961, 104955, 104956, 104968, 104952, 104957, 104959, 104953, 104966, 104954, 104965, 104972, 104967, 104973, 104962 };
+            tempLoot.Add(RaidBoss, BossLoot);
+
+            RaidBoss = "Sha of Pride";
+            BossLoot = new int[] { 104974, 99678, 99679, 99677, 104982, 104979, 104977, 104981, 104980, 104975, 104976, 104978, 104983 };
+            tempLoot.Add(RaidBoss, BossLoot);
+
             RaidLoot.Add(RaidName, tempLoot);            
 
             // Tier 16 Raid - Flex
@@ -2346,6 +2371,14 @@ namespace WoWGuildOrganizer
 
             RaidBoss = "The Fallen Protectors";
             BossLoot = new int[] { 104687, 104682, 104702, 104690, 104701, 104685, 104695, 104696, 104686, 104697, 104693, 104691, 104699, 104692, 104688, 104700, 104694, 104698, 104683, 104689, 104684 };
+            tempLoot.Add(RaidBoss, BossLoot);
+
+            RaidBoss = "Norushen";
+            BossLoot = new int[] { 104715, 104720, 104709, 104714, 104722, 104721, 104711, 104712, 104706, 104707, 104719, 104703, 104708, 104710, 104704, 104717, 104705, 104716, 104723, 104718, 104724, 104713 };
+            tempLoot.Add(RaidBoss, BossLoot);
+
+            RaidBoss = "Sha of Pride";
+            BossLoot = new int[] { 104725, 99743, 99744, 99742, 104733, 104730, 104728, 104732, 104731, 104726, 104727, 104729, 104734 };
             tempLoot.Add(RaidBoss, BossLoot);
 
             RaidLoot.Add(RaidName, tempLoot);            
@@ -2393,7 +2426,7 @@ namespace WoWGuildOrganizer
             {
                 int id = Convert.ToInt32(dataGridViewRaidLootDrop.Rows[e.RowIndex].Cells["ItemId"].Value);
                 ItemInfo item = Items.GetItem(id);
-                dataGridViewRaidLootDrop.Rows[e.RowIndex].Cells["ItemName"].ToolTipText = item.CreateTooltip();
+                dataGridViewRaidLootDrop.Rows[e.RowIndex].Cells["ItemName"].ToolTipText = item.Tooltip;
             }
         }
 

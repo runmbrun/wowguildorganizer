@@ -122,6 +122,25 @@ namespace WoWGuildOrganizer
             set { _armor = value; }
         }
 
+        private String _tooltip;
+        public String Tooltip
+        {
+            get 
+            {
+                if (_tooltip == null || _tooltip == string.Empty)
+                {
+                    _tooltip = CreateTooltip();
+                }
+
+                return _tooltip; 
+            }
+
+            set 
+            { 
+                _tooltip = value; 
+            }
+        }
+
         public bool HasIntellect()
         {
             if (_stats.ContainsKey(5))
@@ -325,11 +344,21 @@ namespace WoWGuildOrganizer
                 line = "";
 
                 // All Secondary stats
-                foreach (int stat in _stats.Keys)
+                //foreach (int stat in _stats.Keys)
+                {
+                    //if (stat != 3 && stat != 4 && stat != 5 && stat != 7)
+                    {
+                        //line += "+" + _stats[stat].ToString() + " " + Converter.ConvertStat(stat) + "\n";
+                    }
+                }
+
+                Dictionary<Int32, Int32> dict = _stats.OrderBy(x => x.Key).ToDictionary(x => x.Key, x => x.Value);
+
+                foreach (int stat in dict.Keys)
                 {
                     if (stat != 3 && stat != 4 && stat != 5 && stat != 7)
                     {
-                        line += "+" + _stats[stat].ToString() + " " + Converter.ConvertStat(stat) + "\n";
+                        line += "+" + dict[stat].ToString() + " " + Converter.ConvertStat(stat) + "\n";
                     }
                 }
 
@@ -366,11 +395,22 @@ namespace WoWGuildOrganizer
 
                 line = "";
 
-                foreach (int stat in _stats.Keys)
+                //foreach (KeyValuePair<Int32, Int32> item in _stats.OrderBy(x => x.Key).ToDictionary(x => x.Key, x => x.Key))
+                {
+                    //if (item.Key != 3 && item.Key != 4 && item.Key != 5 && item.Key != 7)
+                    {
+                        //line += "+" + _stats[stat].ToString() + " " + Converter.ConvertStat(stat) + "\n";
+                        //line += "+" + item.Value.ToString() + " " + Converter.ConvertStat(item.Key) + "\n";
+                    }
+                }
+
+                Dictionary<Int32, Int32> dict = _stats.OrderBy(x => x.Key).ToDictionary(x => x.Key, x => x.Value);
+
+                foreach (int stat in dict.Keys)
                 {
                     if (stat != 3 && stat != 4 && stat != 5 && stat != 7)
                     {
-                        line += "+" + _stats[stat].ToString() + " " + Converter.ConvertStat(stat) + "\n";
+                        line += "+" + dict[stat].ToString() + " " + Converter.ConvertStat(stat) + "\n";
                     }
                 }
 

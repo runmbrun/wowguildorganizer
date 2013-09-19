@@ -452,7 +452,7 @@ namespace WoWGuildOrganizer
                 // Create tooltips
                 ItemAudit audit = (ItemAudit)ItemAuditList[i];
                 ItemInfo info = Form1.Items.GetItem(audit.Id);
-                dataGridViewItemAudit.Rows[i].Cells[1].ToolTipText = info.CreateTooltip();
+                dataGridViewItemAudit.Rows[i].Cells[1].ToolTipText = info.Tooltip;
 
                 // Passed or Failed!
                 //   - Red = Failed!
