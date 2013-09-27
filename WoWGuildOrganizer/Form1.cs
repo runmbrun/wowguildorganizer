@@ -2098,7 +2098,7 @@ namespace WoWGuildOrganizer
                                 }
                                 else if (weapon == "Fist Weapon")
                                 {
-                                    if (item.HasAgility() && (gm.Class == "Druid" || gm.Class == "Monk" || gm.Class == "Rogue" || gm.Class == "Shaman"))
+                                    if (item.HasAgility() && ((gm.Class == "Druid" && (gm.Spec == "Feral" || gm.Spec == "Guardian")) || (gm.Class == "Monk" && gm.Role != "HEALING") || gm.Class == "Rogue" || (gm.Class == "Shaman" && gm.Spec == "Enhancement")))
                                     {
                                         charName = gm.Name;
                                     }
@@ -2197,9 +2197,10 @@ namespace WoWGuildOrganizer
                                 {
                                     pass |= gm.ItemAudits.ContainsKey("trinket1");
                                     pass |= gm.ItemAudits.ContainsKey("trinket2");
-                                }
+                                }                                    
                                 else
                                 {
+                                    //TODO: Need to check for dual wielding weapons...
                                     pass = gm.ItemAudits.ContainsKey(slot);                                    
                                 }
 
@@ -2343,6 +2344,7 @@ namespace WoWGuildOrganizer
             RaidName = "Siege of Orgrimmar - LFR";
             tempLoot = new Dictionary<string, int[]>();
 
+            // Wing 1
             RaidBoss = "Immerseus";
             BossLoot = new int[] { 104920, 104927, 104917, 104913, 104914, 104923, 104915, 104919, 104929, 104911, 104922, 104921, 104909, 104918, 104912, 104924, 104926, 104925, 104928, 104916, 104910, 104930 };
             tempLoot.Add(RaidBoss, BossLoot);
@@ -2359,12 +2361,34 @@ namespace WoWGuildOrganizer
             BossLoot = new int[] { 104974, 99678, 99679, 99677, 104982, 104979, 104977, 104981, 104980, 104975, 104976, 104978, 104983 };
             tempLoot.Add(RaidBoss, BossLoot);
 
+            // Wing 2
+            RaidBoss = "Galakras";
+            BossLoot = new int[] { 104991, 104995, 104988, 104984, 104989, 105002, 105001, 104993, 105000, 104997, 104994, 105003, 104987, 104992, 104996, 104999, 104998, 105004, 104985, 104990, 104986, 105005 };
+            tempLoot.Add(RaidBoss, BossLoot);
+
+            RaidBoss = "Iron Juggernaut";
+            BossLoot = new int[] { 105017, 105027, 105019, 105024, 105026, 105011, 105014, 105020, 105016, 105015, 105023, 105007, 105022, 105018, 105009, 105010, 105008, 105006, 105021, 105013, 105025, 105012 };
+            tempLoot.Add(RaidBoss, BossLoot);
+
+            RaidBoss = "Kor'kron Dark Shaman";
+            BossLoot = new int[] { 105035, 105041, 105045, 105036, 105034, 105030, 105044, 105037, 105032, 105029, 105040, 105043, 105042, 105028, 105038, 105031, 105047, 105046, 105048, 105039, 105033 };
+            tempLoot.Add(RaidBoss, BossLoot);
+
+            RaidBoss = "General Nazgrim";
+            BossLoot = new int[] { 105052, 105058, 105056, 105057, 105051, 105049, 105055, 105054, 105050, 105053, 105059, 99681, 99667, 99680 };
+            tempLoot.Add(RaidBoss, BossLoot);
+
+            // Wing 3
+
+            // Wing 4
+
             RaidLoot.Add(RaidName, tempLoot);            
 
             // Tier 16 Raid - Flex
             RaidName = "Siege of Orgrimmar - Flex";
             tempLoot = new Dictionary<string, int[]>();
 
+            // Wing 1
             RaidBoss = "Immerseus";
             BossLoot = new int[] { 104671, 104678, 104688, 104664, 104665, 104674, 104666, 104670, 104680, 104662, 104673, 104672, 104660, 104669, 104663, 104675, 104677, 104676, 104679, 104667, 104661, 104681 };
             tempLoot.Add(RaidBoss, BossLoot);
@@ -2380,6 +2404,12 @@ namespace WoWGuildOrganizer
             RaidBoss = "Sha of Pride";
             BossLoot = new int[] { 104725, 99743, 99744, 99742, 104733, 104730, 104728, 104732, 104731, 104726, 104727, 104729, 104734 };
             tempLoot.Add(RaidBoss, BossLoot);
+
+            // Wing 2
+
+            // Wing 3
+
+            // Wing 4
 
             RaidLoot.Add(RaidName, tempLoot);            
         }
