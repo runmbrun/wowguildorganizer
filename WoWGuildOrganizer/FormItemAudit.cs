@@ -142,8 +142,11 @@ namespace WoWGuildOrganizer
                     if (item.Slot == "mainHand")
                     {
                         // Check to see if weapon is two handed
-                        if (Form1.Items.GetItem(item.Id).InventoryType == 17 ||
-                            Form1.Items.GetItem(item.Id).InventoryType == 26)
+                        if (
+                            Form1.Items.GetItem(item.Id).InventoryType == 17 || // 2 hander
+                            Form1.Items.GetItem(item.Id).InventoryType == 26 || // Gun
+                            Form1.Items.GetItem(item.Id).InventoryType == 15    // Bow
+                            )
                         {
                             TwoHanded = true;
                         }
