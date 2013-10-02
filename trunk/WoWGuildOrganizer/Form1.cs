@@ -2197,11 +2197,37 @@ namespace WoWGuildOrganizer
                                 {
                                     pass |= gm.ItemAudits.ContainsKey("trinket1");
                                     pass |= gm.ItemAudits.ContainsKey("trinket2");
-                                }                                    
+                                }
+                                else if (slot == "mainHand")
+                                {
+                                    // Need to check that either a 2 hander is being used
+                                    //   or 2 one handers, or 1 hand and off hand is equiped
+                                    string weapon = Converter.ConvertItemSubClass(item.ItemClass, item.ItemSubClass);
+
+                                    if (weapon == "1 Axe" || weapon == "1 Mace" || weapon == "1 Sword" || weapon == "Fist Weapon" || weapon == "Dagger" || weapon == "Wand")
+                                    {
+                                        // this is NOT a 2 handed weapon, check to make sure both hands are equiped
+
+                                        // Look for 2 x 1 handed weapons
+                                        int mainHands = gm.ItemAudits.Keys.Where(kv => kv == "mainHand").Count();
+
+                                        if (mainHands == 2)
+                                        {
+                                            pass = gm.ItemAudits.ContainsKey(slot);
+                                        }
+                                        else if (gm.ItemAudits.ContainsKey("Shield") || gm.ItemAudits.ContainsKey("offHand"))
+                                        {
+                                            pass = gm.ItemAudits.ContainsKey(slot);
+                                        }
+                                    }
+                                    else 
+                                    {
+                                        pass = gm.ItemAudits.ContainsKey(slot);
+                                    }
+                                }
                                 else
                                 {
-                                    //TODO: Need to check for dual wielding weapons...
-                                    pass = gm.ItemAudits.ContainsKey(slot);                                    
+                                    pass = gm.ItemAudits.ContainsKey(slot);
                                 }
 
                                 if (pass)
@@ -2214,12 +2240,65 @@ namespace WoWGuildOrganizer
                                     }
                                     else if (slot == "trinket")
                                     {
-                                        iLevelOld = gm.ItemAudits["trinket2"].ItemLevel > gm.ItemAudits["trinket1"].ItemLevel ? gm.ItemAudits["trinket2"].ItemLevel : gm.ItemAudits["trinket1"].ItemLevel;
+                                        iLevelOld = gm.ItemAudits["trinket1"].ItemLevel > gm.ItemAudits["trinket2"].ItemLevel ? gm.ItemAudits["trinket2"].ItemLevel : gm.ItemAudits["trinket1"].ItemLevel;
                                     }
-                                    else if (slot == "mainHand")
+                                    else if (slot == "mainHand" || slot == "offHand")
                                     {
-                                        // TODO: Need to check for dual hands vs 2 hands vs one hand + off hand...
-                                        iLevelOld = gm.ItemAudits[Converter.ConvertInventoryType(item.InventoryType)].ItemLevel;
+                                        string weapon = Converter.ConvertItemSubClass(item.ItemClass, item.ItemSubClass);
+
+                                        // Need to check for dual hands vs 2 handers vs one hand + off hand...
+                                        if ((gm.Class == "Rogue" || (gm.Class == "Shaman" && gm.Spec == "Enhancement") || (gm.Class == "Warrior" && gm.Spec == "Fury") || (gm.Class == "Druid" && (gm.Spec == "Guardian" || gm.Spec == "Feral")) || (gm.Class == "Monk" && (gm.Spec == "Brewmaster" || gm.Spec == "Windwalker")) || (gm.Class == "Death Knight" && (gm.Spec == "Unholy" || gm.Spec == "Frost"))) &&
+                                            //(weapon == "1 Axe" || weapon == "1 Mace" || weapon == "1 Sword" || weapon == "Fist Weapon" || weapon == "Dagger") &&
+                                            //(gm.ItemAudits.ContainsKey("mainHand") && gm.ItemAudits.ContainsKey("offHand")))
+                                            (gm.ItemAudits["offHand"].ItemLevel > 0))
+                                        {                                            
+                                            iLevelOld = gm.ItemAudits["mainHand"].ItemLevel > gm.ItemAudits["offHand"].ItemLevel ? gm.ItemAudits["offHand"].ItemLevel : gm.ItemAudits["mainHand"].ItemLevel;
+                                        }
+                                        else if (slot == "offHand" && gm.ItemAudits["offHand"].ItemLevel == 0)
+                                        {
+                                            int itemIdMainHand = gm.ItemAudits["mainHand"].Id;
+                                            int slotType = 0;
+                                            ItemInfo itemMainHand = null;
+
+                                            // does this item currently exist in the item cache?
+                                            if (!Items.Contains(itemIdMainHand))
+                                            {
+                                                // Need to add in this item to the Item Cache
+
+                                                // First fetch the data
+                                                GetItemInfo get = new GetItemInfo();
+                                                if (get.CollectData(itemIdMainHand))
+                                                {
+                                                    itemMainHand = get.Item;
+                                                    itemMainHand.Id = itemIdMainHand;
+                                                    Items.AddItem(itemMainHand);
+                                                }
+                                            }
+                                            else
+                                            {
+                                                itemMainHand = Items.GetItem(itemIdMainHand);
+                                            }
+
+                                            if (itemMainHand != null)
+                                            {
+                                                slotType = itemMainHand.InventoryType;
+
+                                                // if slot if offHand and currently doesn't have an offHand equipped
+                                                //  and mainhand is a 2 hander... compare iLevel with mainHand
+                                                if (slotType == 17 || slotType == 15 || slotType == 26)
+                                                {
+                                                    iLevelOld = gm.ItemAudits["mainHand"].ItemLevel;
+                                                }
+                                                else
+                                                {
+                                                    iLevelOld = gm.ItemAudits[Converter.ConvertInventoryType(item.InventoryType)].ItemLevel;
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            iLevelOld = gm.ItemAudits[Converter.ConvertInventoryType(item.InventoryType)].ItemLevel;
+                                        }
                                     }
                                     else
                                     {
