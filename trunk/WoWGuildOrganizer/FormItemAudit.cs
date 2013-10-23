@@ -169,7 +169,7 @@ namespace WoWGuildOrganizer
                     }
                     else
                     {
-                        if (item.Slot != "tabard" && item.Slot != "shirt")
+                        if (item.Slot != "tabard" && item.Slot != "shirt" && !(item.Slot == "offHand" && TwoHanded))
                         {
                             iLevels += item.ItemLevel;
                             ItemCount++;

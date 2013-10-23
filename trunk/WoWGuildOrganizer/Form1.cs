@@ -2437,7 +2437,7 @@ namespace WoWGuildOrganizer
             tempLoot.Add(RaidBoss, BossLoot);
 
             RaidBoss = "Sha of Pride";
-            BossLoot = new int[] { 104974, 99678, 99679, 99677, 104982, 104979, 104977, 104981, 104980, 104975, 104976, 104978, 104983 };
+            BossLoot = new int[] { 104974, 104982, 104979, 104977, 104981, 104980, 104975, 104976, 104978, 104983 };  // 99678, 99679, 99677 - Tier 16 Chest Tokens
             tempLoot.Add(RaidBoss, BossLoot);
 
             // Wing 2
@@ -2454,12 +2454,34 @@ namespace WoWGuildOrganizer
             tempLoot.Add(RaidBoss, BossLoot);
 
             RaidBoss = "General Nazgrim";
-            BossLoot = new int[] { 105052, 105058, 105056, 105057, 105051, 105049, 105055, 105054, 105050, 105053, 105059, 99681, 99667, 99680 };
+            BossLoot = new int[] { 105052, 105058, 105056, 105057, 105051, 105049, 105055, 105054, 105050, 105053, 105059 };  // 99681, 99667, 99680 - Tier 16 Hand Tokens
             tempLoot.Add(RaidBoss, BossLoot);
 
             // Wing 3
+            RaidBoss = "Malkorok";
+            BossLoot = new int[] { 105075, 105066, 105078, 105079, 105080, 105074, 105062, 105072, 105061, 105063, 105067, 105065, 105069, 105068, 105071, 105060, 105073, 105076, 105081, 105070, 105077, 105064 };
+            tempLoot.Add(RaidBoss, BossLoot);
+
+            RaidBoss = "Spoils of Pandaria";
+            BossLoot = new int[] { 105087, 105092, 105086, 105093, 105100, 105099, 105083, 105088, 105096, 105097, 105095, 105085, 105094, 105102, 105090, 105084, 105101, 105091, 105098, 105082, 105089 };
+            tempLoot.Add(RaidBoss, BossLoot);
+
+            RaidBoss = "Thok the Bloodthirsty";
+            BossLoot = new int[] { 105106, 105112, 105113, 105107, 105104, 105103, 105110, 105105, 105108, 105109, 105111 };  // 99672,99673,99671 - Tier 16 Head Tokens
+            tempLoot.Add(RaidBoss, BossLoot);
 
             // Wing 4
+            RaidBoss = "Siegecrafter Blackfuse";
+            BossLoot = new int[] { 105122, 105124, 105118, 105119, 105121, 105117, 105115, 105116, 105120, 105123, 105114 };  // 99669,99670,99668 - Tier 16 Shoulder Tokens
+            tempLoot.Add(RaidBoss, BossLoot);
+
+            RaidBoss = "Paragons of the Klaxxi";
+            BossLoot = new int[] { 105131, 105128, 105132, 105133, 105125, 105130, 105126, 105135, 105127, 105129, 105134 };  // 99675,99676,99674 - Tier 16 Legs Tokens
+            tempLoot.Add(RaidBoss, BossLoot);
+
+            RaidBoss = "Garrosh Hellscream";
+            BossLoot = new int[] { 105148, 105150, 105139, 105156, 105137, 105155, 105147, 105149, 105145, 105154, 105151, 105138, 105136, 105142, 105157, 105140, 105152, 105153, 105141, 105143, 105146 };  // 105860,105861,105862 - Tier 16 All Token
+            tempLoot.Add(RaidBoss, BossLoot);
 
             RaidLoot.Add(RaidName, tempLoot);            
 
@@ -2485,10 +2507,47 @@ namespace WoWGuildOrganizer
             tempLoot.Add(RaidBoss, BossLoot);
 
             // Wing 2
+            RaidBoss = "Galakras";
+            BossLoot = new int[] {  };
+            tempLoot.Add(RaidBoss, BossLoot);
+
+            RaidBoss = "Iron Juggernaut";
+            BossLoot = new int[] {  };
+            tempLoot.Add(RaidBoss, BossLoot);
+
+            RaidBoss = "Kor'kron Dark Shaman";
+            BossLoot = new int[] {  };
+            tempLoot.Add(RaidBoss, BossLoot);
+
+            RaidBoss = "General Nazgrim";
+            BossLoot = new int[] {  };
+            tempLoot.Add(RaidBoss, BossLoot);
 
             // Wing 3
+            RaidBoss = "Malkorok";
+            BossLoot = new int[] { };
+            tempLoot.Add(RaidBoss, BossLoot);
+
+            RaidBoss = "Spoils of Pandaria";
+            BossLoot = new int[] { };
+            tempLoot.Add(RaidBoss, BossLoot);
+
+            RaidBoss = "Thok the Bloodthirsty";
+            BossLoot = new int[] { };
+            tempLoot.Add(RaidBoss, BossLoot);
 
             // Wing 4
+            RaidBoss = "Siegecrafter Blackfuse";
+            BossLoot = new int[] { };
+            tempLoot.Add(RaidBoss, BossLoot);
+
+            RaidBoss = "Paragons of the Klaxxi";
+            BossLoot = new int[] { };
+            tempLoot.Add(RaidBoss, BossLoot);
+
+            RaidBoss = "Garrosh Hellscream";
+            BossLoot = new int[] { };
+            tempLoot.Add(RaidBoss, BossLoot);
 
             RaidLoot.Add(RaidName, tempLoot);            
         }
