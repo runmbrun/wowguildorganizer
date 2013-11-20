@@ -274,6 +274,7 @@
             this.dataGridViewRaidLootDrop.Size = new System.Drawing.Size(702, 243);
             this.dataGridViewRaidLootDrop.TabIndex = 4;
             this.dataGridViewRaidLootDrop.CellToolTipTextNeeded += new System.Windows.Forms.DataGridViewCellToolTipTextNeededEventHandler(this.dataGridViewRaidLootDrop_CellToolTipTextNeeded);
+            this.dataGridViewRaidLootDrop.DataBindingComplete += new System.Windows.Forms.DataGridViewBindingCompleteEventHandler(this.dataGridViewRaidLootDrop_DataBindingComplete);
             this.dataGridViewRaidLootDrop.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.dataGridViewRaidLootDrop_MouseDoubleClick);
             // 
             // tabPageSettings
