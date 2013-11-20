@@ -1643,6 +1643,9 @@ namespace WoWGuildOrganizer
                 MessageBox.Show("No data found for this raid boss.");
             }
 
+            // Remove focus from drop down so middle mouse wheel doesn't change accidently
+            this.dataGridViewRaidLootDrop.Focus();
+
             if (itemIds != null && itemIds.Length > 0)
             {
                 // Go through all item ids
@@ -2342,15 +2345,18 @@ namespace WoWGuildOrganizer
 
             if (loot.Rows.Count > 0)
             {
-                dataGridViewRaidLootDrop.DataSource = loot.Select("upgrade > 0", "upgrade desc").CopyToDataTable();
-                dataGridViewRaidLootDrop.Columns["ItemId"].Visible = false;
-                dataGridViewRaidLootDrop.AutoResizeColumns();
-
-                foreach (DataGridViewRow row in dataGridViewRaidLootDrop.Rows)
+                if (loot.Select("upgrade > 0", "upgrade desc").Length > 0)
                 {
-                    int id = Convert.ToInt32(row.Cells["ItemId"].Value);
-                    ItemInfo item = Items.GetItem(id);
-                    row.Cells["ItemName"].ToolTipText = item.Tooltip;
+                    dataGridViewRaidLootDrop.DataSource = loot.Select("upgrade > 0", "upgrade desc").CopyToDataTable();
+                    dataGridViewRaidLootDrop.Columns["ItemId"].Visible = false;
+                    dataGridViewRaidLootDrop.AutoResizeColumns();
+
+                    foreach (DataGridViewRow row in dataGridViewRaidLootDrop.Rows)
+                    {
+                        int id = Convert.ToInt32(row.Cells["ItemId"].Value);
+                        ItemInfo item = Items.GetItem(id);
+                        row.Cells["ItemName"].ToolTipText = item.Tooltip;
+                    }
                 }
             }
 
@@ -2508,7 +2514,7 @@ namespace WoWGuildOrganizer
 
             // Wing 2
             RaidBoss = "Galakras";
-            BossLoot = new int[] {  };
+            BossLoot = new int[] { 104742, 104746, 104739, 104735, 104740, 104753, 104752, 104744, 104751, 104748, 104745, 104754, 104738, 104743, 104747, 104750, 104749, 104755, 104736, 104741, 104737, 104756 };
             tempLoot.Add(RaidBoss, BossLoot);
 
             RaidBoss = "Iron Juggernaut";
@@ -2596,6 +2602,19 @@ namespace WoWGuildOrganizer
                 ItemInfo item = Items.GetItem(id);
                 dataGridViewRaidLootDrop.Rows[e.RowIndex].Cells["ItemName"].ToolTipText = item.Tooltip;
             }
+        }
+
+        private void dataGridViewRaidLootDrop_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
+        {
+            // Set the control types for all the rows in the grid.
+            foreach (DataGridViewRow r in this.dataGridViewRaidLootDrop.Rows)
+            {
+                // Display a row count in the row header.
+                r.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleLeft;
+                r.HeaderCell.Value = string.Format("{0}", r.Index + 1);   
+            }
+
+            dataGridViewRaidLootDrop.AutoResizeRowHeadersWidth(DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders);
         }
 
         #endregion
