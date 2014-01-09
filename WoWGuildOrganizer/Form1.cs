@@ -1330,13 +1330,11 @@ namespace WoWGuildOrganizer
                             // Success! Now we have the new info
                             // Compare the new info with the old info
                             //  And make updates as needed...
-                            Boolean Updated = false;
 
                             // Level
                             if (oldMember.Level != gm.Level)
                             {
                                 oldMember.Level = gm.Level;
-                                Updated = true;
                             }
                             else
                             {
@@ -1348,14 +1346,12 @@ namespace WoWGuildOrganizer
                             if (oldMember.AchievementPoints != gm.AchievementPoints)
                             {
                                 oldMember.AchievementPoints = gm.AchievementPoints;
-                                Updated = true;
                             }
 
                             // Equiped iLevel
                             if (oldMember.EquipediLevel != gm.EquipediLevel)
                             {
                                 oldMember.EquipediLevel = gm.EquipediLevel;
-                                Updated = true;
                             }
                             else
                             {
@@ -1367,7 +1363,6 @@ namespace WoWGuildOrganizer
                             if (oldMember.MaxiLevel != gm.MaxiLevel)
                             {
                                 oldMember.MaxiLevel = gm.MaxiLevel;
-                                Updated = true;
                             }
                             else
                             {
@@ -1421,6 +1416,9 @@ namespace WoWGuildOrganizer
                         
                         dataGridViewRaidGroup.ClearSelection();
                         dataGridViewRaidGroup.Rows[row - 1].Selected = true;
+
+                        // refresh the grid data since it's been changed
+                        UpdateRaidGrid();
                     }
                 }
             }
@@ -1439,6 +1437,9 @@ namespace WoWGuildOrganizer
                         
                         dataGridViewRaidGroup.ClearSelection();
                         dataGridViewRaidGroup.Rows[row+1].Selected = true;
+
+                        // refresh the grid data since it's been changed
+                        UpdateRaidGrid();
                     }
                 }
             }
@@ -1456,6 +1457,9 @@ namespace WoWGuildOrganizer
 
                 // refresh grid data
                 dataGridViewRaidGroup.DataSource = RaidGroup.RaidGroup;
+
+                // refresh the grid data since it's been changed
+                UpdateRaidGrid();
             }
         }
 
@@ -2423,6 +2427,10 @@ namespace WoWGuildOrganizer
             BossLoot = new int[] { 94738, 95510, 94512, 94739, 94726, 94723, 94735, 94733, 94724, 94737, 94730, 94725, 94728, 94722, 94736, 94732, 94734, 94729, 94731, 94727, 95064, 97126, 95066, 95503, 95063, 95069, 95065, 95500, 95504, 95498 };
             tempLoot.Add(RaidBoss, BossLoot);
 
+            RaidBoss = "Horridon";
+            BossLoot = new int[] { 94754, 95514, 94526, 94514, 94747, 94751, 94742, 94745, 94744, 95063, 95502, 95498, 95505, 95499, 95500, 95068, 95069, 95516 };
+            tempLoot.Add(RaidBoss, BossLoot);
+
             RaidLoot.Add(RaidName, tempLoot);
 
             // Tier 16 Raid - LFR
@@ -2518,15 +2526,15 @@ namespace WoWGuildOrganizer
             tempLoot.Add(RaidBoss, BossLoot);
 
             RaidBoss = "Iron Juggernaut";
-            BossLoot = new int[] {  };
+            BossLoot = new int[] { 104768, 104778, 104770, 104775, 104777, 104762, 104765, 104771, 104767, 104766, 104774, 104758, 104773, 104769, 104760, 104761, 104759, 104757, 104772, 104764, 104776, 104763 };
             tempLoot.Add(RaidBoss, BossLoot);
 
             RaidBoss = "Kor'kron Dark Shaman";
-            BossLoot = new int[] {  };
+            BossLoot = new int[] { 104786, 104792, 104796, 104787, 104785, 104781, 104795, 104788, 104783, 104780, 104791, 104794, 104793, 104779, 104789, 104782, 104798, 104797, 104799, 104790, 104784 };
             tempLoot.Add(RaidBoss, BossLoot);
 
             RaidBoss = "General Nazgrim";
-            BossLoot = new int[] {  };
+            BossLoot = new int[] { 104803, 104809, 104807, 104808, 99746, 99747, 99745, 104802, 104800, 104806, 104805, 104801, 104804, 104810 };
             tempLoot.Add(RaidBoss, BossLoot);
 
             // Wing 3
@@ -2565,7 +2573,7 @@ namespace WoWGuildOrganizer
         /// <param name="e"></param>
         private void dataGridViewRaidLootDrop_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            // Check for a right click
+            // Check for a left double click
             if (e.Button == MouseButtons.Left)
             {
                 // select the current row                
