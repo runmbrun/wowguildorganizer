@@ -2312,7 +2312,7 @@ namespace WoWGuildOrganizer
                                         iLevelOld = gm.ItemAudits[Converter.ConvertInventoryType(item.InventoryType)].ItemLevel;
                                     }
 
-                                    if (iLevelNew >= iLevelOld)
+                                    if (iLevelNew > iLevelOld)
                                     {
                                         DataRow dr = loot.NewRow();
                                         dr["Upgrade"] = iLevelNew - iLevelOld;
@@ -2349,9 +2349,51 @@ namespace WoWGuildOrganizer
 
             if (loot.Rows.Count > 0)
             {
-                if (loot.Select("upgrade > 0", "upgrade desc").Length > 0)
+                // find any items that weren't needed by anyone...
+                if (itemIds != null && itemIds.Length > 0)
                 {
-                    dataGridViewRaidLootDrop.DataSource = loot.Select("upgrade > 0", "upgrade desc").CopyToDataTable();
+                    // Go through all item ids
+                    foreach (int itemId in itemIds)
+                    {
+                        if (loot.Select("ItemId = " + itemId, "upgrade desc").Length == 0)
+                        {
+                            ItemInfo item = null;
+
+                            // does this item currently exist in the item cache?
+                            if (!Items.Contains(itemId))
+                            {
+                                // Need to add in this item to the Item Cache
+
+                                // First fetch the data
+                                GetItemInfo get = new GetItemInfo();
+                                if (get.CollectData(itemId))
+                                {
+                                    item = get.Item;
+                                    item.Id = itemId;
+                                    Items.AddItem(item);
+                                }
+                            }
+                            else
+                            {
+                                item = Items.GetItem(itemId);
+                            }
+
+                            DataRow dr = loot.NewRow();
+                            dr["Upgrade"] = 0;
+                            dr["ItemId"] = item.Id;
+                            dr["ItemName"] = item.Name;
+                            dr["ItemSlot"] = Converter.ConvertInventoryType(item.InventoryType);
+                            dr["CharacterName"] = "Not Needed";
+                            dr["ItemILevel"] = item.ItemLevel;
+                            dr["OldItemILevel"] = 0;
+                            loot.Rows.Add(dr);
+                        }
+                    }
+                }
+
+                if (loot.Select("upgrade >= 0", "upgrade desc").Length > 0)
+                {
+                    dataGridViewRaidLootDrop.DataSource = loot.Select("upgrade >= 0", "upgrade desc").CopyToDataTable();
                     dataGridViewRaidLootDrop.Columns["ItemId"].Visible = false;
                     dataGridViewRaidLootDrop.AutoResizeColumns();
 
@@ -2360,12 +2402,22 @@ namespace WoWGuildOrganizer
                         int id = Convert.ToInt32(row.Cells["ItemId"].Value);
                         ItemInfo item = Items.GetItem(id);
                         row.Cells["ItemName"].ToolTipText = item.Tooltip;
+
+                        if (Convert.ToInt32(row.Cells["Upgrade"].Value) == 0)
+                        {
+                            // color row grey
+                            row.DefaultCellStyle.BackColor = Color.DimGray;
+                        }
                     }
                 }
             }
 
             WaitCursor(false);
         }
+
+        #endregion
+
+        #region " Raid Loot - Loot data from wowhead "
 
         /// <summary>
         /// Fill out the raid boss loot data here
@@ -2565,6 +2617,10 @@ namespace WoWGuildOrganizer
 
             RaidLoot.Add(RaidName, tempLoot);            
         }
+        
+        #endregion
+
+        #region " Raid Loot Grid Functions "
 
         /// <summary>
         /// 
