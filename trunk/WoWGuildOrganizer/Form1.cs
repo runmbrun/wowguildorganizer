@@ -2355,7 +2355,7 @@ namespace WoWGuildOrganizer
                     // Go through all item ids
                     foreach (int itemId in itemIds)
                     {
-                        if (loot.Select("ItemId = " + itemId, "upgrade desc").Length == 0)
+                        if (loot.Select("upgrade > 0 and ItemId = " + itemId, "upgrade desc").Length == 0)
                         {
                             ItemInfo item = null;
 
