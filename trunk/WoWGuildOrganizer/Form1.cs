@@ -1778,7 +1778,7 @@ namespace WoWGuildOrganizer
                                 }
                                 else if (Converter.ConvertItemSubClass(item.ItemClass, item.ItemSubClass) == "Leather")
                                 {
-                                    if (item.HasIntellect() && (gm.Class == "Druid" && (gm.Spec == "Balance" || gm.Spec == "Restoration")) && (gm.Class == "Monk" && gm.Role == "HEALING"))
+                                    if (item.HasIntellect() && (gm.Class == "Druid" && (gm.Spec == "Balance" || gm.Spec == "Restoration")) || (gm.Class == "Monk" && gm.Role == "HEALING"))
                                     {
                                         charName = gm.Name;
                                     }
