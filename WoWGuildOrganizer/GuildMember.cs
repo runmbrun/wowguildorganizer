@@ -150,6 +150,73 @@ namespace WoWGuildOrganizer
         }
 
         [Browsable(false)]
+        public bool UsesIntellect
+        {
+            get 
+            {
+                if (this.Spec == "Balance" ||       // Druid Ranged DPS
+                    this.Spec == "Restoration" ||   // Druid and Shaman Healer
+                    this.Class == "Mage" ||         // All 3 Mage specs
+                    this.Spec == "Mistweave" ||     // Monk Healer
+                    this.Spec == "Holy" ||          // Paladin and Priest Healer
+                    this.Class == "Priest" ||       // All 3 Priest specs
+                    this.Spec == "Elemental" ||     // Shaman Ranged DPS
+                    this.Class == "Warlock"         // All 3 Warlock specs
+                    )
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
+        [Browsable(false)]
+        public bool UsesStrength
+        {
+            get
+            {
+                if (this.Class == "Death Knight" || // All 3 Death Knight specs
+                    this.Spec == "Retribution" ||   // Paladin DPS
+                    this.Spec == "Protection" ||    // Paladin and Warrior TANK
+                    this.Class == "Warrior"         // All 3 Death Knight specs
+                    )
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
+        [Browsable(false)]
+        public bool UsesAgility
+        {
+            get
+            {
+                if (this.Spec == "Guardian" ||      // Druid TANK
+                    this.Spec == "Feral" ||         // Druid melee DPS
+                    this.Class == "Hunter" ||       // All 3 Hunter specs
+                    this.Spec == "Brewmaster" ||    // Monk TANK
+                    this.Spec == "Windwalker" ||    // Monk DPS
+                    this.Class == "Rogue" ||        // All 3 Rogue specs
+                    this.Spec == "Enhancement"      // Shaman melee DPS
+                    )
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
+        [Browsable(false)]
         public Dictionary<string, ItemAudit> ItemAudits
         {
             get { return _items; }

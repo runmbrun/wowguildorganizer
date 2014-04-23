@@ -306,9 +306,7 @@ namespace WoWGuildOrganizer
                     this.ItemLevel + "\n";
 
                 // Slot and Type
-                //   TODO: Need to convert Inventory Type to a nicer looking format
-                tooltip +=
-                    Converter.ConvertInventoryType(this.InventoryType) + "\t\t" + Converter.ConvertItemSubClass(this.ItemClass, this.ItemSubClass) + "\n";
+                tooltip += Converter.ConvertInventoryType(this.InventoryType) + "\t\t" + Converter.ConvertItemSubClass(this.ItemClass, this.ItemSubClass) + "\n";
 
                 // Armor if applicatable
                 if (Armor > 0)
@@ -336,24 +334,17 @@ namespace WoWGuildOrganizer
                 }
 
                 // Stamina Stat
-                tooltip +=
-                    line + 
-                    "+" + GetStamina() + " Stamina \n";
-
-                // Blank Line
-                line = "";
-
-                // All Secondary stats
-                //foreach (int stat in _stats.Keys)
+                if (GetStamina() != "")
                 {
-                    //if (stat != 3 && stat != 4 && stat != 5 && stat != 7)
-                    {
-                        //line += "+" + _stats[stat].ToString() + " " + Converter.ConvertStat(stat) + "\n";
-                    }
+                    tooltip += line + "+" + GetStamina() + " Stamina \n";
                 }
+
+                // Blank Line in between the main stats and secondary ones
+                line = "";
 
                 Dictionary<Int32, Int32> dict = _stats.OrderBy(x => x.Key).ToDictionary(x => x.Key, x => x.Value);
 
+                // All Secondary stats
                 foreach (int stat in dict.Keys)
                 {
                     if (stat != 3 && stat != 4 && stat != 5 && stat != 7)
@@ -361,14 +352,14 @@ namespace WoWGuildOrganizer
                         line += "+" + dict[stat].ToString() + " " + Converter.ConvertStat(stat) + "\n";
                     }
                 }
+                
+                // TODO: finish this for procs
 
                 tooltip += line;
-
-                // TODO: finish this
             }
             else if (Converter.ConvertItemClass(this.ItemClass) == "Weapon")
             {
-                // TODO: finish this
+                // Name and iLevel of item
                 tooltip +=
                     this.Name + "\n" +
                     this.ItemLevel + "\n" +
@@ -389,21 +380,14 @@ namespace WoWGuildOrganizer
                     line = "+" + GetIntellect() + " Intellect \n";
                 }
 
-                tooltip +=
-                    line +
-                    "+" + GetStamina() + " Stamina \n";
-
-                line = "";
-
-                //foreach (KeyValuePair<Int32, Int32> item in _stats.OrderBy(x => x.Key).ToDictionary(x => x.Key, x => x.Key))
+                if (GetStamina() != "")
                 {
-                    //if (item.Key != 3 && item.Key != 4 && item.Key != 5 && item.Key != 7)
-                    {
-                        //line += "+" + _stats[stat].ToString() + " " + Converter.ConvertStat(stat) + "\n";
-                        //line += "+" + item.Value.ToString() + " " + Converter.ConvertStat(item.Key) + "\n";
-                    }
+                    tooltip += line + "+" + GetStamina() + " Stamina \n";
                 }
-
+                
+                // Blank Line in between the main stats and secondary ones
+                line = "";
+                                
                 Dictionary<Int32, Int32> dict = _stats.OrderBy(x => x.Key).ToDictionary(x => x.Key, x => x.Value);
 
                 foreach (int stat in dict.Keys)
@@ -413,6 +397,8 @@ namespace WoWGuildOrganizer
                         line += "+" + dict[stat].ToString() + " " + Converter.ConvertStat(stat) + "\n";
                     }
                 }
+
+                // TODO: finish this for procs
 
                 tooltip += line;
             }

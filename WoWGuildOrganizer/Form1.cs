@@ -181,7 +181,7 @@ namespace WoWGuildOrganizer
             dataGridViewGuildData.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.Single;
             dataGridViewGuildData.CellBorderStyle = DataGridViewCellBorderStyle.Single;
             dataGridViewGuildData.GridColor = Color.Black;
-            dataGridViewGuildData.RowHeadersVisible = false;
+            dataGridViewGuildData.RowHeadersVisible = true;
 
             // Set the background color for all rows and for alternating rows. 
             // The value for alternating rows overrides the value for all rows. 
@@ -204,7 +204,7 @@ namespace WoWGuildOrganizer
             dataGridViewRaidGroup.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.Single;
             dataGridViewRaidGroup.CellBorderStyle = DataGridViewCellBorderStyle.Single;
             dataGridViewRaidGroup.GridColor = Color.Black;
-            dataGridViewRaidGroup.RowHeadersVisible = false;
+            dataGridViewRaidGroup.RowHeadersVisible = true;
 
             // Set the background color for all rows and for alternating rows. 
             // The value for alternating rows overrides the value for all rows. 
@@ -1703,7 +1703,101 @@ namespace WoWGuildOrganizer
                                 // Armor
                                 if (Converter.ConvertItemSubClass(item.ItemClass, item.ItemSubClass) == "Micellaneous")
                                 {
-                                    if (item.HasIntellect())
+                                    // Trinkets
+                                    if (Converter.ConvertInventoryType(item.InventoryType) == "trinket")
+                                    {
+                                        string test = item.Tooltip;
+
+                                        // It's a trinket and not sure who it should go to...
+                                        //  So for now, we're going to hard code this by name
+
+                                        // Wing #1
+                                        if (item.Name == "Purified Bindings of Immerseus" && gm.Role == "DPS" && gm.UsesIntellect)
+                                        {
+                                            charName = gm.Name;
+                                        }
+                                        else if (item.Name == "Rook's Unlucky Talisman" && gm.Role == "TANK")
+                                        {
+                                            charName = gm.Name;
+                                        }
+                                        else if (item.Name == "Fusion-Fire Core" && gm.Role == "DPS" && gm.UsesStrength)
+                                        {
+                                            charName = gm.Name;
+                                        }
+                                        else if (item.Name == "Assurance of Consequence" && gm.Role == "DPS" && gm.UsesAgility)
+                                        {
+                                            charName = gm.Name;
+                                        }
+                                        else if (item.Name == "Prismatic Prison of Pride" && gm.Role == "HEALING")
+                                        {
+                                            charName = gm.Name;
+                                        }
+                                        // Wing #2
+                                        else if (item.Name == "Evil Eye of Galakras" && gm.Role == "DPS" && gm.UsesStrength)
+                                        {
+                                            charName = gm.Name;
+                                        }
+                                        else if (item.Name == "Juggernaut's Focusing Crystal" && gm.Role == "TANK")
+                                        {
+                                            charName = gm.Name;
+                                        }
+                                        else if (item.Name == "Haromm's Talisman" && gm.Role == "DPS" && gm.UsesAgility)
+                                        {
+                                            charName = gm.Name;
+                                        }
+                                        else if (item.Name == "Kardris' Toxic Totem" && gm.Role == "DPS" && gm.UsesIntellect)
+                                        {
+                                            charName = gm.Name;
+                                        }
+                                        else if (item.Name == "Nazgrim's Burnished Insignia" && gm.Role == "HEALING")
+                                        {
+                                            charName = gm.Name;
+                                        }
+                                        // Wing #3
+                                        else if (item.Name == "Frenzied Crystal of Rage" && gm.Role == "DPS" && gm.UsesIntellect)
+                                        {
+                                            charName = gm.Name;
+                                        }
+                                        else if (item.Name == "Vial of Living Corruption" && gm.Role == "TANK")
+                                        {
+                                            charName = gm.Name;
+                                        }
+                                        else if (item.Name == "Sigil of Rampage" && gm.Role == "DPS" && gm.UsesIntellect)
+                                        {
+                                            charName = gm.Name;
+                                        }
+                                        else if (item.Name == "Thok's Tail Tip" && gm.Role == "DPS" && gm.UsesStrength)
+                                        {
+                                            charName = gm.Name;
+                                        }
+                                        else if (item.Name == "Thok's Acid-Grooved Tooth" && gm.Role == "HEALING")
+                                        {
+                                            charName = gm.Name;
+                                        }
+                                        // Wing #4
+                                        else if (item.Name == "Dysmorphic Samophlange of Discontinuity" && gm.Role == "HEALING")
+                                        {
+                                            charName = gm.Name;
+                                        }
+                                        else if (item.Name == "Ticking Ebon Detonator" && gm.Role == "DPS" && gm.UsesAgility)
+                                        {
+                                            charName = gm.Name;
+                                        }
+                                        else if (item.Name == "Skeer's Bloodsoaked Talisman" && gm.Role == "DPS" && gm.UsesStrength)
+                                        {
+                                            charName = gm.Name;
+                                        }
+                                        else if (item.Name == "Black Blood of Y'Shaarj" && gm.Role == "DPS" && gm.UsesIntellect)
+                                        {
+                                            charName = gm.Name;
+                                        }
+                                        else if (item.Name == "Curse of Hubris" && gm.Role == "TANK")
+                                        {
+                                            charName = gm.Name;
+                                        }
+                                    }
+                                    // Neck or Rings
+                                    else if (item.HasIntellect())
                                     {
                                         if (item.HasSpirit())
                                         {
@@ -2004,7 +2098,7 @@ namespace WoWGuildOrganizer
                                     {
                                         charName = gm.Name;
                                     }
-                                    else if (item.HasAgility() && (gm.Class == "Druid" || gm.Class == "Monk"))
+                                    else if (item.HasAgility() && (gm.Class == "Druid" || gm.Class == "Monk") && gm.Role != "HEALING")
                                     {
                                         charName = gm.Name;
                                     }
@@ -2243,11 +2337,36 @@ namespace WoWGuildOrganizer
 
                                     if (slot == "finger")
                                     {
-                                        iLevelOld = gm.ItemAudits["finger1"].ItemLevel > gm.ItemAudits["finger2"].ItemLevel ? gm.ItemAudits["finger2"].ItemLevel : gm.ItemAudits["finger1"].ItemLevel;
+                                        // Need to account for any ring duplications
+                                        if (item.Name == gm.ItemAudits["finger1"].Name && item.ItemLevel <= gm.ItemAudits["finger1"].ItemLevel)
+                                        {
+                                            iLevelOld = gm.ItemAudits["finger1"].ItemLevel;
+                                        }
+                                        else if (item.Name == gm.ItemAudits["finger2"].Name && item.ItemLevel <= gm.ItemAudits["finger2"].ItemLevel)
+                                        {
+                                            iLevelOld = gm.ItemAudits["finger2"].ItemLevel;
+                                        }
+                                        else
+                                        {
+                                            iLevelOld = gm.ItemAudits["finger1"].ItemLevel > gm.ItemAudits["finger2"].ItemLevel ? gm.ItemAudits["finger2"].ItemLevel : gm.ItemAudits["finger1"].ItemLevel;
+                                        }
                                     }
                                     else if (slot == "trinket")
                                     {
-                                        iLevelOld = gm.ItemAudits["trinket1"].ItemLevel > gm.ItemAudits["trinket2"].ItemLevel ? gm.ItemAudits["trinket2"].ItemLevel : gm.ItemAudits["trinket1"].ItemLevel;
+                                        // Need to account for any ring duplications
+                                        if (item.Name == gm.ItemAudits["trinket1"].Name && item.ItemLevel <= gm.ItemAudits["trinket1"].ItemLevel)
+                                        {
+                                            iLevelOld = gm.ItemAudits["trinket1"].ItemLevel;
+                                        }
+                                        else if (item.Name == gm.ItemAudits["trinket2"].Name && item.ItemLevel <= gm.ItemAudits["trinket2"].ItemLevel)
+                                        {
+                                            iLevelOld = gm.ItemAudits["trinket2"].ItemLevel;
+                                        }
+                                        else
+                                        {
+                                            // upgrade!
+                                            iLevelOld = gm.ItemAudits["trinket1"].ItemLevel > gm.ItemAudits["trinket2"].ItemLevel ? gm.ItemAudits["trinket2"].ItemLevel : gm.ItemAudits["trinket1"].ItemLevel;
+                                        }
                                     }
                                     else if (slot == "mainHand" || slot == "offHand")
                                     {
@@ -2421,7 +2540,6 @@ namespace WoWGuildOrganizer
 
         /// <summary>
         /// Fill out the raid boss loot data here
-        /// TODO: 
         ///   Evenually will need to be able to Add this all in programmatically.
         ///   But for now, I will hard code in what we need, and get the ranking functionality in place to use.
         /// </summary>
@@ -2591,29 +2709,58 @@ namespace WoWGuildOrganizer
 
             // Wing 3
             RaidBoss = "Malkorok";
-            BossLoot = new int[] { };
+            BossLoot = new int[] { 104826, 104817, 104829, 104830, 104831, 104825, 104813, 104823, 104812, 104814, 104818, 104816, 104820, 104819, 104822, 104811, 104824, 104827, 104832, 104821, 104828, 104815 };
             tempLoot.Add(RaidBoss, BossLoot);
 
             RaidBoss = "Spoils of Pandaria";
-            BossLoot = new int[] { };
+            BossLoot = new int[] { 104838, 104843, 104837, 104844, 104851, 104850, 104834, 104839, 104847, 104848, 104846, 104836, 104845, 104853, 104841, 104835, 104852, 104842, 104849, 104833, 104840 };
             tempLoot.Add(RaidBoss, BossLoot);
 
             RaidBoss = "Thok the Bloodthirsty";
-            BossLoot = new int[] { };
+            BossLoot = new int[] { 104857, 104863, 104864, 104858, 104855, 99749, 99750, 99748, 104854, 104861, 104856, 104859, 104860, 104862 };
             tempLoot.Add(RaidBoss, BossLoot);
 
             // Wing 4
             RaidBoss = "Siegecrafter Blackfuse";
-            BossLoot = new int[] { };
+            BossLoot = new int[] { 104873, 104875, 104869, 104870, 104872, 104868, 104866, 104867, 104871, 99755, 99756, 99754, 104874, 104865 };
             tempLoot.Add(RaidBoss, BossLoot);
 
             RaidBoss = "Paragons of the Klaxxi";
-            BossLoot = new int[] { };
+            BossLoot = new int[] { 104882, 104879, 104883, 104884, 104876, 104881, 104877, 104886, 104878, 99752, 99753, 99751, 104880, 104885 };
             tempLoot.Add(RaidBoss, BossLoot);
 
             RaidBoss = "Garrosh Hellscream";
-            BossLoot = new int[] { };
+            BossLoot = new int[] { 104899, 104901, 104890, 104907, 104888, 104906, 104898, 104900, 105864, 105863, 105865, 104896, 104905, 104902, 104889, 104887, 104893, 104908, 104891, 104903, 104904, 104892, 104894, 104897, 105674, 105672, 105679, 105678, 105673, 105671, 105680, 105676, 105677, 105670, 105675 };
             tempLoot.Add(RaidBoss, BossLoot);
+
+            RaidLoot.Add(RaidName, tempLoot);   
+
+            // Tier 16 Raid - Flex
+            RaidName = "Siege of Orgrimmar - Normal";
+            tempLoot = new Dictionary<string, int[]>();
+
+            // Wing 1
+            RaidBoss = "Immerseus";
+            BossLoot = new int[] { 103769, 102293, 103728, 103749, 103771, 103736, 103730, 103726, 103738, 103751, 103733, 103755, 103752, 103757, 103741, 103727, 103747, 103760, 103744, 103766, 103763, 103966 };
+            tempLoot.Add(RaidBoss, BossLoot);
+
+            RaidBoss = "The Fallen Protectors";
+            BossLoot = new int[] { 103783, 103776, 103820, 103799, 103817, 103780, 103809, 103822, 103787, 103801, 103802, 102296, 103812, 103804, 103790, 103815, 103807, 103924, 103775, 103793, 103777 };
+            tempLoot.Add(RaidBoss, BossLoot);
+
+            // todo:
+            //RaidBoss = "Norushen";
+            //BossLoot = new int[] {  };
+            //tempLoot.Add(RaidBoss, BossLoot);
+
+            // todo:
+            //RaidBoss = "Sha of Pride";
+            //BossLoot = new int[] {  };
+            //tempLoot.Add(RaidBoss, BossLoot);
+
+            // Wing 2 - todo: 
+            // Wing 3 - todo: 
+            // Wing 4 - todo: 
 
             RaidLoot.Add(RaidName, tempLoot);            
         }
@@ -2668,17 +2815,86 @@ namespace WoWGuildOrganizer
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void dataGridViewRaidLootDrop_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
         {
+            DataGridViewCellStyle style = new DataGridViewCellStyle();
+            style.Alignment = DataGridViewContentAlignment.MiddleRight;
+
             // Set the control types for all the rows in the grid.
             foreach (DataGridViewRow r in this.dataGridViewRaidLootDrop.Rows)
             {
                 // Display a row count in the row header.
-                r.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleLeft;
-                r.HeaderCell.Value = string.Format("{0}", r.Index + 1);   
+                //r.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleLeft;
+                //r.HeaderCell.Value = string.Format("{0}", r.Index + 1);
+                r.HeaderCell.Value = (r.Index + 1).ToString();
+                r.HeaderCell.Style = style;
+                r.Resizable = DataGridViewTriState.False;
             }
 
             dataGridViewRaidLootDrop.AutoResizeRowHeadersWidth(DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void dataGridViewGuildData_RowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
+        {
+            var grid = sender as DataGridView;
+            var rowIdx = (e.RowIndex + 1).ToString();
+
+            var centerFormat = new StringFormat()
+            {
+                // right alignment might actually make more sense for numbers
+                Alignment = StringAlignment.Center,
+                LineAlignment = StringAlignment.Center
+            };
+
+            var headerBounds = new Rectangle(e.RowBounds.Left, e.RowBounds.Top, grid.RowHeadersWidth, e.RowBounds.Height);
+            e.Graphics.DrawString(rowIdx, this.Font, SystemBrushes.ControlText, headerBounds, centerFormat);
+
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void dataGridViewRaidGroup_RowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
+        {
+            var grid = sender as DataGridView;
+            //var rowIdx = (e.RowIndex + 1).ToString();
+            var rowIdx = "U";
+            GuildMember Char = (GuildMember)(RaidGroup.RaidGroup[e.RowIndex]);
+
+            if (Char.Role == "DPS")
+            {
+                rowIdx = "D";
+            }
+            else if (Char.Role == "HEALING")
+            {
+                rowIdx = "H";
+            }
+            else if (Char.Role == "TANK")
+            {
+                rowIdx = "T";
+            }
+
+            var centerFormat = new StringFormat()
+            {
+                // right alignment might actually make more sense for numbers
+                Alignment = StringAlignment.Center,
+                LineAlignment = StringAlignment.Center
+            };
+
+            var headerBounds = new Rectangle(e.RowBounds.Left, e.RowBounds.Top, grid.RowHeadersWidth, e.RowBounds.Height);
+            e.Graphics.DrawString(rowIdx, this.Font, SystemBrushes.ControlText, headerBounds, centerFormat);
         }
 
         #endregion
