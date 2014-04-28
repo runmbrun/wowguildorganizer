@@ -2280,9 +2280,49 @@ namespace WoWGuildOrganizer
                                     MessageBox.Show("Weapon [" + weapon + "] not found!");
                                 }
                             }
+                            else if (Converter.ConvertItemClass(item.ItemClass) == "Miscellaneous")
+                            {
+                                // Check if this is an armor token
+                                if (item.Name.StartsWith("Helm"))
+                                {
+                                    item.InventoryType = 1;
+                                }
+                                else if (item.Name.StartsWith("Shoulders"))
+                                {
+                                    item.InventoryType = 3;
+                                } 
+                                if (item.Name.StartsWith("Chest"))
+                                {
+                                    item.InventoryType = 5;
+                                }
+                                else if (item.Name.StartsWith("Gauntlets"))
+                                {
+                                    item.InventoryType = 10;
+                                }                                
+                                else if (item.Name.StartsWith("Leggings"))
+                                {
+                                    item.InventoryType = 7;
+                                }
+
+                                if (Converter.ConvertInventoryType(item.InventoryType) != "error")
+                                {
+                                    if (item.Name.EndsWith(" of the Cursed Conqueror") && (gm.Class == "Paladin" || gm.Class == "Priest" || gm.Class == "Warlock"))
+                                    {
+                                        charName = gm.Name;
+                                    }
+                                    else if (item.Name.EndsWith(" of the Cursed Protector") && (gm.Class == "Warrior" || gm.Class == "Hunter" || gm.Class == "Shaman" || gm.Class == "Monk"))
+                                    {
+                                        charName = gm.Name;
+                                    }
+                                    else if (item.Name.EndsWith(" of the Cursed Vanquisher") && (gm.Class == "Rogue" || gm.Class == "Death Knight" || gm.Class == "Mage" || gm.Class == "Druid"))
+                                    {
+                                        charName = gm.Name;
+                                    }
+                                }
+                            }
 
                             // Can the row be added to data table?
-                            if (charName.ToString() != string.Empty)
+                            if (!string.IsNullOrEmpty(charName))
                             {
                                 string slot = Converter.ConvertInventoryType(item.InventoryType);
                                 bool pass = false;
@@ -2331,6 +2371,7 @@ namespace WoWGuildOrganizer
                                     pass = gm.ItemAudits.ContainsKey(slot);
                                 }
 
+                                // Did it pass?  Is it an upgrade?
                                 if (pass)
                                 {                                    
                                     iLevelNew = item.ItemLevel;
