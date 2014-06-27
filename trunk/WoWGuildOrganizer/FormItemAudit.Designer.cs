@@ -53,6 +53,7 @@
             this.textBoxProfessions = new System.Windows.Forms.TextBox();
             this.labelSpec = new System.Windows.Forms.Label();
             this.labelRole = new System.Windows.Forms.Label();
+            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewItemAudit)).BeginInit();
             this.panel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -79,9 +80,9 @@
             // 
             // dataGridViewItemAudit
             // 
-            this.dataGridViewItemAudit.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.dataGridViewItemAudit.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.dataGridViewItemAudit.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridViewItemAudit.Location = new System.Drawing.Point(0, 3);
             this.dataGridViewItemAudit.Name = "dataGridViewItemAudit";
@@ -90,9 +91,9 @@
             // 
             // panel1
             // 
-            this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.panel1.Controls.Add(this.dataGridViewItemAudit);
             this.panel1.Location = new System.Drawing.Point(12, 150);
             this.panel1.Name = "panel1";
@@ -295,11 +296,23 @@
             this.labelRole.TabIndex = 9;
             this.labelRole.Text = "Role: ";
             // 
+            // button1
+            // 
+            this.button1.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.button1.Location = new System.Drawing.Point(339, 118);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 10;
+            this.button1.Text = "Close";
+            this.button1.UseVisualStyleBackColor = true;
+            // 
             // FormItemAudit
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.CancelButton = this.button1;
             this.ClientSize = new System.Drawing.Size(805, 572);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.labelRole);
             this.Controls.Add(this.labelSpec);
             this.Controls.Add(this.groupBox2);
@@ -310,9 +323,16 @@
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.textBoxAuditStatus);
             this.Controls.Add(this.labelName);
+            this.KeyPreview = true;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "FormItemAudit";
+            this.ShowIcon = false;
             this.Text = "Character Audit";
             this.Load += new System.EventHandler(this.FormItemAudit_Load);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FormItemAudit_KeyDown);
+            this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.FormItemAudit_KeyPress);
+            this.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.FormItemAudit_PreviewKeyDown);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewItemAudit)).EndInit();
             this.panel1.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
@@ -351,5 +371,6 @@
         private System.Windows.Forms.TextBox textBoxProfessions;
         private System.Windows.Forms.Label labelSpec;
         private System.Windows.Forms.Label labelRole;
+        private System.Windows.Forms.Button button1;
     }
 }
