@@ -2789,16 +2789,15 @@ namespace WoWGuildOrganizer
             BossLoot = new int[] { 103783, 103776, 103820, 103799, 103817, 103780, 103809, 103822, 103787, 103801, 103802, 102296, 103812, 103804, 103790, 103815, 103807, 103924, 103775, 103793, 103777 };
             tempLoot.Add(RaidBoss, BossLoot);
 
-            // todo:
-            //RaidBoss = "Norushen";
-            //BossLoot = new int[] {  };
-            //tempLoot.Add(RaidBoss, BossLoot);
+            RaidBoss = "Norushen";
+            BossLoot = new int[] { 103867, 102295, 103841, 103857, 103852, 103740, 103849, 103830, 103845, 103838, 103847, 103834, 103836, 103942, 103762, 103861, 103858, 103827, 103855, 103864, 103826, 103839 };
+            tempLoot.Add(RaidBoss, BossLoot);
+                        
+            RaidBoss = "Sha of Pride";
+            BossLoot = new int[] { 99691,99696,99686,103869,103873,102292,103878,103881,102299,103883,103870,103821,103876 };
+            tempLoot.Add(RaidBoss, BossLoot);
 
             // todo:
-            //RaidBoss = "Sha of Pride";
-            //BossLoot = new int[] {  };
-            //tempLoot.Add(RaidBoss, BossLoot);
-
             // Wing 2 - todo: 
             // Wing 3 - todo: 
             // Wing 4 - todo: 

@@ -486,5 +486,35 @@ namespace WoWGuildOrganizer
         }
 
         #endregion
+
+        private void FormItemAudit_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            // Check for the the ESC key
+            if (e.KeyChar == (char)27)
+            {
+                // quit out of the form
+                this.Close();
+            }
+        }
+
+        private void FormItemAudit_KeyDown(object sender, KeyEventArgs e)
+        {
+            // Check for the the ESC key
+            if (e.KeyCode == Keys.Escape)
+            {
+                // quit out of the form
+                this.Close();
+            }
+        }
+
+        private void FormItemAudit_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+            // Check for the the ESC key
+            if (e.KeyCode == Keys.Escape)
+            {
+                // quit out of the form
+                this.Close();
+            }
+        }
     }
 }
