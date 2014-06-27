@@ -2123,7 +2123,7 @@ namespace WoWGuildOrganizer
                                     }
                                     else if (item.HasStrength())
                                     {
-                                        if (gm.Class == "Death Knight" || (gm.Class == "Paladin" && gm.Role != "HEALING") || gm.Class == "Warrior")
+                                        if ((gm.Class == "Death Knight" && gm.Spec == "Frost") || (gm.Class == "Paladin" && gm.Role == "TANK") || (gm.Class == "Warrior" && gm.Spec != "Arms"))
                                         {
                                             charName = gm.Name;
                                         }
@@ -2160,7 +2160,7 @@ namespace WoWGuildOrganizer
                                             charName = gm.Name;
                                         }
                                     }
-                                    else if (gm.Role == "DPS" && (gm.Class == "Death Knight" || gm.Class == "Paladin" || gm.Class == "Warrior"))
+                                    else if (gm.Role == "DPS" && ((gm.Class == "Death Knight" && gm.Spec != "Frost") || gm.Class == "Paladin" || gm.Class == "Warrior"))
                                     {
                                         charName = gm.Name;
                                     }
