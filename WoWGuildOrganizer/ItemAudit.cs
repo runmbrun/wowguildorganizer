@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.ComponentModel;
+using System.Text.RegularExpressions;
 
 namespace WoWGuildOrganizer
 {
@@ -206,9 +207,9 @@ namespace WoWGuildOrganizer
             }
         }
 
-        public Boolean IsJewelcraftingGem()
+        public int IsJewelcraftingGem()
         {
-            Boolean Found = false;
+            int Found = 0;
 
 
             //  This will change for every expansion!
@@ -216,22 +217,55 @@ namespace WoWGuildOrganizer
             if (_toolTips != null)
             {
                 // If the tooltips contains one of them... return true
-                if (
-                    _toolTips.Contains("83141") || 
-                    _toolTips.Contains("83142") || 
-                    _toolTips.Contains("83143") || 
-                    _toolTips.Contains("83144") || 
-                    _toolTips.Contains("83145") || 
-                    _toolTips.Contains("83146") || 
-                    _toolTips.Contains("83147") || 
-                    _toolTips.Contains("83148") ||
-                    _toolTips.Contains("83149") ||
-                    _toolTips.Contains("83150") ||
-                    _toolTips.Contains("83151") || 
-                    _toolTips.Contains("83152")
-                    )
+                if (_toolTips.Contains("83141"))
                 {
-                    Found = true;
+                    Found = Regex.Matches(_toolTips, "83141").Count;
+                }
+                if (_toolTips.Contains("83142"))
+                {
+                    Found = Regex.Matches(_toolTips, "83142").Count;
+                }
+                if (_toolTips.Contains("83143"))
+                {
+                    Found = Regex.Matches(_toolTips, "83143").Count;
+                }
+                if (_toolTips.Contains("83144"))
+                {
+                    Found = Regex.Matches(_toolTips, "83144").Count;
+                }
+                if (_toolTips.Contains("83145"))
+                {
+                    Found = Regex.Matches(_toolTips, "83145").Count;
+                }
+                if (_toolTips.Contains("83146"))
+                {
+                    Found = Regex.Matches(_toolTips, "83146").Count;
+                }
+                if (_toolTips.Contains("83147"))
+                {
+                    Found = Regex.Matches(_toolTips, "83147").Count;
+                }
+                if (_toolTips.Contains("83148"))
+                {
+                    Found = Regex.Matches(_toolTips, "83148").Count;
+                }
+                if (_toolTips.Contains("83149"))
+                {
+                    Found = Regex.Matches(_toolTips, "83149").Count;
+                }
+                                
+                if (_toolTips.Contains("83150"))
+                {
+                    Found = Regex.Matches(_toolTips, "83150").Count;
+                }
+
+                if (_toolTips.Contains("83151"))
+                {
+                    Found = Regex.Matches(_toolTips, "83151").Count;
+                }
+                if (_toolTips.Contains("83152"))
+                {
+                    Found = Regex.Matches(_toolTips, "83152").Count;
                 }
             }
 
