@@ -259,10 +259,11 @@ namespace WoWGuildOrganizer
                     // Jewelcrafting - Check for 2 special JC gems                    
                     if (Profession1 == "Jewelcrafting" || Profession2 == "Jewelcrafting")
                     {
-                        if (item.IsJewelcraftingGem())
+                        int foundJCGems = item.IsJewelcraftingGem();
+                        if (foundJCGems > 0)
                         {
                             item.Profession = "0";
-                            MissingJCGems++;
+                            MissingJCGems += foundJCGems;
                         }
                     }
 
@@ -485,36 +486,22 @@ namespace WoWGuildOrganizer
             UpdateGridData();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="msg"></param>
+        /// <param name="keyData"></param>
+        /// <returns></returns>
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == Keys.Escape)
+            {
+                this.Close();
+                return true;
+            }
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
         #endregion
-
-        private void FormItemAudit_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            // Check for the the ESC key
-            if (e.KeyChar == (char)27)
-            {
-                // quit out of the form
-                this.Close();
-            }
-        }
-
-        private void FormItemAudit_KeyDown(object sender, KeyEventArgs e)
-        {
-            // Check for the the ESC key
-            if (e.KeyCode == Keys.Escape)
-            {
-                // quit out of the form
-                this.Close();
-            }
-        }
-
-        private void FormItemAudit_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
-        {
-            // Check for the the ESC key
-            if (e.KeyCode == Keys.Escape)
-            {
-                // quit out of the form
-                this.Close();
-            }
-        }
     }
 }
