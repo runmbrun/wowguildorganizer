@@ -406,7 +406,6 @@ namespace WoWGuildOrganizer
             return tooltip;
         }
 
-
         // Good Stat Info:
         // Agility = 3
         // Strength = 4
