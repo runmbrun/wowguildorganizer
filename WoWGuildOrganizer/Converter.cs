@@ -5,9 +5,14 @@ using System.Text;
 
 namespace WoWGuildOrganizer
 {
+    /// <summary>
+    /// 
+    /// </summary>
     static class Converter
     {
-        // TODO: finish this...
+        /// <summary>
+        /// 
+        /// </summary>
         enum ItemSlot
         {
             head = 0,
@@ -30,9 +35,45 @@ namespace WoWGuildOrganizer
             offhand = 17
         }
 
-        enum WoWClass
+        /// <summary>
+        /// A list of all the Classes, with the proper spelling
+        /// </summary>
+        public enum WoWClass
         {
+            DeathKnight, // this might cause issues...
+            Druid,
+            Hunter,
+            Mage,
+            Monk,
+            Paladin,
+            Priest,
+            Rogue,
+            Shaman,
+            Warlock,
+            Warrior
+        }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public enum WoWSpecs
+        {
+            Survival,
+            Marksmenship,
+            BeastMastery,
+            Arms,
+            Fury,
+            Protection
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public enum WoWRole
+        {
+            DPS,
+            HEALING,
+            TANK
         }
 
         /// <summary>
@@ -546,7 +587,7 @@ namespace WoWGuildOrganizer
 
             return stat;
         }
-
+                
         // ** OTHERS ***
         /*
          * 

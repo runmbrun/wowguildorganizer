@@ -7,13 +7,13 @@ In no particular order...
 =====================
 
 Raid Data tab.
-1.  Add in Role.  Can order by role... Tanks, then Healers, then DPS.
+1.  Can order by role... Tanks, then Healers, then DPS.
 2.  
 
 Raid Loot Drop tab.
-1.  Paladin Ret should not have 1 hand sword as possible loot
-2.  When checking for a possible upgrade for rings, also check name.  Can't have dups.
-3.  Trinkets - need to rank these somehow.
+1.  Character Audit Grid - make read-only
+2.  Character Audit Grid - Double click will copy Name of item to clipboard
+3.  
 4.
 
 
