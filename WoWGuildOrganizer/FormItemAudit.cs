@@ -14,6 +14,8 @@ namespace WoWGuildOrganizer
 {
     public partial class FormItemAudit : Form
     {
+        #region " Properties "
+
         private String _name;
         public String CharacterName
         {
@@ -64,7 +66,10 @@ namespace WoWGuildOrganizer
         }
 
         ArrayList ItemAuditList = null;
+        
+        #endregion
 
+        #region " Class Constructor "
 
         /// <summary>
         /// 
@@ -75,6 +80,10 @@ namespace WoWGuildOrganizer
 
             ItemAuditList = new ArrayList();
         }
+
+        #endregion
+
+        #region " Class Functions "
 
         /// <summary>
         /// 
@@ -352,6 +361,10 @@ namespace WoWGuildOrganizer
             return Success;
         }
 
+        #endregion
+
+        #region " Data Grid View Functions "
+
         /// <summary>
         /// 
         /// </summary>
@@ -473,6 +486,38 @@ namespace WoWGuildOrganizer
             dataGridViewItemAudit.AutoResizeColumns();
             dataGridViewItemAudit.AutoResizeRows();
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void copyItemToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            int row = this.dataGridViewItemAudit.SelectedRows[0].Index;
+
+            if (row >= 0)
+            {
+                Clipboard.SetData(DataFormats.Text, string.Format("{0}", dataGridViewItemAudit.Rows[row].Cells[1].Value.ToString()));
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void copyLineToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            int row = this.dataGridViewItemAudit.SelectedRows[0].Index;
+
+            if (row >= 0)
+            {
+                Clipboard.SetData(DataFormats.Text, string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}", dataGridViewItemAudit.Rows[row].Cells[0].Value.ToString(), dataGridViewItemAudit.Rows[row].Cells[1].Value.ToString(), dataGridViewItemAudit.Rows[row].Cells[2].Value.ToString(), dataGridViewItemAudit.Rows[row].Cells[3].Value.ToString(), dataGridViewItemAudit.Rows[row].Cells[4].Value.ToString(), dataGridViewItemAudit.Rows[row].Cells[5].Value.ToString()));
+            }
+        }
+
+        #endregion
 
         #region " Form Functions "
 

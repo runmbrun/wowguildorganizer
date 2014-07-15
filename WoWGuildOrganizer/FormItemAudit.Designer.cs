@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.labelName = new System.Windows.Forms.Label();
             this.textBoxAuditStatus = new System.Windows.Forms.TextBox();
             this.dataGridViewItemAudit = new System.Windows.Forms.DataGridView();
@@ -53,10 +54,14 @@
             this.textBoxProfessions = new System.Windows.Forms.TextBox();
             this.labelSpec = new System.Windows.Forms.Label();
             this.labelRole = new System.Windows.Forms.Label();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.copyItemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.copyLineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewItemAudit)).BeginInit();
             this.panel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // labelName
@@ -83,8 +88,10 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dataGridViewItemAudit.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridViewItemAudit.ContextMenuStrip = this.contextMenuStrip1;
             this.dataGridViewItemAudit.Location = new System.Drawing.Point(0, 3);
             this.dataGridViewItemAudit.Name = "dataGridViewItemAudit";
+            this.dataGridViewItemAudit.ReadOnly = true;
             this.dataGridViewItemAudit.Size = new System.Drawing.Size(777, 404);
             this.dataGridViewItemAudit.TabIndex = 2;
             // 
@@ -295,6 +302,28 @@
             this.labelRole.TabIndex = 9;
             this.labelRole.Text = "Role: ";
             // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.copyItemToolStripMenuItem,
+            this.copyLineToolStripMenuItem});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(153, 70);
+            // 
+            // copyItemToolStripMenuItem
+            // 
+            this.copyItemToolStripMenuItem.Name = "copyItemToolStripMenuItem";
+            this.copyItemToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.copyItemToolStripMenuItem.Text = "Copy Item";
+            this.copyItemToolStripMenuItem.Click += new System.EventHandler(this.copyItemToolStripMenuItem_Click);
+            // 
+            // copyLineToolStripMenuItem
+            // 
+            this.copyLineToolStripMenuItem.Name = "copyLineToolStripMenuItem";
+            this.copyLineToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.copyLineToolStripMenuItem.Text = "Copy Line";
+            this.copyLineToolStripMenuItem.Click += new System.EventHandler(this.copyLineToolStripMenuItem_Click);
+            // 
             // FormItemAudit
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -324,6 +353,7 @@
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            this.contextMenuStrip1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -356,5 +386,8 @@
         private System.Windows.Forms.TextBox textBoxProfessions;
         private System.Windows.Forms.Label labelSpec;
         private System.Windows.Forms.Label labelRole;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem copyItemToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem copyLineToolStripMenuItem;
     }
 }
