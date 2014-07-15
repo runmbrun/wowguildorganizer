@@ -2863,5 +2863,15 @@ namespace WoWGuildOrganizer
         }
 
         #endregion
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void updateCharacterToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // todo:
+        }
     }
 }
