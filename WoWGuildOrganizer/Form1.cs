@@ -2871,7 +2871,136 @@ namespace WoWGuildOrganizer
         /// <param name="e"></param>
         private void updateCharacterToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            // todo:
+            // Update just the selected rows of characters
+            UpdateCharacters(this.dataGridViewGuildData.SelectedRows, true);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="chars"></param>
+        /// <param name="guildUpdate"></param>
+        private void UpdateCharacters(DataGridViewSelectedRowCollection chars, bool guildUpdate)
+        {
+            WaitCursor(true);
+
+            try
+            {
+                foreach (DataGridViewRow row in chars)
+                {
+                    int CurrentRow = row.Index;
+                    GuildMember oldMember = null;
+                    GuildMember gm = null;
+                    
+                    if (guildUpdate)
+                    {
+                        oldMember = (GuildMember)(SavedCharacters.SavedCharacters[CurrentRow]);
+                        gm = GetCharacterInformation(oldMember.Name, SavedCharacters.Realm);
+                    }
+                    else
+                    {
+                        oldMember = (GuildMember)(RaidGroup.RaidGroup[CurrentRow]);
+                        gm = GetCharacterInformation(oldMember.Name, oldMember.Realm);
+                    }
+                    
+                    if (gm != null)
+                    {
+                        // Success! Now we have the new info
+                        bool goOn = true;
+                        
+                        // Check the spec first... if spec is different then first 
+                        //  ask if the update should happen
+                        // This prevents from losing primary spec data
+                        if (oldMember.Spec != gm.Spec)
+                        {
+                            if (MessageBox.Show(string.Format("The spec for {0} has changed from {1} to {2}.\n  Are you sure that you want to update?", oldMember.Name, oldMember.Spec, gm.Spec), "Spec Change", MessageBoxButtons.YesNo) == DialogResult.No)
+                            {
+                                goOn = false;
+                            }
+                        }
+                        
+                        if (goOn)
+                        {
+                            // Success! Now we have the new info
+                            // Compare the new info with the old info
+                            //  And make updates as needed...
+
+                            // Level
+                            if (oldMember.Level != gm.Level)
+                            {
+                                oldMember.Level = gm.Level;
+                            }
+                            else
+                            {
+                                oldMember.ClearFlags();
+                                gm.ClearFlags();
+                            }
+
+                            // Achievement Points
+                            if (oldMember.AchievementPoints != gm.AchievementPoints)
+                            {
+                                oldMember.AchievementPoints = gm.AchievementPoints;
+                            }
+
+                            // Equiped iLevel
+                            if (oldMember.EquipediLevel != gm.EquipediLevel)
+                            {
+                                oldMember.EquipediLevel = gm.EquipediLevel;
+                            }
+                            else
+                            {
+                                oldMember.ClearEquipItemLevelFlag();
+                                gm.ClearEquipItemLevelFlag();
+                            }
+
+                            // Max iLevel
+                            if (oldMember.MaxiLevel != gm.MaxiLevel)
+                            {
+                                oldMember.MaxiLevel = gm.MaxiLevel;
+                            }
+                            else
+                            {
+                                oldMember.ClearMaxItemLevelFlag();
+                                gm.ClearMaxItemLevelFlag();
+                            }
+
+                            // Spec
+                            if (oldMember.Spec != gm.Spec)
+                            {
+                                oldMember.Spec = gm.Spec;
+                            }
+
+                            // Role
+                            if (oldMember.Role != gm.Role)
+                            {
+                                oldMember.Role = gm.Role;
+                            }
+
+                            // ItemAudit - always update, just in case
+                            oldMember.ItemAudits = gm.ItemAudits;
+
+                            // Update the last updated time with the current date and time
+                            oldMember.LastUpdated = DateTime.Now;
+                        }
+                    }
+                }
+
+                // refresh the grid data since it's been changed
+                if (guildUpdate)
+                {
+                    UpdateGrid();
+                }
+                else
+                {
+                    UpdateRaidGrid();
+                }
+            }
+            catch (Exception ex)
+            {
+                Log("Error: " + ex.Message);
+            }
+
+            WaitCursor(false);
         }
     }
 }
