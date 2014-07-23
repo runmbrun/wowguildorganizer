@@ -215,8 +215,8 @@ namespace WoWGuildOrganizer
 
             RaidLoot.Add(RaidName, tempLoot);
 
-            // Tier 16 Raid - Flex
-            RaidName = "Siege of Orgrimmar - Normal";
+            // Tier 16 Raid - 10 Normal
+            RaidName = "Siege of Orgrimmar - 10N";
             tempLoot = new Dictionary<string, int[]>();
 
             // Wing 1
@@ -235,11 +235,50 @@ namespace WoWGuildOrganizer
             RaidBoss = "Sha of Pride";
             BossLoot = new int[] { 99691, 99696, 99686, 103869, 103873, 102292, 103878, 103881, 102299, 103883, 103870, 103821, 103876 };
             tempLoot.Add(RaidBoss, BossLoot);
+                        
+            // Wing 2: 
+            RaidBoss = "Galakras";
+            BossLoot = new int[] { 103875, 103823, 102298, 103842, 103805, 103889, 103900, 103850, 103887, 103831, 103892, 103778, 103743, 103885, 103905, 103894, 103765, 103748, 103756, 103902, 103907, 103865 };
+            tempLoot.Add(RaidBoss, BossLoot);
+                        
+            RaidBoss = "Iron Juggernaut";
+            BossLoot = new int[] { 103773,103921,103898,103916,103918,103731,103782,103788,102297,103909,103912,103735,103739,103767,103811,103759,103754,103908,103922,103813,103863,103914 };
+            tempLoot.Add(RaidBoss, BossLoot);
+                        
+            RaidBoss = "Kor'kron Dark Shaman";
+            BossLoot = new int[] { 103868,102300,103936,102301,103934,103806,103880,103798,103737,103927,103930,103929,103940,103926,103866,103816,103943,103932,103877,103938,103895 };
+            tempLoot.Add(RaidBoss, BossLoot);
 
             // todo:
-            // Wing 2 - todo: 
-            // Wing 3 - todo: 
-            // Wing 4 - todo: 
+            //RaidBoss = "General Nazgrim";
+            //BossLoot = new int[] { };
+            //tempLoot.Add(RaidBoss, BossLoot);
+
+            // Wing 3: 
+            //RaidBoss = "Malkorok";
+            //BossLoot = new int[] {  };
+            //tempLoot.Add(RaidBoss, BossLoot);
+
+            //RaidBoss = "Spoils of Pandaria";
+            //BossLoot = new int[] {  };
+            //tempLoot.Add(RaidBoss, BossLoot);
+
+            //RaidBoss = "Thok the Bloodthirsty";
+            //BossLoot = new int[] {  };
+            //tempLoot.Add(RaidBoss, BossLoot);
+
+            // Wing 4: 
+            //RaidBoss = "Siegecrafter Blackfuse";
+            //BossLoot = new int[] {  };
+            //tempLoot.Add(RaidBoss, BossLoot);
+
+            //RaidBoss = "Paragons of the Klaxxi";
+            //BossLoot = new int[] {  };
+            //tempLoot.Add(RaidBoss, BossLoot);
+
+            //RaidBoss = "Garrosh Hellscream";
+            //BossLoot = new int[] {  };
+            //tempLoot.Add(RaidBoss, BossLoot);
 
             RaidLoot.Add(RaidName, tempLoot);
         }

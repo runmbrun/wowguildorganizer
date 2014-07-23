@@ -2561,14 +2561,14 @@ namespace WoWGuildOrganizer
                                             // Need to account for any trinket duplicates
                                             if (item.Name == gm.ItemAudits["trinket1"].Name)
                                             {
-                                                if (item.ItemLevel <= testTrinket1)
+                                                if (item.ItemLevel > testTrinket1)
                                                 {
                                                     iLevelOriginal = testTrinket1;
                                                 }
                                             }
                                             else if (item.Name == gm.ItemAudits["trinket2"].Name)
                                             {
-                                                if (item.ItemLevel <= testTrinket2)
+                                                if (item.ItemLevel > testTrinket2)
                                                 {
                                                     iLevelOriginal = testTrinket2;
                                                 }
