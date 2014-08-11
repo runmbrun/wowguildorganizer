@@ -6,13 +6,16 @@ In no particular order...
 + Updates and Fixes +
 =====================
 
-Raid Data tab.
+Global:
+1.  Check to see if web site is available before doing any polls against it.
+
+Raid Data tab:
 1.  Can order by role... Tanks, then Healers, then DPS.
 2.  
 
-Raid Loot Drop tab.
-1.  Character Audit Grid - make read-only
-2.  Character Audit Grid - Double click will copy Name of item to clipboard
+Raid Loot Drop tab:
+1.  
+2.  
 3.  
 4.
 

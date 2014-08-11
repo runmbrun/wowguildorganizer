@@ -639,6 +639,19 @@ namespace WoWGuildOrganizer
                                         gm.Spec = charInfo.Spec;
                                         gm.Role = charInfo.Role;
                                         gm.ItemAudits = charInfo.ItemAudits;
+
+                                        if (charInfo.AchievementPoints == 0)
+                                        {
+                                            gm.AchievementPoints = gm.AchievementPoints;
+                                        }
+                                        else if (gm.AchievementPoints == 0)
+                                        {
+                                            gm.AchievementPoints = charInfo.AchievementPoints;
+                                        }
+                                        else
+                                        {
+                                            MessageBox.Show(string.Format("WARN: Old vs New Achievement points.  [{0}] vs [{1}].", gm.AchievementPoints, charInfo.AchievementPoints));
+                                        }
                                     }
                                     else
                                     {
@@ -979,7 +992,7 @@ namespace WoWGuildOrganizer
         private void buttonGetGuildInfo_Click(object sender, EventArgs e)
         {
             // First check to make sure the vars are passed in
-            if (textBoxGuildName.Text.Length == 0 || textBoxGuildName.Text.Length == 0)
+            if (textBoxGuildName.Text.Length == 0 || textBoxRealm.Text.Length == 0)
             {
                 MessageBox.Show("Error: Both Guild Name and Realm need to be filled out.");
             }
@@ -1125,14 +1138,14 @@ namespace WoWGuildOrganizer
                 else
                 {
                     // no character was matched!
-                    Log(String.Format("Failed to get information about {0}", textBoxCharacterName.Text));
+                    Log(String.Format("Failed to get information about {0}", name));
                     gm = null;
                 }
             }
             else
             {
                 // Fail!  Save all errors until the end!
-                Log(String.Format("Failed to get information about {0}", textBoxCharacterName.Text));
+                Log(String.Format("Failed to get information about {0}", name));
                 gm = null;
             }
 

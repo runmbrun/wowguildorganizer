@@ -248,12 +248,12 @@ namespace WoWGuildOrganizer
             RaidBoss = "Kor'kron Dark Shaman";
             BossLoot = new int[] { 103868,102300,103936,102301,103934,103806,103880,103798,103737,103927,103930,103929,103940,103926,103866,103816,103943,103932,103877,103938,103895 };
             tempLoot.Add(RaidBoss, BossLoot);
+                        
+            RaidBoss = "General Nazgrim";
+            BossLoot = new int[] { 99692, 99682, 99687, 103945, 102294, 103946, 103872, 103829, 103732, 103913, 103808, 103949, 103904, 103947 };
+            tempLoot.Add(RaidBoss, BossLoot);
 
             // todo:
-            //RaidBoss = "General Nazgrim";
-            //BossLoot = new int[] { };
-            //tempLoot.Add(RaidBoss, BossLoot);
-
             // Wing 3: 
             //RaidBoss = "Malkorok";
             //BossLoot = new int[] {  };
