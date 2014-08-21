@@ -28,6 +28,7 @@ namespace WoWGuildOrganizer
         private BackgroundWorker GetGuildInfoAsyncWorker = new BackgroundWorker();
         private StopWatch sw = new StopWatch();
         static public ItemCache Items;
+        static public bool WebSiteOnline = true;
         ArrayList ErrorLog = new ArrayList();
         ContextMenuStrip contextMenuCharacter;
         Dictionary<string, Dictionary<string, int[]>> RaidLoot = new Dictionary<string, Dictionary<string, int[]>>();
