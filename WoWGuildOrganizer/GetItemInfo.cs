@@ -277,8 +277,7 @@ namespace WoWGuildOrganizer
                     {
                         item.CanSocket = true;
 
-                        // TODO: is this the best way to do this?
-                        //   capture the number of sockets
+                        // Capture the number of sockets
                         int i = 0;
 
                         while ((i = data.IndexOf(@"""type"":""", i + 1)) != -1)
@@ -306,9 +305,8 @@ namespace WoWGuildOrganizer
                         item.Armor = Convert.ToInt32(testArmor);
                     }
                     catch (Exception ex)
-                    {
-                        // TODO: how to handle this error?
-                        string message = ex.Message;
+                    {                        
+                        Logging.DisplayError(ex.Message);
                     }
                 }
 

@@ -18,7 +18,7 @@ using System.Threading;
 
 namespace WoWGuildOrganizer
 {
-    public partial class Form1 : Form
+    public partial class FormMain : Form
     {
         #region " Variables "
 
@@ -36,7 +36,7 @@ namespace WoWGuildOrganizer
 
         #region " Constructor "
 
-        public Form1()
+        public FormMain()
         {
             InitializeComponent();
 
@@ -79,7 +79,7 @@ namespace WoWGuildOrganizer
             {
                 if (!ex.Message.StartsWith("Could not find file"))
                 {
-                    Log(String.Format("  **ERROR: ", ex.Message));
+                    Logging.Log(String.Format("  **ERROR: ", ex.Message));
                     MessageBox.Show(String.Format("  **ERROR[LoadTempData]: {0}", ex.Message));
                 }
             }
@@ -105,7 +105,7 @@ namespace WoWGuildOrganizer
             {
                 if (!ex.Message.StartsWith("Could not find file"))
                 {
-                    Log(String.Format("  **ERROR: ", ex.Message));
+                    Logging.Log(String.Format("  **ERROR: ", ex.Message));
                     MessageBox.Show(String.Format("  **ERROR[LoadTempData]: {0}", ex.Message));
                 }
             }
@@ -130,7 +130,7 @@ namespace WoWGuildOrganizer
             {
                 if (!ex.Message.StartsWith("Could not find file"))
                 {
-                    Log(String.Format("  **ERROR: ", ex.Message));
+                    Logging.Log(String.Format("  **ERROR: ", ex.Message));
                     MessageBox.Show(String.Format("  **ERROR[LoadTempData]: {0}", ex.Message));
                 }
             }
@@ -323,10 +323,13 @@ namespace WoWGuildOrganizer
 
             // Get the cell's current row
             Int32 CurrentRow = currentCell.RowIndex;
-
-
+            
             // First check to make sure the vars are passed in
-            if (CurrentRow < 0 || textBoxRealm.Text.Length == 0)
+            if (textBoxRealm.Text.Length == 0)
+            {
+                MessageBox.Show("Error: Please fill out the Realm.");
+            }
+            else if (CurrentRow < 0)
             {
                 MessageBox.Show("Error: No row was selected.");
             }
@@ -379,7 +382,7 @@ namespace WoWGuildOrganizer
                 }
                 else
                 {
-                    DisplayError("ERROR - Can't Audit Character: " + CharName);
+                    Logging.DisplayError("Can't Audit Character: " + CharName);
                 }
             }
 
@@ -524,7 +527,7 @@ namespace WoWGuildOrganizer
                 if (bwAsync.CancellationPending)
                 {
                     // stop the job...
-                    Log("Searching stopped!");
+                    Logging.Log("Searching stopped!");
                 }
                 else
                 {
@@ -650,7 +653,7 @@ namespace WoWGuildOrganizer
                                         }
                                         else
                                         {
-                                            MessageBox.Show(string.Format("WARN: Old vs New Achievement points.  [{0}] vs [{1}].", gm.AchievementPoints, charInfo.AchievementPoints));
+                                            //MessageBox.Show(string.Format("WARN: Old vs New Achievement points.  [{0}] vs [{1}].", gm.AchievementPoints, charInfo.AchievementPoints));
                                         }
                                     }
                                     else
@@ -670,7 +673,7 @@ namespace WoWGuildOrganizer
                          }
                         catch (Exception ex)
                         {
-                            Log("Error: " + ex.Message);
+                            Logging.Log("Error: " + ex.Message);
                         }
 
                         // Data has been gathered now...
@@ -692,18 +695,18 @@ namespace WoWGuildOrganizer
                                 ErrorMessage += str + "\n";
                             }
 
-                            Log(ErrorMessage);
+                            Logging.Log(ErrorMessage);
                         }
                     }
                     catch (Exception ex)
                     {
-                        Log("  **ERROR: " + ex.Message);
+                        Logging.Log("  **ERROR: " + ex.Message);
                     }
                 }
             }
             catch (Exception ex)
             {
-                Log("  **ERROR: " + ex.Message);
+                Logging.Log("  **ERROR: " + ex.Message);
             }            
         }
 
@@ -726,14 +729,14 @@ namespace WoWGuildOrganizer
             // Check to see if the background process was cancelled.
             if (e.Cancelled)
             {
-                Log("Search has been cancelled!");
+                Logging.Log("Search has been cancelled!");
             }
             else
             {
                 // Everything completed normally.
 
                 // process the response using e.Result
-                Log("Search has been completed!");
+                Logging.Log("Search has been completed!");
 
                 // change the buttons back
                 buttonGetGuildInfo.Text = "Get Guild Info";
@@ -894,7 +897,7 @@ namespace WoWGuildOrganizer
             {
                 if (!ex.Message.StartsWith("Could not find file"))
                 {
-                    Log(String.Format("  **ERROR[LoadTempData]: {0}", ex.Message));
+                    Logging.Log(String.Format("  **ERROR[LoadTempData]: {0}", ex.Message));
                 }
             }
         }
@@ -927,48 +930,11 @@ namespace WoWGuildOrganizer
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Error: " + ex.Message);
+                    Logging.DisplayError(ex.Message);
                 }
             }
         }
-        #endregion
 
-        #region " Logging Functions " 
-
-        /// <summary>
-        /// Place holder for future logging mechanism
-        /// </summary>
-        /// <param name="Message"></param>
-        public void Log(String Message)
-        {
-            // Add to the Error Log
-            ErrorLog.Add(Message);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public void ShowAllErrors()
-        {
-            String Errors = "";
-
-            foreach (String s in ErrorLog)
-            {
-                Errors += s + "\n";
-            }
-
-            MessageBox.Show(Errors);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="Message"></param>
-        public void DisplayError(String Message)
-        {
-            MessageBox.Show(Message);
-            Log(Message);
-        }
         #endregion
 
         #region " Button Functions "
@@ -1016,7 +982,7 @@ namespace WoWGuildOrganizer
                 }
                 else
                 {
-                    Log("Search Started...");
+                    Logging.Log("Search Started...");
 
                     // start the wait cursor
                     WaitCursor(true);
@@ -1054,7 +1020,7 @@ namespace WoWGuildOrganizer
             }
             catch (Exception ex)
             {
-                Log("Error: " + ex.Message);
+                Logging.Log("Error: " + ex.Message);
             }
         }
 
@@ -1065,7 +1031,7 @@ namespace WoWGuildOrganizer
         /// <param name="e"></param>
         private void button1_Click(object sender, EventArgs e)
         {
-            ShowAllErrors();
+            Logging.ShowAllErrors();
         }
 
         #endregion        
@@ -1138,14 +1104,14 @@ namespace WoWGuildOrganizer
                 else
                 {
                     // no character was matched!
-                    Log(String.Format("Failed to get information about {0}", name));
+                    Logging.Log(String.Format("Failed to get information about {0}", name));
                     gm = null;
                 }
             }
             else
             {
                 // Fail!  Save all errors until the end!
-                Log(String.Format("Failed to get information about {0}", name));
+                Logging.Log(String.Format("Failed to get information about {0}", name));
                 gm = null;
             }
 
@@ -1260,14 +1226,14 @@ namespace WoWGuildOrganizer
             }
             catch (Exception ex)
             {
-                Log("Error: " + ex.Message);
+                Logging.Log("Error: " + ex.Message);
             }
 
             WaitCursor(false);
         }       
 
         /// <summary>
-        /// Update the individual chars Armory info and Gear Score
+        /// Bring up the individual character's Armory info and Gear Score
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -1282,7 +1248,11 @@ namespace WoWGuildOrganizer
             Int32 CurrentRow = currentCell.RowIndex;
 
             // First check to make sure the vars are passed in
-            if (CurrentRow < 0 || textBoxRealm.Text.Length == 0)
+            if (textBoxRealm.Text.Length == 0)
+            {
+                MessageBox.Show("Error: Please fill out the Realm.");
+            }
+            else if (CurrentRow < 0)
             {
                 MessageBox.Show("Error: No row was selected.");
             }
@@ -1303,7 +1273,7 @@ namespace WoWGuildOrganizer
                 }
                 else
                 {
-                    DisplayError("ERROR - Can't Audit Character: " + Char.Name);
+                    Logging.DisplayError("Can't Audit Character: " + Char.Name);
                 }
             }
 
@@ -1443,7 +1413,7 @@ namespace WoWGuildOrganizer
                 }
                 catch (Exception ex)
                 {
-                    Log("Error: " + ex.Message);
+                    Logging.Log("Error: " + ex.Message);
                 }
 
                 WaitCursor(false);
@@ -1704,25 +1674,8 @@ namespace WoWGuildOrganizer
                 {
                     ItemInfo item = null;
 
-                    // does this item currently exist in the item cache?
-                    if (!Items.Contains(itemId))
-                    {
-                        // Need to add in this item to the Item Cache
-
-                        // First fetch the data
-                        GetItemInfo get = new GetItemInfo();
-                        if (get.CollectData(itemId))
-                        {
-                            item = get.Item;
-                            item.Id = itemId;
-                            Items.AddItem(item);
-                        }
-                    }
-                    else
-                    {
-                        item = Items.GetItem(itemId);
-                    }
-
+                    item = Items.GetItem(itemId);
+                    
                     if (item != null)
                     {
                         // Now we have the item in the item cache
@@ -2490,25 +2443,8 @@ namespace WoWGuildOrganizer
                                             int slotType = 0;
                                             ItemInfo itemMainHand = null;
 
-                                            // does this item currently exist in the item cache?
-                                            if (!Items.Contains(itemIdMainHand))
-                                            {
-                                                // Need to add in this item to the Item Cache
-
-                                                // First fetch the data
-                                                GetItemInfo get = new GetItemInfo();
-                                                if (get.CollectData(itemIdMainHand))
-                                                {
-                                                    itemMainHand = get.Item;
-                                                    itemMainHand.Id = itemIdMainHand;
-                                                    Items.AddItem(itemMainHand);
-                                                }
-                                            }
-                                            else
-                                            {
-                                                itemMainHand = Items.GetItem(itemIdMainHand);
-                                            }
-
+                                            itemMainHand = Items.GetItem(itemIdMainHand);
+                                                                                        
                                             if (itemMainHand != null)
                                             {
                                                 slotType = itemMainHand.InventoryType;
@@ -2551,26 +2487,14 @@ namespace WoWGuildOrganizer
                                     else
                                     {
                                         // Check for a upgrade taking upgraded items into account
-                                        int id = 0;
                                         int iLevelOriginal = iLevelOld;
-                                        GetItemInfo get = new GetItemInfo();
 
                                         if (Converter.ConvertInventoryType(item.InventoryType) == "trinket")
                                         {
-                                            int testTrinket1 = 0;
-                                            int testTrinket2 = 0;
-                                            
                                             // Get the original iLevel of both trinkets
-                                            if (get.CollectData(gm.ItemAudits[Converter.ConvertInventoryType(item.InventoryType) + "1"].Id))
-                                            {
-                                                testTrinket1 = get.Item.ItemLevel;
-                                            }
-
-                                            if (get.CollectData(gm.ItemAudits[Converter.ConvertInventoryType(item.InventoryType) + "2"].Id))
-                                            {
-                                                testTrinket2 = get.Item.ItemLevel;
-                                            }
-
+                                            int testTrinket1 = Items.GetItem(gm.ItemAudits[Converter.ConvertInventoryType(item.InventoryType) + "1"].Id).ItemLevel; ;
+                                            int testTrinket2 = Items.GetItem(gm.ItemAudits[Converter.ConvertInventoryType(item.InventoryType) + "2"].Id).ItemLevel; ;
+                                            
                                             // Need to account for any trinket duplicates
                                             if (item.Name == gm.ItemAudits["trinket1"].Name)
                                             {
@@ -2594,19 +2518,9 @@ namespace WoWGuildOrganizer
                                         }
                                         else if (Converter.ConvertInventoryType(item.InventoryType) == "finger")
                                         {
-                                            int testRing1 = 0;
-                                            int testRing2 = 0;
-
-                                            if (get.CollectData(gm.ItemAudits[Converter.ConvertInventoryType(item.InventoryType) + "1"].Id))
-                                            {
-                                                testRing1 = get.Item.ItemLevel;
-                                            }
-
-                                            if (get.CollectData(gm.ItemAudits[Converter.ConvertInventoryType(item.InventoryType) + "2"].Id))
-                                            {
-                                                testRing2 = get.Item.ItemLevel;
-                                            }
-
+                                            int testRing1 = Items.GetItem(gm.ItemAudits[Converter.ConvertInventoryType(item.InventoryType) + "1"].Id).ItemLevel;
+                                            int testRing2 = Items.GetItem(gm.ItemAudits[Converter.ConvertInventoryType(item.InventoryType) + "2"].Id).ItemLevel;
+                                            
                                             // Need to account for any ring duplicates
                                             if (item.Name == gm.ItemAudits["finger1"].Name)
                                             {
@@ -2629,14 +2543,11 @@ namespace WoWGuildOrganizer
                                         }
                                         else
                                         {
-                                            id = gm.ItemAudits[Converter.ConvertInventoryType(item.InventoryType)].Id;
-
-                                            if (get.CollectData(id))
-                                            {
-                                                iLevelOriginal = get.Item.ItemLevel;
-                                            }
+                                            iLevelOriginal = Items.GetItem(gm.ItemAudits[Converter.ConvertInventoryType(item.InventoryType)].Id).ItemLevel;
                                         }
 
+                                        // Now that we have both the item's base iLevel and the new item's base iLevel, 
+                                        //  we can compare the two
                                         if (iLevelNew > iLevelOriginal)
                                         {
                                             // This is an upgrade according to the pre-upgraded item
@@ -2685,26 +2596,7 @@ namespace WoWGuildOrganizer
                     {
                         if (loot.Select("upgrade > 0 and ItemId = " + itemId, "upgrade desc").Length == 0)
                         {
-                            ItemInfo item = null;
-
-                            // does this item currently exist in the item cache?
-                            if (!Items.Contains(itemId))
-                            {
-                                // Need to add in this item to the Item Cache
-
-                                // First fetch the data
-                                GetItemInfo get = new GetItemInfo();
-                                if (get.CollectData(itemId))
-                                {
-                                    item = get.Item;
-                                    item.Id = itemId;
-                                    Items.AddItem(item);
-                                }
-                            }
-                            else
-                            {
-                                item = Items.GetItem(itemId);
-                            }
+                            ItemInfo item = Items.GetItem(itemId);
 
                             DataRow dr = loot.NewRow();
                             dr["Upgrade"] = 0;
@@ -3010,7 +2902,7 @@ namespace WoWGuildOrganizer
             }
             catch (Exception ex)
             {
-                Log("Error: " + ex.Message);
+                Logging.Log("Error: " + ex.Message);
             }
 
             WaitCursor(false);

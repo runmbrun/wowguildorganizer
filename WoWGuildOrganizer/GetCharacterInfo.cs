@@ -371,7 +371,7 @@ namespace WoWGuildOrganizer
                         }
 
                         // Now check for the item in the item cache
-                        if (!WoWGuildOrganizer.Form1.Items.Contains(audit.Id))
+                        if (!WoWGuildOrganizer.FormMain.Items.Contains(audit.Id))
                         {
                             // Need to add in this item to the Item Cache
 
@@ -380,12 +380,12 @@ namespace WoWGuildOrganizer
                             if (get.CollectData(audit.Id))
                             {
                                 item = get.Item;
-                                WoWGuildOrganizer.Form1.Items.AddItem(item);
+                                WoWGuildOrganizer.FormMain.Items.AddItem(item);
                             }
                         }
                         else
                         {
-                            item = (ItemInfo)WoWGuildOrganizer.Form1.Items.GetItem(audit.Id);
+                            item = (ItemInfo)WoWGuildOrganizer.FormMain.Items.GetItem(audit.Id);
                         }
 
                         if (item.Id != 0)
