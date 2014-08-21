@@ -152,9 +152,9 @@ namespace WoWGuildOrganizer
                     {
                         // Check to see if weapon is two handed
                         if (
-                            Form1.Items.GetItem(item.Id).InventoryType == 17 || // 2 hander
-                            Form1.Items.GetItem(item.Id).InventoryType == 26 || // Gun
-                            Form1.Items.GetItem(item.Id).InventoryType == 15    // Bow
+                            FormMain.Items.GetItem(item.Id).InventoryType == 17 || // 2 hander
+                            FormMain.Items.GetItem(item.Id).InventoryType == 26 || // Gun
+                            FormMain.Items.GetItem(item.Id).InventoryType == 15    // Bow
                             )
                         {
                             TwoHanded = true;
@@ -468,7 +468,7 @@ namespace WoWGuildOrganizer
 
                 // Create tooltips
                 ItemAudit audit = (ItemAudit)ItemAuditList[i];
-                ItemInfo info = Form1.Items.GetItem(audit.Id);
+                ItemInfo info = FormMain.Items.GetItem(audit.Id);
                 dataGridViewItemAudit.Rows[i].Cells[1].ToolTipText = info.Tooltip;
 
                 // Passed or Failed!

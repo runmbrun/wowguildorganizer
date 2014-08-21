@@ -215,8 +215,8 @@ namespace WoWGuildOrganizer
 
             RaidLoot.Add(RaidName, tempLoot);
 
-            // Tier 16 Raid - 10 Normal
-            RaidName = "Siege of Orgrimmar - 10N";
+            // Tier 16 Raid - Normal
+            RaidName = "Siege of Orgrimmar - Normal";
             tempLoot = new Dictionary<string, int[]>();
 
             // Wing 1
@@ -281,6 +281,18 @@ namespace WoWGuildOrganizer
             //tempLoot.Add(RaidBoss, BossLoot);
 
             RaidLoot.Add(RaidName, tempLoot);
+
+            // Tier 16 Raid - Heroic
+            RaidName = "Siege of Orgrimmar - Heroic";
+            tempLoot = new Dictionary<string, int[]>();
+
+            // Wing 1
+            RaidBoss = "Immerseus";
+            BossLoot = new int[] {  };
+            tempLoot.Add(RaidBoss, BossLoot);
+
+            //RaidLoot.Add(RaidName, tempLoot);
+
         }
 
         #endregion

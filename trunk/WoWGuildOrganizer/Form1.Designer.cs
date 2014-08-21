@@ -1,6 +1,6 @@
 ﻿namespace WoWGuildOrganizer
 {
-    partial class Form1
+    partial class FormMain
     {
         /// <summary>
         /// Required designer variable.

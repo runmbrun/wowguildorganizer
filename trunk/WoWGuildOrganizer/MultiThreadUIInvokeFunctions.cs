@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 namespace WoWGuildOrganizer
 {
-    public partial class Form1 : Form
+    public partial class FormMain : Form
     {
         #region " Delegates "
         delegate void SetWaitCursorCallback(Boolean Wait);
