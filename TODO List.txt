@@ -22,5 +22,7 @@ Raid Loot Drop tab:
 	b. Normal Warforged?
 2.  Need way to add this in via the gui
 	a. Save data to a file?
-3.  
+3.  BUG - When a Boss is selected for the first time... grid doesn't display everything
+	a. maybe because item needed to be searched first???  grid refresh doesn't seem to work.
+
 

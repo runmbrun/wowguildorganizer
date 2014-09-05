@@ -98,5 +98,29 @@ namespace WoWGuildOrganizer
             return Items.Count;
         }
 
+        public Dictionary<Int32, ItemInfo> GetData()
+        {
+            return Items;
+        }
+
+        /// <summary>
+        /// todo
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        /*public List<int> Search(int ident)
+        {
+            //List<int> tests = Items.Keys.ToList<int>();
+            List<int> results = null; // tests.FindAll(ident);
+
+            results = Items.Keys.ToList<int>().FindAll(
+                delegate(int bk)
+                {
+                    return Items.Keys.Any(ident);
+                }
+                );
+
+            return results;
+        }*/
     }
 }

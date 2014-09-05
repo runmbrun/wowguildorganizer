@@ -253,32 +253,31 @@ namespace WoWGuildOrganizer
             BossLoot = new int[] { 99692, 99682, 99687, 103945, 102294, 103946, 103872, 103829, 103732, 103913, 103808, 103949, 103904, 103947 };
             tempLoot.Add(RaidBoss, BossLoot);
 
-            // todo:
             // Wing 3: 
-            //RaidBoss = "Malkorok";
-            //BossLoot = new int[] {  };
-            //tempLoot.Add(RaidBoss, BossLoot);
+            RaidBoss = "Malkorok";
+            BossLoot = new int[] { 102303, 103843, 103959, 103772, 103879, 103899, 102306, 103848, 103952, 103835, 103951, 103917, 103761, 103758, 103953, 103923, 103890, 103955, 103939, 103954, 103957, 103742 };
+            tempLoot.Add(RaidBoss, BossLoot);
 
-            //RaidBoss = "Spoils of Pandaria";
-            //BossLoot = new int[] {  };
-            //tempLoot.Add(RaidBoss, BossLoot);
+            RaidBoss = "Spoils of Pandaria";
+            BossLoot = new int[] { 103962, 103871, 103888, 103851, 103862, 103941, 103961, 103893, 103964, 103860, 103882, 103911, 103803, 103768, 103745, 103779, 103965, 103796, 103967, 102302, 103933 };
+            tempLoot.Add(RaidBoss, BossLoot);
 
-            //RaidBoss = "Thok the Bloodthirsty";
-            //BossLoot = new int[] {  };
-            //tempLoot.Add(RaidBoss, BossLoot);
+            RaidBoss = "Thok the Bloodthirsty";
+            BossLoot = new int[] { 99683, 99694, 99689, 103968, 103750, 102305, 104308, 103774, 102304, 103828, 103853, 103919, 103896, 103915 };
+            tempLoot.Add(RaidBoss, BossLoot);
 
             // Wing 4: 
-            //RaidBoss = "Siegecrafter Blackfuse";
-            //BossLoot = new int[] {  };
-            //tempLoot.Add(RaidBoss, BossLoot);
+            RaidBoss = "Siegecrafter Blackfuse";
+            BossLoot = new int[] { 99695, 99685, 99690, 102309, 103794, 103884, 103910, 103891, 103970, 103874, 103814, 103969, 102311, 103792 };
+            tempLoot.Add(RaidBoss, BossLoot);
 
-            //RaidBoss = "Paragons of the Klaxxi";
-            //BossLoot = new int[] {  };
-            //tempLoot.Add(RaidBoss, BossLoot);
+            RaidBoss = "Paragons of the Klaxxi";
+            BossLoot = new int[] { 99693, 103824, 99684, 103973, 103948, 103810, 103956, 103819, 103886, 103844, 103972, 103971, 99688, 102308 };
+            tempLoot.Add(RaidBoss, BossLoot);
 
-            //RaidBoss = "Garrosh Hellscream";
-            //BossLoot = new int[] {  };
-            //tempLoot.Add(RaidBoss, BossLoot);
+            RaidBoss = "Garrosh Hellscream";
+            BossLoot = new int[] { 105857, 105859, 105858, 102310, 103937, 103649, 103901, 103920, 103928, 103729, 103974, 103931, 103906, 103784, 103856, 103963, 103958, 103950, 102307, 103925, 104311, 103837, 103944, 103840, 103785 };
+            tempLoot.Add(RaidBoss, BossLoot);
 
             RaidLoot.Add(RaidName, tempLoot);
 
@@ -286,13 +285,27 @@ namespace WoWGuildOrganizer
             RaidName = "Siege of Orgrimmar - Heroic";
             tempLoot = new Dictionary<string, int[]>();
 
-            // Wing 1
+            // Wing 1:
             RaidBoss = "Immerseus";
-            BossLoot = new int[] {  };
+            BossLoot = new int[] { 104425, 104414, 104426, 104412, 104416, 104417, 104428, 104429, 104424, 104418, 104421, 104427, 104430, 104422, 104419, 104415, 104431, 104413, 104423, 104411, 104420, 104432 };
             tempLoot.Add(RaidBoss, BossLoot);
 
-            //RaidLoot.Add(RaidName, tempLoot);
+            // TODO:
+            //RaidBoss = "The Fallen Protectors";
+            //BossLoot = new int[] {  };
+            //tempLoot.Add(RaidBoss, BossLoot);
 
+            //RaidBoss = "Norushen";
+            //BossLoot = new int[] {  };
+            //tempLoot.Add(RaidBoss, BossLoot);
+
+            //RaidBoss = "Sha of Pride";
+            //BossLoot = new int[] {  };
+            //tempLoot.Add(RaidBoss, BossLoot);
+
+            // Wing 2 - TODO:
+
+            RaidLoot.Add(RaidName, tempLoot);
         }
 
         #endregion
