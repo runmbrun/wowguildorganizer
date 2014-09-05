@@ -28,8 +28,8 @@ namespace WoWGuildOrganizer
             set { _data = value; }
         }
 
-        Boolean Debug = false;
-        String DebugFile = @"c:\temp\GetWebSiteData.log";
+        Boolean debug = false;
+        String debugFile = @"c:\temp\GetWebSiteData.log";
 
         #endregion
 
@@ -41,7 +41,8 @@ namespace WoWGuildOrganizer
         /// <returns></returns>
         public virtual Boolean Parse(String WebPage)
         {
-            Boolean Success = WoWGuildOrganizer.FormMain.WebSiteOnline;
+            bool Success = WoWGuildOrganizer.FormMain.WebSiteOnline;
+            string strResponse = string.Empty;
 
             if (Success)
             {
@@ -66,25 +67,10 @@ namespace WoWGuildOrganizer
                     // Pipe the stream to a higher level stream reader with the required encoding format.
                     StreamReader readStream = new StreamReader(ReceiveStream, encode);
 
-                    String strResponse = readStream.ReadToEnd();
+                    strResponse = readStream.ReadToEnd();
 
-                    #region DEBUG
-                    // this is for debugging only
-                    if (Debug)
-                    {
-                        // Create the output file.
-                        using (FileStream fs = File.Create(DebugFile)) { }
-                        // Open the stream and write to it
-                        using (FileStream fs = File.OpenWrite(DebugFile))
-                        {
-                            Byte[] info = new UTF8Encoding(true).GetBytes("   ");
-                            // Add some information to the file.
-                            fs.Write(info, 0, info.Length);
-                            info = new UTF8Encoding(true).GetBytes(strResponse);
-                            fs.Write(info, 0, info.Length);
-                        }
-                    }
-                    #endregion
+                    // Debugging
+                    this.Debug(strResponse);
 
                     // close the reading stream
                     readStream.Close();
@@ -101,8 +87,23 @@ namespace WoWGuildOrganizer
                         // Web site is block... 
                         WoWGuildOrganizer.FormMain.WebSiteOnline = Success = false;
 
-                        Logging.DisplayError("Battle.net Web Site cannot be reached.  No further attempts will be made.  Restart application to try again.");
+                        // Log it
+                        string message = string.Format("Battle.net Web Site cannot be reached.  No further attempts will be made.  Restart application to try again.");
+
+                        Logging.Log(message);
+                        Logging.DisplayError(message);
                     }
+                }
+                catch (WebException ex)
+                {
+                    Success = false;
+                    
+                    // This is a 404 error, usually because a character hasn't been logged into for a while
+                    //   collect this error for use in the function that is calling this function
+                    Logging.Log(String.Format("ERROR: {0}", ex.Message));
+                    
+                    // Check for Debugging
+                    this.Debug(strResponse);
                 }
                 catch (Exception ex)
                 {
@@ -111,11 +112,41 @@ namespace WoWGuildOrganizer
                     // collect this error for use in the function that is calling this function
                     Logging.Log(String.Format("ERROR: {0}", ex.Message));
 
-
+                    // Check for Debugging
+                    this.Debug(strResponse);
                 }
             }
 
             return Success;
         }
+        
+        #region DEBUG
+
+        /// <summary>
+        /// Debug what was pulled back from the web site
+        /// </summary>
+        /// <param name="message"></param>
+        void Debug(string message)
+        {            
+            // this is for debugging only
+            if (debug && message != string.Empty)
+            {
+                // Create the output file.
+                using (FileStream fs = File.Create(debugFile)) { }
+
+                // Open the stream and write to it
+                using (FileStream fs = File.OpenWrite(debugFile))
+                {
+                    Byte[] info = new UTF8Encoding(true).GetBytes("   ");
+
+                    // Add some information to the file.
+                    fs.Write(info, 0, info.Length);
+                    info = new UTF8Encoding(true).GetBytes(message);
+                    fs.Write(info, 0, info.Length);
+                }
+            }
+        }
+
+        #endregion
     }
 }

@@ -128,6 +128,12 @@
     <Compile Include="FormItemAudit.Designer.cs">
       <DependentUpon>FormItemAudit.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormItemCacheManager.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormItemCacheManager.Designer.cs">
+      <DependentUpon>FormItemCacheManager.cs</DependentUpon>
+    </Compile>
     <Compile Include="GetCharacterInfo.cs" />
     <Compile Include="GetGuildInfo.cs" />
     <Compile Include="GetItemInfo.cs" />
@@ -154,6 +160,9 @@
     <EmbeddedResource Include="FormItemAudit.resx">
       <DependentUpon>FormItemAudit.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormItemCacheManager.resx">
+      <DependentUpon>FormItemCacheManager.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

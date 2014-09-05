@@ -163,7 +163,7 @@ namespace WoWGuildOrganizer
             {
                 GetWebSiteData getSiteData = new GetWebSiteData();
 
-
+                // Collect the data from the webpage
                 if (!getSiteData.Parse(WebPage))
                 {
                     // error
@@ -200,7 +200,6 @@ namespace WoWGuildOrganizer
                     */
 
                     string DataString = getSiteData.Data;
-                    //string Search = @"name"":""(?<name>\w+)"".*?""class"":(?<class>\d+).*?""race"":(?<race>\d+).*?""level"":(?<level>\d+).*?""achievementPoints"":(?<achs>\d+).*?""averageItemLevel"":(?<avg_iLevel>\d+).*?averageItemLevelEquipped"":(?<equip_iLevel>\d+),(?<items>.*)}.*?primary"":.*?name"":""(?<Profession1>\w+).*?name"":""(?<Profession2>\w+).*?""selected"":true,.*?(""spec"":{""name"":""(?<Spec>[a-zA-Z0-9 ]+)"".*?,""role"":""(?<Role>\w+)"")?";
                     string Search = @"name"":""(?<name>\w+)"".*?""class"":(?<class>\d+).*?""race"":(?<race>\d+).*?""level"":(?<level>\d+).*?""achievementPoints"":(?<achs>\d+).*?""averageItemLevel"":(?<avg_iLevel>\d+).*?averageItemLevelEquipped"":(?<equip_iLevel>\d+),(?<items>.*)}.*?primary"":.*?name"":""(?<Profession1>\w+).*?name"":""(?<Profession2>\w+).*?""selected"":true,(?<Talents>.*)";
                     Regex test = new Regex(Search, RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
 

@@ -29,7 +29,6 @@ namespace WoWGuildOrganizer
         private StopWatch sw = new StopWatch();
         static public ItemCache Items;
         static public bool WebSiteOnline = true;
-        ArrayList ErrorLog = new ArrayList();
         ContextMenuStrip contextMenuCharacter;
         Dictionary<string, Dictionary<string, int[]>> RaidLoot = new Dictionary<string, Dictionary<string, int[]>>();
 
@@ -316,7 +315,6 @@ namespace WoWGuildOrganizer
         {
             DataGridViewCell currentCell;
 
-
             // find out the row... and then try to update the individual chars Armory info and Gear Score
 
             // Get the current cell.
@@ -504,9 +502,6 @@ namespace WoWGuildOrganizer
         /// <param name="e"></param>
         private void GetGuildInfoAsync_DoWork(object sender, DoWorkEventArgs e)
         {
-            // vars
-
-
             try
             {
                 // The sender is the BackgroundWorker object we need it to
@@ -541,8 +536,9 @@ namespace WoWGuildOrganizer
                         // Reset the Counter
                         bwAsync.ReportProgress(0);
 
-
+                        // Get the guild information
                         GetGuildInfo guildInfo = new GetGuildInfo();
+
                         if (guildInfo.CollectData(URLWowAPI + @"guild/" + textBoxRealm.Text + @"/" + textBoxGuildName.Text + @"?fields=members"))
                         {
                             // success!
@@ -611,7 +607,6 @@ namespace WoWGuildOrganizer
                             }
                         }
 
-
                         // Now get the individual Character data
                         Int32 Count = 0;
                         Int32 Total = SavedCharacters.SavedCharacters.Count;
@@ -619,7 +614,6 @@ namespace WoWGuildOrganizer
                         
                          try
                          {
-
                             // Go through all the guild members
                             foreach (GuildMember gm in SavedCharacters.SavedCharacters)
                             {
@@ -654,13 +648,13 @@ namespace WoWGuildOrganizer
                                         }
                                         else
                                         {
-                                            //MessageBox.Show(string.Format("WARN: Old vs New Achievement points.  [{0}] vs [{1}].", gm.AchievementPoints, charInfo.AchievementPoints));
+                                            Logging.Log(string.Format("WARN: Old vs New Achievement points.  [{0}] vs [{1}].", gm.AchievementPoints, charInfo.AchievementPoints));
                                         }
                                     }
                                     else
                                     {
                                         // Fail!  Save all errors until the end!
-                                        Errors.Add("      " + gm.Name + "\t\t" + gm.Level);
+                                        Logging.Log("      " + gm.Name + "\t\t" + gm.Level);
                                     }
                                 }
 
@@ -1008,20 +1002,9 @@ namespace WoWGuildOrganizer
         /// <param name="e"></param>
         private void buttonDeleteItemCacheData_Click(object sender, EventArgs e)
         {
-            try
+            using (FormItemCacheManager frm = new FormItemCacheManager())
             {
-                if (File.Exists("ItemCache.dat"))
-                {
-                    // delete it
-                    File.Delete("ItemCache.dat");
-
-                    // clear the current cache
-                    Items = new ItemCache();
-                }
-            }
-            catch (Exception ex)
-            {
-                Logging.Log("Error: " + ex.Message);
+                frm.ShowDialog();
             }
         }
 
@@ -2633,6 +2616,11 @@ namespace WoWGuildOrganizer
                 }
             }
 
+            if (dataGridViewRaidLootDrop.DataSource != null)
+            {
+                dataGridViewRaidLootDrop.Refresh();
+            }
+
             WaitCursor(false);
         }
 
@@ -2740,7 +2728,6 @@ namespace WoWGuildOrganizer
         private void dataGridViewRaidGroup_RowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
         {
             var grid = sender as DataGridView;
-            //var rowIdx = (e.RowIndex + 1).ToString();
             var rowIdx = "U";
             GuildMember Char = (GuildMember)(RaidGroup.RaidGroup[e.RowIndex]);
 
@@ -2788,10 +2775,10 @@ namespace WoWGuildOrganizer
         /// <param name="guildUpdate"></param>
         private void UpdateCharacters(DataGridViewSelectedRowCollection chars, bool guildUpdate)
         {
-            WaitCursor(true);
-
             try
             {
+                WaitCursor(true);
+
                 foreach (DataGridViewRow row in chars)
                 {
                     int CurrentRow = row.Index;
