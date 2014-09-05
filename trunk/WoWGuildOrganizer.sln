@@ -1,6 +1,6 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WoWGuildOrganizer", "WoWGuildOrganizer\WoWGuildOrganizer.csproj", "{56932DB9-842B-4A23-9AD9-D5CC57467C10}"
 EndProject
 Global
