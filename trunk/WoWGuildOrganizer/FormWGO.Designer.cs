@@ -29,7 +29,8 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.tabControl1 = new System.Windows.Forms.TabControl();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
+            this.tabControlWGO = new System.Windows.Forms.TabControl();
             this.tabPageGuildData = new System.Windows.Forms.TabPage();
             this.buttonRefreshGuildData = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
@@ -49,7 +50,7 @@
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.dataGridViewRaidLootDrop = new System.Windows.Forms.DataGridView();
             this.tabPageSettings = new System.Windows.Forms.TabPage();
-            this.button1 = new System.Windows.Forms.Button();
+            this.buttonShowErrors = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.textBoxCharacterName = new System.Windows.Forms.TextBox();
             this.buttonAddCharacterToRaidData = new System.Windows.Forms.Button();
@@ -69,7 +70,9 @@
             this.textBoxRealm = new System.Windows.Forms.TextBox();
             this.progressBarCollectData = new System.Windows.Forms.ProgressBar();
             this.buttonGetGuildInfo = new System.Windows.Forms.Button();
-            this.tabControl1.SuspendLayout();
+            this.toolStrip2 = new System.Windows.Forms.ToolStrip();
+            this.toolStripButtonRefresh = new System.Windows.Forms.ToolStripButton();
+            this.tabControlWGO.SuspendLayout();
             this.tabPageGuildData.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewGuildData)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
@@ -84,51 +87,55 @@
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox1.SuspendLayout();
+            this.toolStrip2.SuspendLayout();
             this.SuspendLayout();
             // 
-            // tabControl1
+            // tabControlWGO
             // 
-            this.tabControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.tabControlWGO.Alignment = System.Windows.Forms.TabAlignment.Left;
+            this.tabControlWGO.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.tabControl1.Controls.Add(this.tabPageGuildData);
-            this.tabControl1.Controls.Add(this.tabPageRaidData);
-            this.tabControl1.Controls.Add(this.tabPage1);
-            this.tabControl1.Controls.Add(this.tabPageSettings);
-            this.tabControl1.Location = new System.Drawing.Point(0, 1);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(722, 307);
-            this.tabControl1.TabIndex = 0;
-            this.tabControl1.SelectedIndexChanged += new System.EventHandler(this.tabControl1_SelectedIndexChanged);
+            this.tabControlWGO.Controls.Add(this.tabPageGuildData);
+            this.tabControlWGO.Controls.Add(this.tabPageRaidData);
+            this.tabControlWGO.Controls.Add(this.tabPage1);
+            this.tabControlWGO.Controls.Add(this.tabPageSettings);
+            this.tabControlWGO.Location = new System.Drawing.Point(0, 24);
+            this.tabControlWGO.Multiline = true;
+            this.tabControlWGO.Name = "tabControlWGO";
+            this.tabControlWGO.SelectedIndex = 0;
+            this.tabControlWGO.Size = new System.Drawing.Size(722, 283);
+            this.tabControlWGO.TabIndex = 0;
+            this.tabControlWGO.SelectedIndexChanged += new System.EventHandler(this.TabControl1_SelectedIndexChanged);
             // 
             // tabPageGuildData
             // 
             this.tabPageGuildData.Controls.Add(this.buttonRefreshGuildData);
             this.tabPageGuildData.Controls.Add(this.label3);
             this.tabPageGuildData.Controls.Add(this.dataGridViewGuildData);
-            this.tabPageGuildData.Location = new System.Drawing.Point(4, 22);
+            this.tabPageGuildData.Location = new System.Drawing.Point(23, 4);
             this.tabPageGuildData.Name = "tabPageGuildData";
             this.tabPageGuildData.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageGuildData.Size = new System.Drawing.Size(714, 281);
+            this.tabPageGuildData.Size = new System.Drawing.Size(695, 275);
             this.tabPageGuildData.TabIndex = 0;
             this.tabPageGuildData.Text = "Guild Data";
             this.tabPageGuildData.UseVisualStyleBackColor = true;
             // 
             // buttonRefreshGuildData
             // 
-            this.buttonRefreshGuildData.Location = new System.Drawing.Point(630, 3);
+            this.buttonRefreshGuildData.Enabled = false;
+            this.buttonRefreshGuildData.Location = new System.Drawing.Point(211, 28);
             this.buttonRefreshGuildData.Name = "buttonRefreshGuildData";
             this.buttonRefreshGuildData.Size = new System.Drawing.Size(75, 23);
             this.buttonRefreshGuildData.TabIndex = 2;
             this.buttonRefreshGuildData.Text = "Refresh";
             this.buttonRefreshGuildData.UseVisualStyleBackColor = true;
-            this.buttonRefreshGuildData.Click += new System.EventHandler(this.buttonRefreshGuildData_Click);
+            this.buttonRefreshGuildData.Click += new System.EventHandler(this.ButtonRefreshGuildData_Click);
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 8);
+            this.label3.Location = new System.Drawing.Point(28, 38);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(158, 13);
             this.label3.TabIndex = 1;
@@ -141,13 +148,13 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dataGridViewGuildData.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridViewGuildData.ContextMenuStrip = this.contextMenuStrip1;
-            this.dataGridViewGuildData.Location = new System.Drawing.Point(6, 32);
+            this.dataGridViewGuildData.Location = new System.Drawing.Point(9, 54);
             this.dataGridViewGuildData.Name = "dataGridViewGuildData";
-            this.dataGridViewGuildData.Size = new System.Drawing.Size(702, 249);
+            this.dataGridViewGuildData.Size = new System.Drawing.Size(683, 218);
             this.dataGridViewGuildData.TabIndex = 0;
-            this.dataGridViewGuildData.CellMouseDoubleClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridViewGuildData_CellMouseDoubleClick);
-            this.dataGridViewGuildData.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridViewGuildData_ColumnHeaderMouseClick);
-            this.dataGridViewGuildData.RowPostPaint += new System.Windows.Forms.DataGridViewRowPostPaintEventHandler(this.dataGridViewGuildData_RowPostPaint);
+            this.dataGridViewGuildData.CellMouseDoubleClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.DataGridViewGuildData_CellMouseDoubleClick);
+            this.dataGridViewGuildData.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.DataGridViewGuildData_ColumnHeaderMouseClick);
+            this.dataGridViewGuildData.RowPostPaint += new System.Windows.Forms.DataGridViewRowPostPaintEventHandler(this.DataGridViewGuildData_RowPostPaint);
             // 
             // contextMenuStrip1
             // 
@@ -161,17 +168,17 @@
             this.updateCharacterToolStripMenuItem.Name = "updateCharacterToolStripMenuItem";
             this.updateCharacterToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
             this.updateCharacterToolStripMenuItem.Text = "Update Character";
-            this.updateCharacterToolStripMenuItem.Click += new System.EventHandler(this.updateCharacterToolStripMenuItem_Click);
+            this.updateCharacterToolStripMenuItem.Click += new System.EventHandler(this.UpdateCharacterToolStripMenuItem_Click);
             // 
             // tabPageRaidData
             // 
             this.tabPageRaidData.Controls.Add(this.labelRaidTab);
             this.tabPageRaidData.Controls.Add(this.buttonRaidGroupRefresh);
             this.tabPageRaidData.Controls.Add(this.dataGridViewRaidGroup);
-            this.tabPageRaidData.Location = new System.Drawing.Point(4, 22);
+            this.tabPageRaidData.Location = new System.Drawing.Point(23, 4);
             this.tabPageRaidData.Name = "tabPageRaidData";
             this.tabPageRaidData.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageRaidData.Size = new System.Drawing.Size(714, 281);
+            this.tabPageRaidData.Size = new System.Drawing.Size(695, 275);
             this.tabPageRaidData.TabIndex = 2;
             this.tabPageRaidData.Text = "Raid Data";
             this.tabPageRaidData.UseVisualStyleBackColor = true;
@@ -192,7 +199,7 @@
             this.buttonRaidGroupRefresh.TabIndex = 1;
             this.buttonRaidGroupRefresh.Text = "Refresh";
             this.buttonRaidGroupRefresh.UseVisualStyleBackColor = true;
-            this.buttonRaidGroupRefresh.Click += new System.EventHandler(this.buttonRaidGroupRefresh_Click);
+            this.buttonRaidGroupRefresh.Click += new System.EventHandler(this.ButtonRaidGroupRefresh_Click);
             // 
             // dataGridViewRaidGroup
             // 
@@ -203,24 +210,24 @@
             this.dataGridViewRaidGroup.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridViewRaidGroup.Location = new System.Drawing.Point(0, 44);
             this.dataGridViewRaidGroup.Name = "dataGridViewRaidGroup";
-            this.dataGridViewRaidGroup.Size = new System.Drawing.Size(718, 237);
+            this.dataGridViewRaidGroup.Size = new System.Drawing.Size(699, 255);
             this.dataGridViewRaidGroup.TabIndex = 0;
-            this.dataGridViewRaidGroup.CellMouseDoubleClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridViewRaidGroup_CellMouseDoubleClick);
-            this.dataGridViewRaidGroup.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridViewRaidGroup_ColumnHeaderMouseClick);
-            this.dataGridViewRaidGroup.RowPostPaint += new System.Windows.Forms.DataGridViewRowPostPaintEventHandler(this.dataGridViewRaidGroup_RowPostPaint);
-            this.dataGridViewRaidGroup.SortCompare += new System.Windows.Forms.DataGridViewSortCompareEventHandler(this.dataGridViewRaidGroup_SortCompare);
-            this.dataGridViewRaidGroup.MouseClick += new System.Windows.Forms.MouseEventHandler(this.dataGridViewRaidGroup_MouseClick);
+            this.dataGridViewRaidGroup.CellMouseDoubleClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.DataGridViewRaidGroup_CellMouseDoubleClick);
+            this.dataGridViewRaidGroup.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.DataGridViewRaidGroup_ColumnHeaderMouseClick);
+            this.dataGridViewRaidGroup.RowPostPaint += new System.Windows.Forms.DataGridViewRowPostPaintEventHandler(this.DataGridViewRaidGroup_RowPostPaint);
+            this.dataGridViewRaidGroup.SortCompare += new System.Windows.Forms.DataGridViewSortCompareEventHandler(this.DataGridViewRaidGroup_SortCompare);
+            this.dataGridViewRaidGroup.MouseClick += new System.Windows.Forms.MouseEventHandler(this.DataGridViewRaidGroup_MouseClick);
             // 
             // tabPage1
             // 
             this.tabPage1.Controls.Add(this.toolStrip1);
             this.tabPage1.Controls.Add(this.tableLayoutPanel1);
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Location = new System.Drawing.Point(23, 4);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(714, 281);
+            this.tabPage1.Size = new System.Drawing.Size(695, 275);
             this.tabPage1.TabIndex = 3;
-            this.tabPage1.Text = "Raid Loot Drop";
+            this.tabPage1.Text = "Raid Loot Drops";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
             // toolStrip1
@@ -232,7 +239,7 @@
             this.toolStripComboBoxRaidLootDropBoss});
             this.toolStrip1.Location = new System.Drawing.Point(3, 3);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(708, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(689, 25);
             this.toolStrip1.TabIndex = 6;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -249,7 +256,7 @@
             this.toolStripComboBoxRaidLootDropRaid.DropDownWidth = 175;
             this.toolStripComboBoxRaidLootDropRaid.Name = "toolStripComboBoxRaidLootDropRaid";
             this.toolStripComboBoxRaidLootDropRaid.Size = new System.Drawing.Size(175, 25);
-            this.toolStripComboBoxRaidLootDropRaid.SelectedIndexChanged += new System.EventHandler(this.toolStripComboBoxRaidLootDropRaid_SelectedIndexChanged);
+            this.toolStripComboBoxRaidLootDropRaid.SelectedIndexChanged += new System.EventHandler(this.ToolStripComboBoxRaidLootDropRaid_SelectedIndexChanged);
             // 
             // toolStripLabel2
             // 
@@ -263,7 +270,7 @@
             this.toolStripComboBoxRaidLootDropBoss.DropDownWidth = 150;
             this.toolStripComboBoxRaidLootDropBoss.Name = "toolStripComboBoxRaidLootDropBoss";
             this.toolStripComboBoxRaidLootDropBoss.Size = new System.Drawing.Size(150, 25);
-            this.toolStripComboBoxRaidLootDropBoss.SelectedIndexChanged += new System.EventHandler(this.toolStripComboBoxRaidLootDropBoss_SelectedIndexChanged);
+            this.toolStripComboBoxRaidLootDropBoss.SelectedIndexChanged += new System.EventHandler(this.ToolStripComboBoxRaidLootDropBoss_SelectedIndexChanged);
             // 
             // tableLayoutPanel1
             // 
@@ -278,7 +285,7 @@
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(708, 275);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(689, 269);
             this.tableLayoutPanel1.TabIndex = 5;
             // 
             // dataGridViewRaidLootDrop
@@ -293,36 +300,36 @@
             this.dataGridViewRaidLootDrop.ReadOnly = true;
             this.tableLayoutPanel1.SetRowSpan(this.dataGridViewRaidLootDrop, 2);
             this.dataGridViewRaidLootDrop.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridViewRaidLootDrop.Size = new System.Drawing.Size(702, 243);
+            this.dataGridViewRaidLootDrop.Size = new System.Drawing.Size(683, 237);
             this.dataGridViewRaidLootDrop.TabIndex = 4;
-            this.dataGridViewRaidLootDrop.CellToolTipTextNeeded += new System.Windows.Forms.DataGridViewCellToolTipTextNeededEventHandler(this.dataGridViewRaidLootDrop_CellToolTipTextNeeded);
-            this.dataGridViewRaidLootDrop.DataBindingComplete += new System.Windows.Forms.DataGridViewBindingCompleteEventHandler(this.dataGridViewRaidLootDrop_DataBindingComplete);
-            this.dataGridViewRaidLootDrop.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.dataGridViewRaidLootDrop_MouseDoubleClick);
+            this.dataGridViewRaidLootDrop.CellToolTipTextNeeded += new System.Windows.Forms.DataGridViewCellToolTipTextNeededEventHandler(this.DataGridViewRaidLootDrop_CellToolTipTextNeeded);
+            this.dataGridViewRaidLootDrop.DataBindingComplete += new System.Windows.Forms.DataGridViewBindingCompleteEventHandler(this.DataGridViewRaidLootDrop_DataBindingComplete);
+            this.dataGridViewRaidLootDrop.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.DataGridViewRaidLootDrop_MouseDoubleClick);
             // 
             // tabPageSettings
             // 
-            this.tabPageSettings.Controls.Add(this.button1);
+            this.tabPageSettings.Controls.Add(this.buttonShowErrors);
             this.tabPageSettings.Controls.Add(this.groupBox4);
             this.tabPageSettings.Controls.Add(this.groupBox2);
             this.tabPageSettings.Controls.Add(this.groupBox3);
             this.tabPageSettings.Controls.Add(this.groupBox1);
-            this.tabPageSettings.Location = new System.Drawing.Point(4, 22);
+            this.tabPageSettings.Location = new System.Drawing.Point(23, 4);
             this.tabPageSettings.Name = "tabPageSettings";
             this.tabPageSettings.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageSettings.Size = new System.Drawing.Size(714, 281);
+            this.tabPageSettings.Size = new System.Drawing.Size(695, 275);
             this.tabPageSettings.TabIndex = 1;
             this.tabPageSettings.Text = "Settings";
             this.tabPageSettings.UseVisualStyleBackColor = true;
             // 
-            // button1
+            // buttonShowErrors
             // 
-            this.button1.Location = new System.Drawing.Point(313, 147);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 14;
-            this.button1.Text = "Show Errors";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.buttonShowErrors.Location = new System.Drawing.Point(313, 147);
+            this.buttonShowErrors.Name = "buttonShowErrors";
+            this.buttonShowErrors.Size = new System.Drawing.Size(75, 23);
+            this.buttonShowErrors.TabIndex = 14;
+            this.buttonShowErrors.Text = "Show Errors";
+            this.buttonShowErrors.UseVisualStyleBackColor = true;
+            this.buttonShowErrors.Click += new System.EventHandler(this.ButtonShowErrors_Click);
             // 
             // groupBox4
             // 
@@ -354,7 +361,7 @@
             this.buttonAddCharacterToRaidData.TabIndex = 15;
             this.buttonAddCharacterToRaidData.Text = "Add Character";
             this.buttonAddCharacterToRaidData.UseVisualStyleBackColor = true;
-            this.buttonAddCharacterToRaidData.Click += new System.EventHandler(this.buttonAddCharacterToRaidData_Click);
+            this.buttonAddCharacterToRaidData.Click += new System.EventHandler(this.ButtonAddCharacterToRaidData_Click);
             // 
             // label4
             // 
@@ -407,7 +414,7 @@
             this.buttonDeleteItemCacheData.TabIndex = 4;
             this.buttonDeleteItemCacheData.Text = "Open";
             this.buttonDeleteItemCacheData.UseVisualStyleBackColor = true;
-            this.buttonDeleteItemCacheData.Click += new System.EventHandler(this.buttonDeleteItemCacheData_Click);
+            this.buttonDeleteItemCacheData.Click += new System.EventHandler(this.ButtonDeleteItemCacheData_Click);
             // 
             // groupBox3
             // 
@@ -428,7 +435,7 @@
             this.buttonSave.TabIndex = 4;
             this.buttonSave.Text = "Save";
             this.buttonSave.UseVisualStyleBackColor = true;
-            this.buttonSave.Click += new System.EventHandler(this.buttonSave_Click);
+            this.buttonSave.Click += new System.EventHandler(this.ButtonSave_Click);
             // 
             // buttonLoad
             // 
@@ -438,7 +445,7 @@
             this.buttonLoad.TabIndex = 5;
             this.buttonLoad.Text = "Load";
             this.buttonLoad.UseVisualStyleBackColor = true;
-            this.buttonLoad.Click += new System.EventHandler(this.buttonLoad_Click);
+            this.buttonLoad.Click += new System.EventHandler(this.ButtonLoad_Click);
             // 
             // groupBox1
             // 
@@ -503,19 +510,41 @@
             this.buttonGetGuildInfo.TabIndex = 2;
             this.buttonGetGuildInfo.Text = "Get Guild Info";
             this.buttonGetGuildInfo.UseVisualStyleBackColor = true;
-            this.buttonGetGuildInfo.Click += new System.EventHandler(this.buttonGetGuildInfo_Click);
+            this.buttonGetGuildInfo.Click += new System.EventHandler(this.ButtonGetGuildInfo_Click);
+            // 
+            // toolStrip2
+            // 
+            this.toolStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripButtonRefresh});
+            this.toolStrip2.Location = new System.Drawing.Point(0, 0);
+            this.toolStrip2.Name = "toolStrip2";
+            this.toolStrip2.Size = new System.Drawing.Size(721, 25);
+            this.toolStrip2.TabIndex = 1;
+            this.toolStrip2.Text = "toolStrip2";
+            // 
+            // toolStripButtonRefresh
+            // 
+            this.toolStripButtonRefresh.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButtonRefresh.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonRefresh.Image")));
+            this.toolStripButtonRefresh.ImageTransparentColor = System.Drawing.Color.Black;
+            this.toolStripButtonRefresh.Name = "toolStripButtonRefresh";
+            this.toolStripButtonRefresh.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButtonRefresh.Text = "Refresh";
+            this.toolStripButtonRefresh.Click += new System.EventHandler(this.ToolStripButtonRefresh_Click);
             // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(721, 307);
-            this.Controls.Add(this.tabControl1);
+            this.Controls.Add(this.toolStrip2);
+            this.Controls.Add(this.tabControlWGO);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FormMain";
             this.Text = "WoW Guild Organizer";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
-            this.tabControl1.ResumeLayout(false);
+            this.tabControlWGO.ResumeLayout(false);
             this.tabPageGuildData.ResumeLayout(false);
             this.tabPageGuildData.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewGuildData)).EndInit();
@@ -536,13 +565,16 @@
             this.groupBox3.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.toolStrip2.ResumeLayout(false);
+            this.toolStrip2.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
 
-        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabControl tabControlWGO;
         private System.Windows.Forms.TabPage tabPageGuildData;
         private System.Windows.Forms.DataGridView dataGridViewGuildData;
         private System.Windows.Forms.TabPage tabPageSettings;
@@ -570,7 +602,7 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Button buttonRaidGroupRefresh;
         private System.Windows.Forms.DataGridView dataGridViewRaidGroup;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button buttonShowErrors;
         private System.Windows.Forms.Label labelRaidTab;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.ToolStrip toolStrip1;
@@ -582,6 +614,8 @@
         private System.Windows.Forms.DataGridView dataGridViewRaidLootDrop;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem updateCharacterToolStripMenuItem;
+        private System.Windows.Forms.ToolStrip toolStrip2;
+        private System.Windows.Forms.ToolStripButton toolStripButtonRefresh;
     }
 }
 

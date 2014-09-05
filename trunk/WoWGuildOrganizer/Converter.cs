@@ -1,21 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿// <copyright file="Converter.cs" company="Secondnorth.com">
+//     Secondnorth.com. All rights reserved.
+// </copyright>
+// <author>Me</author>
 
 namespace WoWGuildOrganizer
 {
+    #region Includes
+
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+
+    #endregion
+
     /// <summary>
-    /// 
+    /// Converter Class
     /// </summary>
     static class Converter
     {
         /// <summary>
-        /// 
+        /// Enumeration for the item slot values
         /// </summary>
         enum ItemSlot
         {
+            /// <summary>
+            /// 
+            /// </summary>
             head = 0,
+
+            /// <summary>
+            /// 
+            /// </summary>
             neck = 1,
             shoulder = 2,
             back = 3,
@@ -40,7 +56,7 @@ namespace WoWGuildOrganizer
         /// </summary>
         public enum WoWClass
         {
-            DeathKnight, // this might cause issues...
+            DeathKnight, // todo: this might cause issues...
             Druid,
             Hunter,
             Mage,

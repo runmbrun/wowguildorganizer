@@ -17,7 +17,6 @@ namespace WoWGuildOrganizer
         delegate void SuspendGridCallback(Boolean Suspend);
         #endregion
 
-
         #region " Functions "
         /// <summary>
         /// 
@@ -90,10 +89,10 @@ namespace WoWGuildOrganizer
 
                 dataGridViewGuildData.DataSource = null;
 
-                SavedCharacters.SavedCharacters.Sort(new ObjectComparer(Sorting, MultipleSort));
+                savedCharacters.SavedCharacters.Sort(new ObjectComparer(Sorting, MultipleSort));
 
                 // refresh grid data
-                dataGridViewGuildData.DataSource = SavedCharacters.SavedCharacters;
+                dataGridViewGuildData.DataSource = savedCharacters.SavedCharacters;
 
                 // Now update the grid
                 UpdateGrid();
