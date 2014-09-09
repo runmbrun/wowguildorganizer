@@ -1,23 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
-
-
+﻿// <copyright file="MultiThreadUIInvokeFunctions.cs" company="Secondnorth.com">
+//     Secondnorth.com. All rights reserved.
+// </copyright>
+// <author>Me</author>
 
 namespace WoWGuildOrganizer
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Windows.Forms;
+
+    /// <summary>
+    /// Parital class
+    /// </summary>
     public partial class FormMain : Form
     {
         #region " Delegates "
+
         delegate void SetWaitCursorCallback(Boolean Wait);
         delegate void LabelCallback(String Message);
         delegate void SortGridCallback(String Sorting);
         delegate void SuspendGridCallback(Boolean Suspend);
+
         #endregion
 
         #region " Functions "
+
         /// <summary>
         /// 
         /// </summary>
@@ -59,7 +68,7 @@ namespace WoWGuildOrganizer
             else
             {
                 // update label
-                this.label3.Text = Message;
+                //this.label3.Text = Message;
             }
         }
 

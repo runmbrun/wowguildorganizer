@@ -2,6 +2,7 @@
 //     Secondnorth.com. All rights reserved.
 // </copyright>
 // <author>Me</author>
+
 namespace WoWGuildOrganizer
 {
     #region " Includes "
@@ -61,11 +62,6 @@ namespace WoWGuildOrganizer
         private StopWatch sw = new StopWatch();
 
         /// <summary>
-        /// Context Menu used for more functional in right clicks on a grid
-        /// </summary>
-        private ContextMenuStrip contextMenuCharacter;
-
-        /// <summary>
         /// Dictionary containing all the Raid loot from a raid boss
         /// </summary>
         private Dictionary<string, Dictionary<string, int[]>> raidLoot = new Dictionary<string, Dictionary<string, int[]>>();
@@ -85,6 +81,7 @@ namespace WoWGuildOrganizer
             if (!string.IsNullOrEmpty(Properties.Settings.Default.GuildName))
             {
                 textBoxGuildName.Text = Properties.Settings.Default.GuildName;
+                toolStripTextBoxGuild.Text = Properties.Settings.Default.GuildName;
             }
 
             // Load up the realm name textbox if it's been saved before
@@ -92,13 +89,14 @@ namespace WoWGuildOrganizer
             {
                 textBoxRealm.Text = Properties.Settings.Default.Realm;
                 textBoxCharacterRealm.Text = textBoxRealm.Text;
+                toolStripTextBoxRealm.Text = Properties.Settings.Default.Realm;
             }
-
-            // setup the data grid view
-            this.SetupDataGridView();
 
             // init the struct that will store all the char info
             this.savedCharacters = new GuildMemberGroup();
+
+            // setup the data grid view
+            this.SetupDataGridView();            
 
             // Attempt to load the last guild saved...
             //   check for a data file and if there is one, try to load it up
@@ -113,15 +111,14 @@ namespace WoWGuildOrganizer
                     this.savedCharacters = (GuildMemberGroup)bformatter.Deserialize(stream);
                     stream.Close();
 
-                    label3.Text = this.savedCharacters.SavedCharacters.Count.ToString() + " total characters";
+                    toolStripLabelRefreshStatus.Text = this.savedCharacters.SavedCharacters.Count.ToString() + " total characters";
                 }
             }
             catch (Exception ex)
             {
                 if (!ex.Message.StartsWith("Could not find file"))
                 {
-                    Logging.Log(string.Format("  **ERROR: ", ex.Message));
-                    MessageBox.Show(string.Format("  **ERROR[LoadTempData]: {0}", ex.Message));
+                    Logging.DisplayError(ex.Message);
                 }
             }
 
@@ -146,8 +143,7 @@ namespace WoWGuildOrganizer
             {
                 if (!ex.Message.StartsWith("Could not find file"))
                 {
-                    Logging.Log(string.Format("  **ERROR: ", ex.Message));
-                    MessageBox.Show(string.Format("  **ERROR[LoadTempData]: {0}", ex.Message));
+                    Logging.DisplayError(ex.Message);
                 }
             }
 
@@ -171,8 +167,7 @@ namespace WoWGuildOrganizer
             {
                 if (!ex.Message.StartsWith("Could not find file"))
                 {
-                    Logging.Log(string.Format("  **ERROR: ", ex.Message));
-                    MessageBox.Show(string.Format("  **ERROR[LoadTempData]: {0}", ex.Message));
+                    Logging.DisplayError(ex.Message);
                 }
             }
 
@@ -183,26 +178,16 @@ namespace WoWGuildOrganizer
             // Add Raid Loot Drop Items
             foreach (string key in this.raidLoot.Keys)
             {
-                toolStripComboBoxRaidLootDropRaid.Items.Add(key);
+                toolStripComboBoxPickRaid.Items.Add(key);
             }
-
-            // create context grid popup menu
-            this.contextMenuCharacter = new ContextMenuStrip();
-            this.contextMenuCharacter.Items.Add("Update this Character");
-            this.contextMenuCharacter.Items.Add("Move Character Up");
-            this.contextMenuCharacter.Items.Add("Move Character Down");
-            this.contextMenuCharacter.Items.Add("Delete Character from Grid");
-            this.contextMenuCharacter.ItemClicked += this.ContextMenuCharacter_ItemClicked;
 
             // Assume that the Web Site is currently online
             WebSiteOnline = true;
 
-            // Create a background worker thread that Searches and Reports Progress and Supports Cancellation            
+            // Create a background worker thread that Off Loads work, Reports Progress and Supports Cancellation            
             this.guildInfoAsyncWorker.WorkerReportsProgress = true;
             this.guildInfoAsyncWorker.WorkerSupportsCancellation = true;
             this.guildInfoAsyncWorker.ProgressChanged += new ProgressChangedEventHandler(this.GetGuildInfoAsync_ProgressChanged);
-
-            // todo: can one of these be made for all controls so invoke won't have to be done?
             this.guildInfoAsyncWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(this.GetGuildInfoAsync_RunWorkerCompleted);
             this.guildInfoAsyncWorker.DoWork += new DoWorkEventHandler(this.GetGuildInfoAsync_DoWork);
         }
@@ -214,11 +199,7 @@ namespace WoWGuildOrganizer
         /// <summary>
         /// Gets or sets a persistent cache of all the WoW Item Data needed
         /// </summary>
-        public static ItemCache Items
-        {
-            get;
-            set;
-        }
+        public static ItemCache Items { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to let the app know if it should attempt to connect
@@ -232,7 +213,7 @@ namespace WoWGuildOrganizer
 
         #endregion
 
-        #region " Guild DataGrid Functions "
+        #region " Guild Data DataGridView Functions "
 
         /// <summary>
         /// Setup the Data Grid View for guild members
@@ -385,19 +366,16 @@ namespace WoWGuildOrganizer
         private void DataGridViewGuildData_CellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             DataGridViewCell currentCell;
+            int currentRow = -1;
 
             // Get the current cell.
             currentCell = dataGridViewGuildData.CurrentCell;
 
             // Get the cell's current row
-            int currentRow = currentCell.RowIndex;
+            currentRow = currentCell.RowIndex;
 
             // First check to make sure the vars are passed in
-            if (textBoxRealm.Text.Length == 0)
-            {
-                MessageBox.Show("Error: Please fill out the Realm.");
-            }
-            else if (currentRow < 0)
+            if (currentRow < 0)
             {
                 MessageBox.Show("Error: No row was selected.");
             }
@@ -801,7 +779,7 @@ namespace WoWGuildOrganizer
 
                 // change the buttons back
                 buttonGetGuildInfo.Text = "Get Guild Info";
-                buttonRefreshGuildData.Text = "Refresh";
+                //buttonRefreshGuildData.Text = "Refresh";
 
                 // start the wait cursor
                 this.WaitCursor(false);
@@ -818,7 +796,7 @@ namespace WoWGuildOrganizer
 
         #endregion
 
-        #region " Form and Tab Functions "
+        #region " Class Form Functions "
 
         /// <summary>
         /// Before the form closes, save the important variables
@@ -827,12 +805,12 @@ namespace WoWGuildOrganizer
         /// <param name="e">e parameter</param>
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (!string.IsNullOrEmpty(textBoxGuildName.Text))
+            if (!string.IsNullOrEmpty(this.savedCharacters.Guild))
             {
                 Properties.Settings.Default.GuildName = textBoxGuildName.Text;
             }
 
-            if (!string.IsNullOrEmpty(textBoxRealm.Text))
+            if (!string.IsNullOrEmpty(this.savedCharacters.Realm))
             {
                 Properties.Settings.Default.Realm = textBoxRealm.Text;
             }
@@ -885,6 +863,10 @@ namespace WoWGuildOrganizer
             dataGridViewRaidGroup.DataSource = this.raidGroup.RaidGroup;
             this.UpdateRaidGrid();
         }
+        
+        #endregion
+
+        #region " Tab Functions "
 
         /// <summary>
         /// The selected tab is changed
@@ -893,26 +875,116 @@ namespace WoWGuildOrganizer
         /// <param name="e">e parameter</param>
         private void TabControl1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (tabControlWGO.SelectedIndex == 0)
+            if (tabControlWGO.SelectedTab.Text == "Guild Data")
             {
+                // Setup the Main Tool strip
+
+                // Hide all controls not needed for this tab:
+                toolStripComboBoxPickRaid.Visible = false;
+                toolStripLabelPickRaid.Visible = false;
+                toolStripComboBoxPickBoss.Visible = false;
+                toolStripLabelPickBoss.Visible = false;
+                toolStripButtonAdd.Visible = false;
+                toolStripProgressBar1.Visible = false;
+
+                // Show all controls needed for this tab:                
+                toolStripLabelGuild.Visible = true;
+                toolStripTextBoxGuild.Visible = true;
+                toolStripLabelRealm.Visible = true;
+                toolStripTextBoxRealm.Visible = true;
+                toolStripLabelRefreshStatus.Visible = true;
+                toolStripButtonRefresh.Visible = true;
+
+                // Update Text as needed
+                toolStripLabelGuild.Text = "Guild:";
+                toolStripLabelRefreshStatus.Text = "in progress...";
+
+                // Check to see what the currently saved guild is
+                if (this.savedCharacters.SavedCharacters.Count > 0)
+                {
+                    toolStripTextBoxGuild.Text = this.savedCharacters.Guild;
+                }
+                else
+                {
+                    toolStripTextBoxGuild.Text = string.Empty;
+                }
+
                 // Guild Members Tab
                 this.UpdateGrid();
             }
-            else if (tabControlWGO.SelectedIndex == 1)
+            else if (tabControlWGO.SelectedTab.Text == "Raid Data")
             {
+                // Raid Group Tab
+
+                // Hide all controls not needed for this tab:
+                toolStripComboBoxPickRaid.Visible = false;
+                toolStripLabelPickRaid.Visible = false;
+                toolStripComboBoxPickBoss.Visible = false;
+                toolStripLabelPickBoss.Visible = false;
+                toolStripProgressBar1.Visible = false;
+
+                // Show all controls needed for this tab:
+                toolStripLabelGuild.Text = "Character:";
+                toolStripLabelGuild.Visible = true;
+                toolStripTextBoxGuild.Visible = true;
+                toolStripTextBoxGuild.Text = string.Empty;
+                toolStripLabelRealm.Visible = true;
+                toolStripTextBoxRealm.Visible = true;
+                toolStripButtonAdd.Visible = true;
+                toolStripLabelRefreshStatus.Visible = true;
+                toolStripButtonRefresh.Visible = true;
+
+                // Update Text as needed
+                toolStripLabelGuild.Text = "Guild:";
+                toolStripLabelRefreshStatus.Text = "in progress...";
+
                 // Raid Group Tab
                 this.UpdateRaidGrid();
             }
-            else if (tabControlWGO.SelectedIndex == 2)
+            else if (tabControlWGO.SelectedTab.Text == "Raid Loot Drops")
             {
                 // Boss Loot tab
-                // todo:
+
+                // Hide all controls not needed for this tab:
+                toolStripLabelGuild.Visible = false;
+                toolStripTextBoxGuild.Visible = false;
+                toolStripLabelRealm.Visible = false;
+                toolStripTextBoxRealm.Visible = false;
+                toolStripButtonAdd.Visible = false;
+                toolStripProgressBar1.Visible = false;
+                toolStripLabelRefreshStatus.Visible = false;
+
+                // Show all controls needed for this tab:
+                toolStripComboBoxPickRaid.Visible = true;
+                toolStripLabelPickRaid.Visible = true;
+                toolStripComboBoxPickBoss.Visible = true;
+                toolStripLabelPickBoss.Visible = true;
+                toolStripButtonRefresh.Visible = true;
+            }
+            else if (tabControlWGO.SelectedTab.Text == "Settings")
+            {
+                // Boss Loot tab
+
+                // Hide all controls not needed for this tab:
+                toolStripLabelGuild.Visible = false;
+                toolStripTextBoxGuild.Visible = false;
+                toolStripLabelRealm.Visible = false;
+                toolStripTextBoxRealm.Visible = false;
+                toolStripButtonAdd.Visible = false;
+                toolStripComboBoxPickRaid.Visible = false;
+                toolStripLabelPickRaid.Visible = false;
+                toolStripComboBoxPickBoss.Visible = false;
+                toolStripLabelPickBoss.Visible = false;
+                toolStripButtonRefresh.Visible = false;
+                toolStripProgressBar1.Visible = false;
+                toolStripSeparator1.Visible = false;
+                toolStripLabelRefreshStatus.Visible = false;
             }
         }
 
         #endregion
 
-        #region " Save and Load Functions "
+        #region " Setting Functions "
 
         /// <summary>
         /// Loads guild data from a saved file
@@ -945,7 +1017,7 @@ namespace WoWGuildOrganizer
                         this.savedCharacters = (GuildMemberGroup)bformatter.Deserialize(stream);
                         stream.Close();
 
-                        label3.Text = this.savedCharacters.SavedCharacters.Count.ToString() + " total characters";
+                        //todo: label3.Text = this.savedCharacters.SavedCharacters.Count.ToString() + " total characters";
                         this.SortGrid(this.basicGuildSort);
 
                         // update the text boxes                        
@@ -999,6 +1071,31 @@ namespace WoWGuildOrganizer
             }
         }
 
+        /// <summary>
+        /// Fires when the Delete Item Cache button is pressed
+        ///   Deletes the persistent item data
+        /// </summary>
+        /// <param name="sender">sender parameter</param>
+        /// <param name="e">e parameter</param>
+        private void ButtonDeleteItemCacheData_Click(object sender, EventArgs e)
+        {
+            using (FormItemCacheManager frm = new FormItemCacheManager())
+            {
+                frm.ShowDialog();
+            }
+        }
+
+        /// <summary>
+        /// Fires when the Show Errors button is pressed
+        ///   Brings up another form that displays all the errors found in the current session
+        /// </summary>
+        /// <param name="sender">sender parameter</param>
+        /// <param name="e">e parameter</param>
+        private void ButtonShowErrors_Click(object sender, EventArgs e)
+        {
+            Logging.ShowAllErrors();
+        }
+
         #endregion
 
         #region " Button Functions "
@@ -1036,7 +1133,7 @@ namespace WoWGuildOrganizer
                     Logging.Log("Cancelling Search...");
 
                     buttonGetGuildInfo.Enabled = false;
-                    buttonRefreshGuildData.Enabled = false;
+                    //buttonRefreshGuildData.Enabled = false;
 
                     // Notify the worker thread that a cancel has been requested.
                     // The cancel will not actually happen until the thread in the
@@ -1054,7 +1151,7 @@ namespace WoWGuildOrganizer
 
                     // Change the button text so that this can be cancelled
                     buttonGetGuildInfo.Text = "Cancel";
-                    buttonRefreshGuildData.Text = "Cancel";
+                    //buttonRefreshGuildData.Text = "Cancel";
 
                     // Start the stop watch
                     this.sw.Start();
@@ -1063,31 +1160,6 @@ namespace WoWGuildOrganizer
                     this.guildInfoAsyncWorker.RunWorkerAsync();
                 }
             }
-        }
-
-        /// <summary>
-        /// Fires when the Delete Item Cache button is pressed
-        ///   Deletes the persistent item data
-        /// </summary>
-        /// <param name="sender">sender parameter</param>
-        /// <param name="e">e parameter</param>
-        private void ButtonDeleteItemCacheData_Click(object sender, EventArgs e)
-        {
-            using (FormItemCacheManager frm = new FormItemCacheManager())
-            {
-                frm.ShowDialog();
-            }
-        }
-
-        /// <summary>
-        /// Fires when the Show Errors button is pressed
-        ///   Brings up another form that displays all the errors found in the current session
-        /// </summary>
-        /// <param name="sender">sender parameter</param>
-        /// <param name="e">e parameter</param>
-        private void ButtonShowErrors_Click(object sender, EventArgs e)
-        {
-            Logging.ShowAllErrors();
         }
 
         #endregion
@@ -1099,9 +1171,9 @@ namespace WoWGuildOrganizer
         /// </summary>
         /// <param name="sender">sender parameter</param>
         /// <param name="e">e parameter</param>
-        private void ButtonAddCharacterToRaidData_Click(object sender, EventArgs e)
+        private void ToolStripButtonAdd_Click(object sender, EventArgs e)
         {
-            if (textBoxCharacterName.Text.Length == 0 || textBoxCharacterRealm.Text.Length == 0)
+            if (toolStripTextBoxGuild.Text.Length == 0 || toolStripTextBoxRealm.Text.Length == 0)
             {
                 MessageBox.Show("Error: Both Character Name and Realm need to be filled out.");
             }
@@ -1109,16 +1181,19 @@ namespace WoWGuildOrganizer
             {
                 this.WaitCursor(true);
 
-                GuildMember gm = this.GetCharacterInformation(textBoxCharacterName.Text, textBoxCharacterRealm.Text);
+                GuildMember gm = this.GetCharacterInformation(toolStripTextBoxGuild.Text, toolStripTextBoxRealm.Text);
 
                 if (gm != null)
                 {
+                    //todo: is this needed?
+                    //  do we need to clear datasource, or can it just be updated
+
                     // Clear out the Grid Data Source to get it ready for the new data
                     dataGridViewRaidGroup.DataSource = null;
 
                     // Add new character to Raid
                     this.raidGroup.RaidGroup.Add(gm);
-
+                                        
                     // refresh grid data
                     dataGridViewRaidGroup.DataSource = this.raidGroup.RaidGroup;
 
@@ -1174,7 +1249,9 @@ namespace WoWGuildOrganizer
         }
 
         /// <summary>
-        /// Refreshes the raid group data
+        /// Refreshes the raid group data - 
+        /// TODO: remove me
+        /// 
         /// </summary>
         /// <param name="sender">sender parameter</param>
         /// <param name="e">e parameter</param>
@@ -1336,205 +1413,6 @@ namespace WoWGuildOrganizer
         }
 
         /// <summary>
-        /// Fires when a mouse right clicks on the raid group grid
-        /// </summary>
-        /// <param name="sender">sender parameter</param>
-        /// <param name="e">e parameter</param>
-        private void DataGridViewRaidGroup_MouseClick(object sender, MouseEventArgs e)
-        {
-            // Check for a right click
-            if (e.Button == MouseButtons.Right)
-            {
-                // select the current row
-                int currentMouseOverRow = this.dataGridViewRaidGroup.HitTest(e.X, e.Y).RowIndex;
-
-                if (currentMouseOverRow > -1)
-                {
-                    this.dataGridViewRaidGroup.ClearSelection();
-                    this.dataGridViewRaidGroup.Rows[currentMouseOverRow].Selected = true;
-
-                    // pop up a context menu
-                    this.contextMenuCharacter.Show(this.dataGridViewRaidGroup, new Point(e.X, e.Y));
-                }
-            }
-        }
-
-        /// <summary>
-        /// Fires when a context menu item is clicked
-        /// </summary>
-        /// <param name="sender">sender parameter</param>
-        /// <param name="e">e parameter</param>
-        private void ContextMenuCharacter_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
-        {
-            ToolStripItem item = e.ClickedItem;
-
-            if (item.Text == "Update this Character")
-            {
-                this.WaitCursor(true);
-
-                try
-                {
-                    foreach (DataGridViewRow row in this.dataGridViewRaidGroup.SelectedRows)
-                    {
-                        int currentRow = row.Index;
-                        GuildMember oldMember = (GuildMember)this.raidGroup.RaidGroup[currentRow];
-                        GuildMember gm = this.GetCharacterInformation(oldMember.Name, oldMember.Realm);
-
-                        if (gm != null)
-                        {
-                            // Success! Now we have the new info
-                            bool success = true;
-
-                            // Check the spec first... if spec is different then first 
-                            //  ask if the update should happen
-                            // This prevents from losing primary spec data
-                            if (oldMember.Spec != gm.Spec)
-                            {
-                                if (MessageBox.Show(string.Format("The spec for {0} has changed from {1} to {2}.\n  Are you sure that you want to update?", oldMember.Name, oldMember.Spec, gm.Spec), "Spec Change", MessageBoxButtons.YesNo) == DialogResult.No)
-                                {
-                                    success = false;
-                                }
-                            }
-
-                            if (success)
-                            {
-                                // Success! Now we have the new info
-                                // Compare the new info with the old info
-                                //  And make updates as needed...
-
-                                // Level
-                                if (oldMember.Level != gm.Level)
-                                {
-                                    oldMember.Level = gm.Level;
-                                }
-                                else
-                                {
-                                    oldMember.ClearFlags();
-                                    gm.ClearFlags();
-                                }
-
-                                // Achievement Points
-                                if (oldMember.AchievementPoints != gm.AchievementPoints)
-                                {
-                                    oldMember.AchievementPoints = gm.AchievementPoints;
-                                }
-
-                                // Equiped iLevel
-                                if (oldMember.EquipediLevel != gm.EquipediLevel)
-                                {
-                                    oldMember.EquipediLevel = gm.EquipediLevel;
-                                }
-                                else
-                                {
-                                    oldMember.ClearEquipItemLevelFlag();
-                                    gm.ClearEquipItemLevelFlag();
-                                }
-
-                                // Max iLevel
-                                if (oldMember.MaxiLevel != gm.MaxiLevel)
-                                {
-                                    oldMember.MaxiLevel = gm.MaxiLevel;
-                                }
-                                else
-                                {
-                                    oldMember.ClearMaxItemLevelFlag();
-                                    gm.ClearMaxItemLevelFlag();
-                                }
-
-                                // Spec
-                                if (oldMember.Spec != gm.Spec)
-                                {
-                                    oldMember.Spec = gm.Spec;
-                                }
-
-                                // Role
-                                if (oldMember.Role != gm.Role)
-                                {
-                                    oldMember.Role = gm.Role;
-                                }
-
-                                // ItemAudit - always update, just in case
-                                oldMember.ItemAudits = gm.ItemAudits;
-
-                                // Update the last updated time with the current date and time
-                                oldMember.LastUpdated = DateTime.Now;
-                            }
-                        }
-                    }
-
-                    // refresh the grid data since it's been changed
-                    this.UpdateRaidGrid();
-                }
-                catch (Exception ex)
-                {
-                    Logging.Log("Error: " + ex.Message);
-                }
-
-                this.WaitCursor(false);
-            }
-            else if (item.Text == "Move Character Up")
-            {
-                if (this.dataGridViewRaidGroup.SelectedRows.Count > 0)
-                {
-                    // check to see if the row can to be moved
-                    if (this.dataGridViewRaidGroup.SelectedRows[0].Index != 0)
-                    {
-                        // get the row index that will be moved
-                        int row = this.dataGridViewRaidGroup.SelectedRows[0].Index;
-                        GuildMember gm = (GuildMember)this.raidGroup.RaidGroup[row];
-                        this.raidGroup.RaidGroup.RemoveAt(row);
-                        this.raidGroup.RaidGroup.Insert(row - 1, gm);
-
-                        dataGridViewRaidGroup.ClearSelection();
-                        dataGridViewRaidGroup.Rows[row - 1].Selected = true;
-
-                        // refresh the grid data since it's been changed
-                        this.UpdateRaidGrid();
-                    }
-                }
-            }
-            else if (item.Text == "Move Character Down")
-            {
-                if (this.dataGridViewRaidGroup.SelectedRows.Count > 0)
-                {
-                    // check to see if the row can to be moved
-                    if (this.dataGridViewRaidGroup.SelectedRows[0].Index != this.dataGridViewRaidGroup.RowCount - 1)
-                    {
-                        // get the row index that will be moved
-                        int row = this.dataGridViewRaidGroup.SelectedRows[0].Index;
-                        GuildMember gm = (GuildMember)this.raidGroup.RaidGroup[row];
-                        this.raidGroup.RaidGroup.RemoveAt(row);
-                        this.raidGroup.RaidGroup.Insert(row + 1, gm);
-
-                        dataGridViewRaidGroup.ClearSelection();
-                        dataGridViewRaidGroup.Rows[row + 1].Selected = true;
-
-                        // refresh the grid data since it's been changed
-                        this.UpdateRaidGrid();
-                    }
-                }
-            }
-            else if (item.Text == "Delete Character from Grid")
-            {
-                // Delete this character(s) from the Raid Group
-                foreach (DataGridViewRow row in this.dataGridViewRaidGroup.SelectedRows)
-                {
-                    // Remove the character selected
-                    this.raidGroup.RaidGroup.RemoveAt(row.Index);
-                }
-
-                // Clear out the Grid Data Source to get it ready for the new data
-                dataGridViewRaidGroup.DataSource = null;
-
-                // refresh grid data
-                dataGridViewRaidGroup.DataSource = this.raidGroup.RaidGroup;
-
-                // refresh the grid data since it's been changed
-                this.UpdateRaidGrid();
-            }
-        }
-
-        /// <summary>
         /// Sort the grid according to the column clicked
         /// </summary>
         /// <param name="sender">sender parameter</param>
@@ -1659,18 +1537,19 @@ namespace WoWGuildOrganizer
         /// </summary>
         /// <param name="sender">sender parameter</param>
         /// <param name="e">e parameter</param>
-        private void ToolStripComboBoxRaidLootDropRaid_SelectedIndexChanged(object sender, EventArgs e)
+
+        private void toolStripComboBoxPickRaid_SelectedIndexChanged(object sender, EventArgs e)
         {
             // Clear out the results first
             dataGridViewRaidLootDrop.DataSource = null;
-            toolStripComboBoxRaidLootDropBoss.Items.Clear();
+            toolStripComboBoxPickBoss.Items.Clear();
 
-            if (this.raidLoot.ContainsKey(toolStripComboBoxRaidLootDropRaid.SelectedItem.ToString()))
+            if (this.raidLoot.ContainsKey(toolStripComboBoxPickRaid.SelectedItem.ToString()))
             {
                 // Fill out bosses now
-                foreach (string value in this.raidLoot[toolStripComboBoxRaidLootDropRaid.SelectedItem.ToString()].Keys)
+                foreach (string value in this.raidLoot[toolStripComboBoxPickRaid.SelectedItem.ToString()].Keys)
                 {
-                    toolStripComboBoxRaidLootDropBoss.Items.Add(value);
+                    toolStripComboBoxPickBoss.Items.Add(value);
                 }
             }
             else
@@ -1685,7 +1564,7 @@ namespace WoWGuildOrganizer
         /// </summary>
         /// <param name="sender">sender parameter</param>
         /// <param name="e">e parameter</param>
-        private void ToolStripComboBoxRaidLootDropBoss_SelectedIndexChanged(object sender, EventArgs e)
+        private void toolStripComboBoxPickBoss_SelectedIndexChanged(object sender, EventArgs e)
         {
             this.GetLootResults();
         }
@@ -1720,9 +1599,9 @@ namespace WoWGuildOrganizer
             int[] itemIds = null;
 
             // Fill out the results
-            if (this.raidLoot[toolStripComboBoxRaidLootDropRaid.SelectedItem.ToString()].ContainsKey(toolStripComboBoxRaidLootDropBoss.SelectedItem.ToString()))
+            if (this.raidLoot[toolStripComboBoxPickRaid.SelectedItem.ToString()].ContainsKey(toolStripComboBoxPickBoss.SelectedItem.ToString()))
             {
-                itemIds = this.raidLoot[toolStripComboBoxRaidLootDropRaid.SelectedItem.ToString()][toolStripComboBoxRaidLootDropBoss.SelectedItem.ToString()];
+                itemIds = this.raidLoot[toolStripComboBoxPickRaid.SelectedItem.ToString()][toolStripComboBoxPickBoss.SelectedItem.ToString()];
             }
             else
             {
@@ -2742,6 +2621,13 @@ namespace WoWGuildOrganizer
                 ItemInfo item = Items.GetItem(id);
                 dataGridViewRaidLootDrop.Rows[e.RowIndex].Cells["ItemName"].ToolTipText = item.Tooltip;
             }
+            else if (e.ColumnIndex == 5 && e.RowIndex >= 0 && dataGridViewRaidLootDrop.Rows.Count > 0)
+            {
+                // TODO: Make this tooltip show the current item that would be replaced
+                //int id = Convert.ToInt32(dataGridViewRaidLootDrop.Rows[e.RowIndex].Cells["ItemId"].Value);
+                //ItemInfo item = Items.GetItem(id);
+                //dataGridViewRaidLootDrop.Rows[e.RowIndex].Cells["ItemName"].ToolTipText = item.Tooltip;
+            }
         }
 
         /// <summary>
@@ -2823,6 +2709,8 @@ namespace WoWGuildOrganizer
         }
 
         #endregion
+
+        #region Tool Strip Menu
 
         /// <summary>
         /// Fires when the update character right click is pressed
@@ -2968,43 +2856,56 @@ namespace WoWGuildOrganizer
         /// </summary>
         /// <param name="sender">sender parameter</param>
         /// <param name="e">e parameter</param>
-        private async void ToolStripButtonRefresh_Click(object sender, EventArgs e)
+        private void ToolStripButtonRefresh_Click(object sender, EventArgs e)
         {
-            // todo:
-
             // Find out what tab we're currently on
             if (this.tabControlWGO.SelectedTab.Text == "Guild Data")
             {
-                if (toolStripButtonRefresh.Text == "Refresh")
+                // First check to make sure both Realm and Guild values have been filled out
+                if (toolStripTextBoxGuild.Text != string.Empty && toolStripTextBoxGuild.Text != string.Empty)
                 {
-                    //Func<bool> ActionGetGuildMembers = () => GetGuildMembers();
-                    //List<Task> tasks = new List<Task>();
+                    if (toolStripButtonRefresh.Text == "Refresh")
+                    {
+                        //Func<bool> ActionGetGuildMembers = () => GetGuildMembers();
+                        //List<Task> tasks = new List<Task>();
 
-                    // Start the task to get all the current guild members
-                    //tasks.Add(Task<bool>.Factory.StartNew(ActionGetGuildMembers));
+                        // Start the task to get all the current guild members
+                        //tasks.Add(Task<bool>.Factory.StartNew(ActionGetGuildMembers));
 
-                    //await tasks;
+                        //await tasks;
 
-                    //Task doingWork = GetGuildMembers();
-                    //doingWork.ContineWith(OnWorkCompleted);
-                    
-                    toolStripButtonRefresh.Text = "Cancel";
+                        //Task doingWork = GetGuildMembers();
+                        //doingWork.ContineWith(OnWorkCompleted);
 
-                    //Task<bool> longRunningTask = LongRunningTask();
+                        toolStripButtonRefresh.Enabled = false;
 
-                    // Call the method that runs asynchronously.
-                    //bool result = await longRunningTask();
+                        //Task<bool> longRunningTask = LongRunningTask();
 
-                    Func<bool> ActionLookupConsumer = () => GetGuildMembers();
+                        // Call the method that runs asynchronously.
+                        //bool result = await longRunningTask();
 
-                    List<Task> tasks = new List<Task>();
-                    tasks.Add(Task<bool>.Factory.StartNew(ActionLookupConsumer));
+                        Func<bool> ActionLookupConsumer = () => GetGuildMembers();
+                        List<Task> tasks = new List<Task>();
 
-                    //toolStripButtonRefresh.Text = "Refresh";
-                }
-                else
-                {
-                    // Stop it
+                        // Create the first task
+                        tasks.Add(Task<bool>.Factory.StartNew(ActionLookupConsumer));
+
+                        // Now create a task that will start after the first task completes
+                        tasks.Add((tasks[0] as Task<bool>).ContinueWith(t => OnWorkCompleted()));
+
+                        // other tests
+                        //bool success = false;
+
+                        //await tasks.Run;// (Task<bool>.Factory.StartNew(ActionLookupConsumer));
+                        //Action action = new Action(GetGuildMembers());
+                        //Task task = new Task((ActionLookupConsumer);
+
+                        //toolStripButtonRefresh.Text = "Refresh";
+                    }
+                    else
+                    {
+                        // Cancel it
+                    }
                 }
             }
             else if (this.tabControlWGO.SelectedTab.Text == "Raid Data")
@@ -3015,10 +2916,19 @@ namespace WoWGuildOrganizer
             }
         }
         
+        /// <summary>
+        /// todo
+        /// </summary>
         private void OnWorkCompleted()
         {
+            //toolStripButtonRefresh.Text = "Refresh";
+            toolStripButtonRefresh.Enabled = true;
         }
 
+        /// <summary>
+        /// todo
+        /// </summary>
+        /// <returns></returns>
         public async Task<bool> LongRunningOperation() // assume we return an int from this long running operation 
         {
             bool result = false;
@@ -3028,18 +2938,20 @@ namespace WoWGuildOrganizer
             return result;
         }
 
+        /// <summary>
+        /// 1.  Get the Entire Guild Roster first from: http://us.battle.net/api/wow/guild/Thrall/Secondnorth?fields=members
+        /// 2.  Go through each guild member and pull out additional information from: http://us.battle.net/api/wow/character/Thrall/Purdee?fields=items,professions,talents
+        /// </summary>
+        /// <returns></returns>
         private bool GetGuildMembers()
         {
             // First get the entire Guild Roster
             //await Task.Run(Action
             
-            Thread.Sleep(15000); //1 seconds delay
+            Thread.Sleep(9000); //1 seconds delay
 
             try
             {
-                // This is the Web Site to get the guild info from...
-                // http://us.battle.net/api/wow/guild/Thrall/Secondnorth?fields=members
-
                 // Reset the Counter
                 //async.ReportProgress(0);
 
@@ -3048,9 +2960,7 @@ namespace WoWGuildOrganizer
 
                 if (guildInfo.CollectData(this.URLWowAPI + @"guild/" + textBoxRealm.Text + @"/" + textBoxGuildName.Text + @"?fields=members"))
                 {
-                    // success!
-
-                    // now check to see if a grid needs to be updated or if it's the first time used
+                    // success! now check to see if a grid needs to be updated or if it's the first time used
                     if (this.savedCharacters.SavedCharacters.Count > 0)
                     {
                         // save the current data to a temp var
@@ -3206,5 +3116,206 @@ namespace WoWGuildOrganizer
 
             return true;
         }
+
+#endregion
+
+        #region " Tool Strip Functions "
+
+        /// <summary>
+        /// Fires when the "Update this Character" tool strip menu item is clicked
+        /// </summary>
+        /// <param name="sender">sender parameter</param>
+        /// <param name="e">e parameter</param>
+        private void UpdateThisCharacterToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.WaitCursor(true);
+
+            try
+            {
+                foreach (DataGridViewRow row in this.dataGridViewRaidGroup.SelectedRows)
+                {
+                    int currentRow = row.Index;
+                    GuildMember oldMember = (GuildMember)this.raidGroup.RaidGroup[currentRow];
+                    GuildMember gm = this.GetCharacterInformation(oldMember.Name, oldMember.Realm);
+
+                    if (gm != null)
+                    {
+                        // Success! Now we have the new info
+                        bool success = true;
+
+                        // Check the spec first... if spec is different then first 
+                        //  ask if the update should happen
+                        // This prevents from losing primary spec data
+                        if (oldMember.Spec != gm.Spec)
+                        {
+                            if (MessageBox.Show(string.Format("The spec for {0} has changed from {1} to {2}.\n  Are you sure that you want to update?", oldMember.Name, oldMember.Spec, gm.Spec), "Spec Change", MessageBoxButtons.YesNo) == DialogResult.No)
+                            {
+                                success = false;
+                            }
+                        }
+
+                        if (success)
+                        {
+                            // Success! Now we have the new info
+                            // Compare the new info with the old info
+                            //  And make updates as needed...
+
+                            // Level
+                            if (oldMember.Level != gm.Level)
+                            {
+                                oldMember.Level = gm.Level;
+                            }
+                            else
+                            {
+                                oldMember.ClearFlags();
+                                gm.ClearFlags();
+                            }
+
+                            // Achievement Points
+                            if (oldMember.AchievementPoints != gm.AchievementPoints)
+                            {
+                                oldMember.AchievementPoints = gm.AchievementPoints;
+                            }
+
+                            // Equiped iLevel
+                            if (oldMember.EquipediLevel != gm.EquipediLevel)
+                            {
+                                oldMember.EquipediLevel = gm.EquipediLevel;
+                            }
+                            else
+                            {
+                                oldMember.ClearEquipItemLevelFlag();
+                                gm.ClearEquipItemLevelFlag();
+                            }
+
+                            // Max iLevel
+                            if (oldMember.MaxiLevel != gm.MaxiLevel)
+                            {
+                                oldMember.MaxiLevel = gm.MaxiLevel;
+                            }
+                            else
+                            {
+                                oldMember.ClearMaxItemLevelFlag();
+                                gm.ClearMaxItemLevelFlag();
+                            }
+
+                            // Spec
+                            if (oldMember.Spec != gm.Spec)
+                            {
+                                oldMember.Spec = gm.Spec;
+                            }
+
+                            // Role
+                            if (oldMember.Role != gm.Role)
+                            {
+                                oldMember.Role = gm.Role;
+                            }
+
+                            // ItemAudit - always update, just in case
+                            oldMember.ItemAudits = gm.ItemAudits;
+
+                            // Update the last updated time with the current date and time
+                            oldMember.LastUpdated = DateTime.Now;
+                        }
+                    }
+                }
+
+                // refresh the grid data since it's been changed
+                this.UpdateRaidGrid();
+            }
+            catch (Exception ex)
+            {
+                Logging.Log("Error: " + ex.Message);
+            }
+
+            this.WaitCursor(false);
+        }
+
+        /// <summary>
+        /// Fires when the "Move Character Up" tool strip menu item is clicked
+        /// </summary>
+        /// <param name="sender">sender parameter</param>
+        /// <param name="e">e parameter</param>
+        private void MoveCharacterUpToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (this.dataGridViewRaidGroup.SelectedRows.Count > 0)
+            {
+                // check to see if the row can to be moved
+                if (this.dataGridViewRaidGroup.SelectedRows[0].Index != 0)
+                {
+                    // get the row index that will be moved
+                    int row = this.dataGridViewRaidGroup.SelectedRows[0].Index;
+                    GuildMember gm = (GuildMember)this.raidGroup.RaidGroup[row];
+                    this.raidGroup.RaidGroup.RemoveAt(row);
+                    this.raidGroup.RaidGroup.Insert(row - 1, gm);
+
+                    dataGridViewRaidGroup.ClearSelection();
+                    dataGridViewRaidGroup.Rows[row - 1].Selected = true;
+
+                    // refresh the grid data since it's been changed
+                    this.UpdateRaidGrid();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Fires when the "Move Character Down" tool strip menu item is clicked
+        /// </summary>
+        /// <param name="sender">sender parameter</param>
+        /// <param name="e">e parameter</param>
+        private void MoveCharacterDownToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (this.dataGridViewRaidGroup.SelectedRows.Count > 0)
+            {
+                // check to see if the row can to be moved
+                if (this.dataGridViewRaidGroup.SelectedRows[0].Index != this.dataGridViewRaidGroup.RowCount - 1)
+                {
+                    // get the row index that will be moved
+                    int row = this.dataGridViewRaidGroup.SelectedRows[0].Index;
+                    GuildMember gm = (GuildMember)this.raidGroup.RaidGroup[row];
+                    this.raidGroup.RaidGroup.RemoveAt(row);
+                    this.raidGroup.RaidGroup.Insert(row + 1, gm);
+
+                    dataGridViewRaidGroup.ClearSelection();
+                    dataGridViewRaidGroup.Rows[row + 1].Selected = true;
+
+                    // refresh the grid data since it's been changed
+                    this.UpdateRaidGrid();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Fires when the "Delete Character From Grid" tool strip menu item is clicked
+        /// </summary>
+        /// <param name="sender">sender parameter</param>
+        /// <param name="e">e parameter</param>
+        private void DeleteCharacterFromGridToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Delete this character(s) from the Raid Group
+            foreach (DataGridViewRow row in this.dataGridViewRaidGroup.SelectedRows)
+            {
+                // Remove the character selected
+                this.raidGroup.RaidGroup.RemoveAt(row.Index);
+            }
+
+            // Clear out the Grid Data Source to get it ready for the new data
+            dataGridViewRaidGroup.DataSource = null;
+
+            // refresh grid data
+            dataGridViewRaidGroup.DataSource = this.raidGroup.RaidGroup;
+
+            // refresh the grid data since it's been changed
+            this.UpdateRaidGrid();
+        }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        
+        
+        #endregion
     }
 }

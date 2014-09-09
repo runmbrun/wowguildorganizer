@@ -1,53 +1,77 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Net;
-using System.Collections;
-using System.Text.RegularExpressions;
-using System.IO;
-
-
+﻿// <copyright file="GetGuildInfo.cs" company="Secondnorth.com">
+//     Secondnorth.com. All rights reserved.
+// </copyright>
+// <author>Me</author>
 
 namespace WoWGuildOrganizer
 {
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;    
+    using System.Net;
+    using System.Text;
+    using System.Text.RegularExpressions;    
+
+    /// <summary>
+    /// Class to get all the guild information
+    /// </summary>
     class GetGuildInfo
     {
-        Boolean Debug = false;
-        String DebugFile = @"c:\temp\GetGuildInfo.log";
-
-        private ArrayList _characters;
-        public ArrayList Characters
-        {
-            get { return _characters; }
-            set { _characters = value; }
-        }
-
-        public GetGuildInfo()
-        {
-            Characters = new ArrayList();
-        }
+        #region Class Variables
 
         /// <summary>
-        /// 
+        /// Flag that determines if debug logging is turned on or off
         /// </summary>
-        /// <param name="WebPage"></param>
-        /// <returns></returns>
-        public virtual Boolean CollectData(String WebPage)
-        {
-            Boolean Success = false;
+        private bool debug = false;
 
+        /// <summary>
+        /// String containing the location of a debugging log
+        /// </summary>
+        private string debugFile = @"c:\temp\GetGuildInfo.log";
+
+        #endregion
+
+        #region Class Constructor
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GetGuildInfo"/> class
+        /// </summary>
+        public GetGuildInfo()
+        {
+            this.Characters = new ArrayList();
+        }
+
+        #endregion
+
+        #region Class Properties
+
+        /// <summary>
+        /// Gets or sets an array list of characters in the guild
+        /// </summary>
+        public ArrayList Characters { get; set; }
+
+        #endregion
+
+        #region Collect Data
+
+        /// <summary>
+        /// Collects all the data from a web page
+        /// </summary>
+        /// <param name="webPage">url of the web page that contains the guild information</param>
+        /// <returns>true if data is collected successfully</returns>
+        public virtual bool CollectData(string webPage)
+        {
+            bool success = false;
+            string dataString = string.Empty;
+            string search = string.Empty;
 
             try
             {
-                GetWebSiteData getSiteData = new GetWebSiteData();
-
-
-                if (!getSiteData.Parse(WebPage))
-                {
-                    // error
-                }
-                else
+                GetWebSiteData getSiteData = new GetWebSiteData();                
+                
+                if (getSiteData.Parse(webPage))
                 {
                     // now parse the data
 
@@ -55,7 +79,7 @@ namespace WoWGuildOrganizer
                     // code to expresso => replace "" with "
                     // expresso to code => replace " with ""
 
-                    /*
+                    /* Example:
                     {
                       "character":{
                         ***"name":"Huul", 
@@ -71,32 +95,11 @@ namespace WoWGuildOrganizer
                     },              
                     */
 
+                    dataString = getSiteData.Data;
+                    search = @"character"":{.*?name"":""(?<Name>\w+).*?class"":(?<Class>\d+).*?race"":(?<Race>\d+).*?level"":(?<Level>\d+).*?achievementPoints"":(?<AchPts>\d+).*?}";
+                    Regex test = new Regex(search, RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
 
-                    String DataString = getSiteData.Data;
-                    String Search = @"character"":{.*?name"":""(?<Name>\w+).*?class"":(?<Class>\d+).*?race"":(?<Race>\d+).*?level"":(?<Level>\d+).*?achievementPoints"":(?<AchPts>\d+).*?}";
-                    Regex test = new Regex(Search, RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
-
-                    #region DEBUG
-                    // this is for debugging only
-                    if (Debug)
-                    {
-                        // Create the output file.
-                        using (FileStream fs = File.Create(DebugFile)) { }
-                        // Open the stream and write to it
-                        using (FileStream fs = File.OpenWrite(DebugFile))
-                        {
-                            Byte[] info = new UTF8Encoding(true).GetBytes("   ");
-                            // Add some information to the file.
-                            fs.Write(info, 0, info.Length);
-                            info = new UTF8Encoding(true).GetBytes(Search);
-                            fs.Write(info, 0, info.Length);
-                            info = new UTF8Encoding(true).GetBytes(DataString);
-                            fs.Write(info, 0, info.Length);
-                        }
-                    }
-                    #endregion
-
-                    foreach (Match result in test.Matches(DataString))
+                    foreach (Match result in test.Matches(dataString))
                     {
                         GuildMember member = new GuildMember();
 
@@ -128,18 +131,58 @@ namespace WoWGuildOrganizer
                         member.EquipediLevel = 0;
                         member.MaxiLevel = 0;
 
-                        Characters.Add(member);
+                        this.Characters.Add(member);
                     }
 
-                    Success = true;
+                    success = true;
                 }
             }
             catch (Exception ex)
             {
-                String Error = String.Format("ERROR: ", ex.Message);
+                // Log the error
+                Logging.Log(string.Format("ERROR: {0}", ex.Message));
+
+                // Check for Debugging
+                this.Debug(dataString, search);
             }
 
-            return Success;
+            return success;
         }
+
+        #endregion
+        
+        #region Debugging
+        
+        /// <summary>
+        /// Check if debug logging is needed
+        /// </summary>
+        /// <param name="dataString">full data string of the web site</param>
+        /// <param name="search">regex of what will be searched on in the web site</param>
+        private void Debug(string dataString, string search)
+        {
+            if (this.debug)
+            {
+                // Create the output file.
+                using (FileStream fs = File.Create(this.debugFile)) 
+                { 
+                    // NO OP
+                }
+
+                // Open the stream and write to it
+                using (FileStream fs = File.OpenWrite(this.debugFile))
+                {
+                    byte[] info = new UTF8Encoding(true).GetBytes("   ");
+
+                    // Add some information to the file.
+                    fs.Write(info, 0, info.Length);
+                    info = new UTF8Encoding(true).GetBytes(search);
+                    fs.Write(info, 0, info.Length);
+                    info = new UTF8Encoding(true).GetBytes(dataString);
+                    fs.Write(info, 0, info.Length);
+                }
+            }
+        }
+        
+        #endregion
     }
 }
