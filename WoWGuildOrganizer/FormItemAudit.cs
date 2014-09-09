@@ -1,17 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
-
-
+﻿
 
 namespace WoWGuildOrganizer
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Collections;
+    using System.ComponentModel;
+    using System.Data;
+    using System.Drawing;
+    using System.Linq;
+    using System.Text;
+    using System.Windows.Forms;
+
+    /// <summary>
+    /// 
+    /// </summary>
     public partial class FormItemAudit : Form
     {
         #region " Properties "
@@ -92,7 +95,7 @@ namespace WoWGuildOrganizer
         /// <returns></returns>
         public Boolean PassData(GuildMember Character)
         {
-            Boolean Success = false;
+            bool success = false;
 
             try
             {
@@ -108,7 +111,7 @@ namespace WoWGuildOrganizer
                 // Now fill out the item audit information
                 if (Character.ItemAudits.Count <= 0)
                 {
-                    MessageBox.Show("This character can't be updated... please redo entire guild or raid group.");
+                    MessageBox.Show("This character can't be updated... please update this character.");
                 }
                 else
                 {
@@ -351,14 +354,14 @@ namespace WoWGuildOrganizer
                 // Update the grid
                 UpdateGridData();
                 
-                Success = true;
+                success = true;
             }
             catch (Exception ex)
             {
                 String Error = ex.Message;
             }
 
-            return Success;
+            return success;
         }
 
         #endregion

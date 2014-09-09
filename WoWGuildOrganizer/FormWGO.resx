@@ -117,16 +117,28 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <metadata name="contextMenuStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+  <metadata name="contextMenuStripGuildMembers.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>122, 17</value>
   </metadata>
-  <metadata name="toolStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>17, 17</value>
-  </metadata>
-  <metadata name="toolStrip2.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>277, 17</value>
+  <metadata name="toolStripMain.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>355, 18</value>
   </metadata>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="toolStripButtonAdd.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAH1SURBVFhH7ZJtS1NxGMb3GXoxw8qQoCiCLLFcpb3uVR8k
+        Isn2rGIPYg9baz7QmJq2tDa3FBQMykhphIRfwC3tUXtghbqdtuMO/LrP8ANEHM+rc8HFnz9/ONfvus9t
+        s2TJkqX/0eL0Od5NNvE2dYZ08jRz8Ua2n8zRwmQzmjJOuZBAE78cPWUuQFqalwtJtN+P0X6N8HzkhLkA
+        84lGARgXgJh4mKnBOnMBZscaZPQ6wLA4ykTk2M4BLEw0y7Kd5U3Sweu4g1ejDSzOXBCAuIQPoeWizKfO
+        8yR0mFjwIEN3DjDQXUvkxn5joNKpJlk4Ccs/rSxcxfpdXM5F2Mr1o/4Ms/W9B/VbmNJakOJqgL5rNcYA
+        zCUcEhBCXb0pH++qnOrX66hfOih9bkP96Ke44hG7UJavomSd/JEz3LHHGAD9fxd/dEuYHiiWwNInnwS6
+        Kaw4KSy3oLy/jJLRfani/NJFQm3VxgC8eFTPzMPjTEXrePbgKMneI8yOnUT54JbgVnEL0wP1MvK99Err
+        ++3VhHy7CXqrdm4xY4FD0t5FIdPKZvYK/Z0GjftfNXirVpp7yGddbGachKX19pM5inbVSHMvG0seNjIe
+        7vns5gL0de5jPdsuEH7WMz7uek0G6JGRB/1Vsmh2Am47t127zAWwZMmSJeNks/0FLMRxCUnr+08AAAAA
+        SUVORK5CYII=
+</value>
+  </data>
   <data name="toolStripButtonRefresh.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
@@ -154,6 +166,9 @@
         AElFTkSuQmCC
 </value>
   </data>
+  <metadata name="contextMenuStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>460, 18</value>
+  </metadata>
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         AAABAAQAAAAAAAEAIAAoIAQARgAAAICAAAABACAAKAgBAG4gBAAgIAAAAQAgAKgQAACWKAUAEBAAAAEA

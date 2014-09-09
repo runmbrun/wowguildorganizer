@@ -15,39 +15,42 @@ namespace WoWGuildOrganizer
     /// <summary>
     /// TODO: Update summary.
     /// </summary>
-    static public class Logging
+    public static class Logging
     {
         /// <summary>
-        /// 
+        /// Array list of all the messages that need to be logged
         /// </summary>
-        static private ArrayList logging = new ArrayList();
+        private static ArrayList logging = new ArrayList();
 
         /// <summary>
-        /// 
+        /// Log a message.  Add it to the array list
         /// </summary>
-        /// <param name="message"></param>
-        static public void Log(string message)
+        /// <param name="message">string of the message to be logged</param>
+        public static void Log(string message)
         {
             logging.Add(message);
         }
 
         /// <summary>
-        /// 
+        /// First log the error, and pop up a message box with that error
         /// </summary>
-        /// <param name="message"></param>
-        static public void DisplayError(string message)
+        /// <param name="message">string of the error to be logged and displayed</param>
+        public static void DisplayError(string message)
         {
-            MessageBox.Show(string.Format("Error: {0}", message));
+            string newMessage = string.Format("Error: {0}", message);
+
+            Log(newMessage);
+            MessageBox.Show(newMessage);            
         }
 
         /// <summary>
-        /// 
+        /// Pop up a form that will display all logging and errors in a nice form
         /// </summary>
-        static public void ShowAllErrors()
+        public static void ShowAllErrors()
         {
             FormDisplayErrors frm = new FormDisplayErrors();
 
-            foreach (String s in logging)
+            foreach (string s in logging)
             {
                 frm.listBoxErrors.Items.Add(s);
             }
