@@ -32,6 +32,33 @@ namespace WoWGuildOrganizer
         }
 
         /// <summary>
+        /// Log a message with a Debug string.  Add it to the array list
+        /// </summary>
+        /// <param name="message">string of the message to be logged</param>
+        public static void Debug(string message)
+        {
+            logging.Add(string.Format("DEBUG: {0}", message));
+        }
+
+        /// <summary>
+        /// Log a message with a Warning string.  Add it to the array list
+        /// </summary>
+        /// <param name="message">string of the message to be logged</param>
+        public static void Warning(string message)
+        {
+            logging.Add(string.Format("WARN: {0}", message));
+        }
+
+        /// <summary>
+        /// Log a message with an Error string.  Add it to the array list
+        /// </summary>
+        /// <param name="message">string of the message to be logged</param>
+        public static void Error(string message)
+        {
+            logging.Add(string.Format("ERROR: {0}", message));
+        }
+
+        /// <summary>
         /// First log the error, and pop up a message box with that error
         /// </summary>
         /// <param name="message">string of the error to be logged and displayed</param>

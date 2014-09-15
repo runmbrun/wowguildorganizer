@@ -36,31 +36,17 @@
             this.contextMenuStripGuildMembers = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.updateCharacterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabPageRaidData = new System.Windows.Forms.TabPage();
-            this.labelRaidTab = new System.Windows.Forms.Label();
             this.dataGridViewRaidGroup = new System.Windows.Forms.DataGridView();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.dataGridViewRaidLootDrop = new System.Windows.Forms.DataGridView();
             this.tabPageSettings = new System.Windows.Forms.TabPage();
+            this.groupBoxErrors = new System.Windows.Forms.GroupBox();
             this.buttonShowErrors = new System.Windows.Forms.Button();
-            this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.textBoxCharacterName = new System.Windows.Forms.TextBox();
-            this.buttonAddCharacterToRaidData = new System.Windows.Forms.Button();
-            this.label4 = new System.Windows.Forms.Label();
-            this.textBoxCharacterRealm = new System.Windows.Forms.TextBox();
-            this.progressBarCharacterAddToRaid = new System.Windows.Forms.ProgressBar();
-            this.label5 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.buttonDeleteItemCacheData = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.buttonSave = new System.Windows.Forms.Button();
             this.buttonLoad = new System.Windows.Forms.Button();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
-            this.textBoxGuildName = new System.Windows.Forms.TextBox();
-            this.textBoxRealm = new System.Windows.Forms.TextBox();
-            this.progressBarCollectData = new System.Windows.Forms.ProgressBar();
-            this.buttonGetGuildInfo = new System.Windows.Forms.Button();
             this.toolStripMain = new System.Windows.Forms.ToolStrip();
             this.toolStripLabelGuild = new System.Windows.Forms.ToolStripLabel();
             this.toolStripTextBoxGuild = new System.Windows.Forms.ToolStripTextBox();
@@ -75,7 +61,7 @@
             this.toolStripComboBoxPickRaid = new System.Windows.Forms.ToolStripComboBox();
             this.toolStripLabelPickBoss = new System.Windows.Forms.ToolStripLabel();
             this.toolStripComboBoxPickBoss = new System.Windows.Forms.ToolStripComboBox();
-            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.contextMenuStripRaidMembers = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.updateThisCharacterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.moveCharacterUpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.moveCharacterDownToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -89,12 +75,11 @@
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewRaidLootDrop)).BeginInit();
             this.tabPageSettings.SuspendLayout();
-            this.groupBox4.SuspendLayout();
+            this.groupBoxErrors.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
-            this.groupBox1.SuspendLayout();
             this.toolStripMain.SuspendLayout();
-            this.contextMenuStrip1.SuspendLayout();
+            this.contextMenuStripRaidMembers.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControlWGO
@@ -155,7 +140,6 @@
             // 
             // tabPageRaidData
             // 
-            this.tabPageRaidData.Controls.Add(this.labelRaidTab);
             this.tabPageRaidData.Controls.Add(this.dataGridViewRaidGroup);
             this.tabPageRaidData.Location = new System.Drawing.Point(23, 4);
             this.tabPageRaidData.Name = "tabPageRaidData";
@@ -165,18 +149,11 @@
             this.tabPageRaidData.Text = "Raid Data";
             this.tabPageRaidData.UseVisualStyleBackColor = true;
             // 
-            // labelRaidTab
-            // 
-            this.labelRaidTab.AutoSize = true;
-            this.labelRaidTab.Location = new System.Drawing.Point(8, 16);
-            this.labelRaidTab.Name = "labelRaidTab";
-            this.labelRaidTab.Size = new System.Drawing.Size(0, 13);
-            this.labelRaidTab.TabIndex = 2;
-            // 
             // dataGridViewRaidGroup
             // 
             this.dataGridViewRaidGroup.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.EnableWithoutHeaderText;
             this.dataGridViewRaidGroup.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridViewRaidGroup.ContextMenuStrip = this.contextMenuStripRaidMembers;
             this.dataGridViewRaidGroup.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridViewRaidGroup.Location = new System.Drawing.Point(3, 3);
             this.dataGridViewRaidGroup.Name = "dataGridViewRaidGroup";
@@ -216,11 +193,9 @@
             // 
             // tabPageSettings
             // 
-            this.tabPageSettings.Controls.Add(this.buttonShowErrors);
-            this.tabPageSettings.Controls.Add(this.groupBox4);
+            this.tabPageSettings.Controls.Add(this.groupBoxErrors);
             this.tabPageSettings.Controls.Add(this.groupBox2);
             this.tabPageSettings.Controls.Add(this.groupBox3);
-            this.tabPageSettings.Controls.Add(this.groupBox1);
             this.tabPageSettings.Location = new System.Drawing.Point(23, 4);
             this.tabPageSettings.Name = "tabPageSettings";
             this.tabPageSettings.Padding = new System.Windows.Forms.Padding(3);
@@ -229,9 +204,19 @@
             this.tabPageSettings.Text = "Settings";
             this.tabPageSettings.UseVisualStyleBackColor = true;
             // 
+            // groupBoxErrors
+            // 
+            this.groupBoxErrors.Controls.Add(this.buttonShowErrors);
+            this.groupBoxErrors.Location = new System.Drawing.Point(16, 83);
+            this.groupBoxErrors.Name = "groupBoxErrors";
+            this.groupBoxErrors.Size = new System.Drawing.Size(200, 56);
+            this.groupBoxErrors.TabIndex = 15;
+            this.groupBoxErrors.TabStop = false;
+            this.groupBoxErrors.Text = "Errors";
+            // 
             // buttonShowErrors
             // 
-            this.buttonShowErrors.Location = new System.Drawing.Point(313, 147);
+            this.buttonShowErrors.Location = new System.Drawing.Point(57, 19);
             this.buttonShowErrors.Name = "buttonShowErrors";
             this.buttonShowErrors.Size = new System.Drawing.Size(75, 23);
             this.buttonShowErrors.TabIndex = 14;
@@ -239,74 +224,10 @@
             this.buttonShowErrors.UseVisualStyleBackColor = true;
             this.buttonShowErrors.Click += new System.EventHandler(this.ButtonShowErrors_Click);
             // 
-            // groupBox4
-            // 
-            this.groupBox4.Controls.Add(this.textBoxCharacterName);
-            this.groupBox4.Controls.Add(this.buttonAddCharacterToRaidData);
-            this.groupBox4.Controls.Add(this.label4);
-            this.groupBox4.Controls.Add(this.textBoxCharacterRealm);
-            this.groupBox4.Controls.Add(this.progressBarCharacterAddToRaid);
-            this.groupBox4.Controls.Add(this.label5);
-            this.groupBox4.Location = new System.Drawing.Point(465, 13);
-            this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(200, 166);
-            this.groupBox4.TabIndex = 13;
-            this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "Raid Data";
-            // 
-            // textBoxCharacterName
-            // 
-            this.textBoxCharacterName.Location = new System.Drawing.Point(6, 79);
-            this.textBoxCharacterName.Name = "textBoxCharacterName";
-            this.textBoxCharacterName.Size = new System.Drawing.Size(188, 20);
-            this.textBoxCharacterName.TabIndex = 14;
-            // 
-            // buttonAddCharacterToRaidData
-            // 
-            this.buttonAddCharacterToRaidData.Location = new System.Drawing.Point(54, 105);
-            this.buttonAddCharacterToRaidData.Name = "buttonAddCharacterToRaidData";
-            this.buttonAddCharacterToRaidData.Size = new System.Drawing.Size(91, 23);
-            this.buttonAddCharacterToRaidData.TabIndex = 15;
-            this.buttonAddCharacterToRaidData.Text = "Add Character";
-            this.buttonAddCharacterToRaidData.UseVisualStyleBackColor = true;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(8, 60);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(84, 13);
-            this.label4.TabIndex = 12;
-            this.label4.Text = "Character Name";
-            // 
-            // textBoxCharacterRealm
-            // 
-            this.textBoxCharacterRealm.Location = new System.Drawing.Point(6, 32);
-            this.textBoxCharacterRealm.Name = "textBoxCharacterRealm";
-            this.textBoxCharacterRealm.Size = new System.Drawing.Size(188, 20);
-            this.textBoxCharacterRealm.TabIndex = 13;
-            // 
-            // progressBarCharacterAddToRaid
-            // 
-            this.progressBarCharacterAddToRaid.Location = new System.Drawing.Point(6, 134);
-            this.progressBarCharacterAddToRaid.Name = "progressBarCharacterAddToRaid";
-            this.progressBarCharacterAddToRaid.Size = new System.Drawing.Size(188, 23);
-            this.progressBarCharacterAddToRaid.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
-            this.progressBarCharacterAddToRaid.TabIndex = 1;
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(6, 16);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(37, 13);
-            this.label5.TabIndex = 4;
-            this.label5.Text = "Realm";
-            // 
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.buttonDeleteItemCacheData);
-            this.groupBox2.Location = new System.Drawing.Point(259, 71);
+            this.groupBox2.Location = new System.Drawing.Point(16, 154);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(200, 59);
             this.groupBox2.TabIndex = 10;
@@ -327,7 +248,7 @@
             // 
             this.groupBox3.Controls.Add(this.buttonSave);
             this.groupBox3.Controls.Add(this.buttonLoad);
-            this.groupBox3.Location = new System.Drawing.Point(259, 6);
+            this.groupBox3.Location = new System.Drawing.Point(16, 15);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(200, 59);
             this.groupBox3.TabIndex = 9;
@@ -353,71 +274,6 @@
             this.buttonLoad.Text = "Load";
             this.buttonLoad.UseVisualStyleBackColor = true;
             this.buttonLoad.Click += new System.EventHandler(this.ButtonLoad_Click);
-            // 
-            // groupBox1
-            // 
-            this.groupBox1.Controls.Add(this.label2);
-            this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Controls.Add(this.textBoxGuildName);
-            this.groupBox1.Controls.Add(this.textBoxRealm);
-            this.groupBox1.Controls.Add(this.progressBarCollectData);
-            this.groupBox1.Controls.Add(this.buttonGetGuildInfo);
-            this.groupBox1.Location = new System.Drawing.Point(3, 6);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(227, 123);
-            this.groupBox1.TabIndex = 3;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Collect Data";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(118, 16);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(62, 13);
-            this.label2.TabIndex = 4;
-            this.label2.Text = "Guild Name";
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 16);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(37, 13);
-            this.label1.TabIndex = 4;
-            this.label1.Text = "Realm";
-            // 
-            // textBoxGuildName
-            // 
-            this.textBoxGuildName.Location = new System.Drawing.Point(121, 39);
-            this.textBoxGuildName.Name = "textBoxGuildName";
-            this.textBoxGuildName.Size = new System.Drawing.Size(100, 20);
-            this.textBoxGuildName.TabIndex = 1;
-            // 
-            // textBoxRealm
-            // 
-            this.textBoxRealm.Location = new System.Drawing.Point(5, 39);
-            this.textBoxRealm.Name = "textBoxRealm";
-            this.textBoxRealm.Size = new System.Drawing.Size(100, 20);
-            this.textBoxRealm.TabIndex = 0;
-            // 
-            // progressBarCollectData
-            // 
-            this.progressBarCollectData.Location = new System.Drawing.Point(6, 94);
-            this.progressBarCollectData.Name = "progressBarCollectData";
-            this.progressBarCollectData.Size = new System.Drawing.Size(215, 23);
-            this.progressBarCollectData.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
-            this.progressBarCollectData.TabIndex = 1;
-            // 
-            // buttonGetGuildInfo
-            // 
-            this.buttonGetGuildInfo.Location = new System.Drawing.Point(63, 65);
-            this.buttonGetGuildInfo.Name = "buttonGetGuildInfo";
-            this.buttonGetGuildInfo.Size = new System.Drawing.Size(100, 23);
-            this.buttonGetGuildInfo.TabIndex = 2;
-            this.buttonGetGuildInfo.Text = "Get Guild Info";
-            this.buttonGetGuildInfo.UseVisualStyleBackColor = true;
-            this.buttonGetGuildInfo.Click += new System.EventHandler(this.ButtonGetGuildInfo_Click);
             // 
             // toolStripMain
             // 
@@ -533,15 +389,15 @@
             this.toolStripComboBoxPickBoss.Visible = false;
             this.toolStripComboBoxPickBoss.SelectedIndexChanged += new System.EventHandler(this.toolStripComboBoxPickBoss_SelectedIndexChanged);
             // 
-            // contextMenuStrip1
+            // contextMenuStripRaidMembers
             // 
-            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.contextMenuStripRaidMembers.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.updateThisCharacterToolStripMenuItem,
             this.moveCharacterUpToolStripMenuItem,
             this.moveCharacterDownToolStripMenuItem,
             this.deleteCharacterFromGridToolStripMenuItem});
-            this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(216, 92);
+            this.contextMenuStripRaidMembers.Name = "contextMenuStrip1";
+            this.contextMenuStripRaidMembers.Size = new System.Drawing.Size(216, 92);
             // 
             // updateThisCharacterToolStripMenuItem
             // 
@@ -588,20 +444,16 @@
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewGuildData)).EndInit();
             this.contextMenuStripGuildMembers.ResumeLayout(false);
             this.tabPageRaidData.ResumeLayout(false);
-            this.tabPageRaidData.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewRaidGroup)).EndInit();
             this.tabPage1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewRaidLootDrop)).EndInit();
             this.tabPageSettings.ResumeLayout(false);
-            this.groupBox4.ResumeLayout(false);
-            this.groupBox4.PerformLayout();
+            this.groupBoxErrors.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
             this.toolStripMain.ResumeLayout(false);
             this.toolStripMain.PerformLayout();
-            this.contextMenuStrip1.ResumeLayout(false);
+            this.contextMenuStripRaidMembers.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -613,29 +465,14 @@
         private System.Windows.Forms.TabPage tabPageGuildData;
         private System.Windows.Forms.DataGridView dataGridViewGuildData;
         private System.Windows.Forms.TabPage tabPageSettings;
-        private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox textBoxGuildName;
-        private System.Windows.Forms.TextBox textBoxRealm;
-        private System.Windows.Forms.ProgressBar progressBarCollectData;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.Button buttonSave;
         private System.Windows.Forms.Button buttonLoad;
-        private System.Windows.Forms.Button buttonGetGuildInfo;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Button buttonDeleteItemCacheData;
         private System.Windows.Forms.TabPage tabPageRaidData;
-        private System.Windows.Forms.GroupBox groupBox4;
-        private System.Windows.Forms.TextBox textBoxCharacterName;
-        private System.Windows.Forms.Button buttonAddCharacterToRaidData;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.TextBox textBoxCharacterRealm;
-        private System.Windows.Forms.ProgressBar progressBarCharacterAddToRaid;
-        private System.Windows.Forms.Label label5;
         private System.Windows.Forms.DataGridView dataGridViewRaidGroup;
         private System.Windows.Forms.Button buttonShowErrors;
-        private System.Windows.Forms.Label labelRaidTab;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.DataGridView dataGridViewRaidLootDrop;
         private System.Windows.Forms.ContextMenuStrip contextMenuStripGuildMembers;
@@ -649,7 +486,7 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar1;
         private System.Windows.Forms.ToolStripLabel toolStripLabelRefreshStatus;
-        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStripRaidMembers;
         private System.Windows.Forms.ToolStripMenuItem updateThisCharacterToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem moveCharacterUpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem moveCharacterDownToolStripMenuItem;
@@ -659,6 +496,7 @@
         private System.Windows.Forms.ToolStripComboBox toolStripComboBoxPickRaid;
         private System.Windows.Forms.ToolStripLabel toolStripLabelPickBoss;
         private System.Windows.Forms.ToolStripComboBox toolStripComboBoxPickBoss;
+        private System.Windows.Forms.GroupBox groupBoxErrors;
     }
 }
 
