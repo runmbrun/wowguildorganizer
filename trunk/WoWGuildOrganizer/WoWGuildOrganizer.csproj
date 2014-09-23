@@ -115,7 +115,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ControlHelper.cs" />
     <Compile Include="Converter.cs" />
     <Compile Include="FormWGO.cs">
       <SubType>Form</SubType>

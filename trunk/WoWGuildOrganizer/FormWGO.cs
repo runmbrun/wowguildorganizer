@@ -286,12 +286,12 @@ namespace WoWGuildOrganizer
         /// <param name="e">e parameter</param>
         private void Form1_Load(object sender, EventArgs e)
         {
-            this.SortGrid(this.basicGuildSort);
-
             // refresh the grid data since it's been changed
             dataGridViewRaidGroup.DataSource = null;
             dataGridViewRaidGroup.DataSource = this.raidGroup.RaidGroup;
             this.UpdateRaidGrid();
+            
+            this.SortGrid(this.basicGuildSort);
         }
 
         #endregion
@@ -697,6 +697,8 @@ namespace WoWGuildOrganizer
                     }
                 }
             }
+
+            toolStripLabelRefreshStatus.Text = string.Format("Total Characters in guild: {0}", this.savedCharacters.SavedCharacters.Count);
         }
 
         /// <summary>
@@ -912,11 +914,11 @@ namespace WoWGuildOrganizer
                                         gm.Race = charInfo.Race;
                                         gm.Realm = charInfo.Realm;
 
-                                        if (charInfo.AchievementPoints > 0)
+                                        if (gm.AchievementPoints != charInfo.AchievementPoints && charInfo.AchievementPoints > 0)
                                         {
                                             gm.AchievementPoints = charInfo.AchievementPoints;
                                         }
-                                        else
+                                        else if (gm.AchievementPoints != charInfo.AchievementPoints)
 	                                    {
                                             Logging.Debug(string.Format("Old vs New Achievement points.  [{0}] vs [{1}].", gm.AchievementPoints, charInfo.AchievementPoints));
 	                                    }
@@ -1497,6 +1499,7 @@ namespace WoWGuildOrganizer
                     if (dataGridViewRaidLootDrop.DataSource != null)
                     {
                         // todo: fix this
+                        dataGridViewRaidLootDrop.Update();
                         dataGridViewRaidLootDrop.Refresh();
                     }
                 }
@@ -1660,7 +1663,7 @@ namespace WoWGuildOrganizer
         private void UpdateCharacterToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Update just the selected rows of characters
-            this.UpdateCharacters(this.dataGridViewGuildData.SelectedRows, true);
+            this.UpdateCharacters(this.dataGridViewGuildData.SelectedRows.Cast<DataGridViewRow>().ToList(), true);
         }
 
         /// <summary>
@@ -1691,12 +1694,13 @@ namespace WoWGuildOrganizer
                         //Task doingWork = GetGuildMembers();
                         //doingWork.ContineWith(OnWorkCompleted);
 
-                        toolStripButtonRefresh.Enabled = false;
-
                         //Task<bool> longRunningTask = LongRunningTask();
 
                         // Call the method that runs asynchronously.
                         //bool result = await longRunningTask();
+
+                        // todo: eventually need to change this so cancelling request is allowed
+                        toolStripButtonRefresh.Enabled = false;                        
 
                         Func<bool> ActionLookupConsumer = () => GetGuildMembers();
                         List<Task> tasks = new List<Task>();
@@ -1724,9 +1728,20 @@ namespace WoWGuildOrganizer
             }
             else if (this.tabControlWGO.SelectedTab.Text == "Raid Data")
             {
+                //this.UpdateThisCharacterToolStripMenuItem_Click(null, null); //todo: remove this
+                this.UpdateCharacters(this.dataGridViewGuildData.Rows.Cast<DataGridViewRow>().ToList(), false);
             }
-            else if (this.tabControlWGO.SelectedTab.Text == "Raid  Loot Drops")
+            else if (this.tabControlWGO.SelectedTab.Text == "Raid Loot Drops")
             {
+                if (toolStripComboBoxPickBoss.SelectedIndex == -1 || toolStripComboBoxPickRaid.SelectedIndex == -1)
+                {
+                    // Error - must select both a raid and a boss from the 2 combo boxes
+                    Logging.DisplayError("A raid and a boss must both be selected");
+                }
+                else
+                {
+                    this.toolStripComboBoxPickBoss_SelectedIndexChanged(null, null);
+                }
             }
         }
         
@@ -1927,7 +1942,7 @@ namespace WoWGuildOrganizer
         /// </summary>
         /// <param name="chars">A collection of selected rows in a data grid view</param>
         /// <param name="guildUpdate">Flag if the update is in the guild or raid data grid view</param>
-        private void UpdateCharacters(DataGridViewSelectedRowCollection chars, bool guildUpdate)
+        private void UpdateCharacters(List<DataGridViewRow> chars, bool guildUpdate)
         {
             try
             {
@@ -2116,9 +2131,8 @@ namespace WoWGuildOrganizer
         /// </summary>
         private void OnWorkCompleted()
         {
-            //toolStripButtonRefresh.Text = "Refresh";
-            //toolStripButtonRefresh.Enabled = true;
             this.WaitCursor(false);
+            EnableRefreshButton(true);
         }
 
         /// <summary>
@@ -2260,26 +2274,38 @@ namespace WoWGuildOrganizer
                                 // success!
 
                                 // Fill out the data grid with the data we collected
-                                gm.MaxiLevel = charInfo.MaxiLevel;
-                                gm.EquipediLevel = charInfo.EquipediLevel;
+                                if (gm.Level != charInfo.Level)
+                                {
+                                    gm.Level = charInfo.Level;
+                                }
+
+                                if (gm.MaxiLevel != charInfo.MaxiLevel)
+                                {
+                                    gm.MaxiLevel = charInfo.MaxiLevel;
+                                }
+
+                                if (gm.EquipediLevel != charInfo.EquipediLevel)
+                                {
+                                    gm.EquipediLevel = charInfo.EquipediLevel;
+                                }
+
                                 gm.Profession1 = charInfo.Profession1;
                                 gm.Profession2 = charInfo.Profession2;
                                 gm.Spec = charInfo.Spec;
                                 gm.Role = charInfo.Role;
                                 gm.ItemAudits = charInfo.ItemAudits;
-                                gm.Class = charInfo.Class;
-                                gm.Level = charInfo.Level;
+                                gm.Class = charInfo.Class;                                
                                 gm.Name = charInfo.Name;
                                 gm.Race = charInfo.Race;
                                 gm.Realm = charInfo.Realm;
 
-                                if (charInfo.AchievementPoints > 0)
+                                if (gm.AchievementPoints != charInfo.AchievementPoints && charInfo.AchievementPoints > 0)
                                 {
                                     gm.AchievementPoints = charInfo.AchievementPoints;
                                 }
-                                else
+                                else if (gm.AchievementPoints != charInfo.AchievementPoints)
 	                            {
-                                    Logging.Debug(string.Format("Old vs New Achievement points.  [{0}] vs [{1}].", gm.AchievementPoints, charInfo.AchievementPoints));
+                                    Logging.Warning(string.Format("Old vs New Achievement points.  [{0}] vs [{1}].", gm.AchievementPoints, charInfo.AchievementPoints));
 	                            }
                             }
                             else
@@ -2320,5 +2346,32 @@ namespace WoWGuildOrganizer
         }
 
         #endregion
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DataGridViewGuildData_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            //todo: need to suppress any errors while
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ToolStripButtonSort_Click(object sender, EventArgs e)
+        {
+            if (this.tabControlWGO.SelectedTab.Text == "Guild Data")
+            {
+                this.SortGrid(this.basicGuildSort);
+            }
+            else if (this.tabControlWGO.SelectedTab.Text == "Raid Data")
+            {
+                this.SortGrid("EquipediLevel DESC");
+            }
+        }
     }
 }

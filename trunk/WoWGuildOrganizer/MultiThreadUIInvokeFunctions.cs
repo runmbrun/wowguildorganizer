@@ -22,6 +22,7 @@ namespace WoWGuildOrganizer
         delegate void LabelCallback(String Message);
         delegate void SortGridCallback(String Sorting);
         delegate void SuspendGridCallback(Boolean Suspend);
+        delegate void EnableRefreshButtonCallback(bool enable);
 
         #endregion
 
@@ -68,7 +69,7 @@ namespace WoWGuildOrganizer
             else
             {
                 // update label
-                //this.label3.Text = Message;
+                this.toolStripLabelRefreshStatus.Text = Message;
             }
         }
 
@@ -84,12 +85,8 @@ namespace WoWGuildOrganizer
             }
             else
             {
-                // Code Here
-
                 Boolean MultipleSort = false;
 
-
-                //SortGrid("Level DESC, GearScore DESC");
                 if (Sorting.Contains(","))
                 {
                     // has multiple sorting factors
@@ -131,8 +128,7 @@ namespace WoWGuildOrganizer
                             col.HeaderCell.SortGlyphDirection = direction;
                         }
                     }
-                }
-                
+                }                
             }
         }
 
@@ -155,12 +151,34 @@ namespace WoWGuildOrganizer
                 // suspend or resume the grid painting
                 if (Suspend)
                 {
-                    ControlHelper.SuspendDrawing(dataGridViewGuildData);
+                    this.dataGridViewGuildData.SuspendLayout();
+
                 }
                 else
                 {
-                    ControlHelper.ResumeDrawing(dataGridViewGuildData);
+                    this.dataGridViewGuildData.ResumeLayout();
                 }
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="enable"></param>
+        public void EnableRefreshButton(bool enable)
+        {
+            // InvokeRequired required compares the thread ID of the
+            // calling thread to the thread ID of the creating thread.
+            // If these threads are different, it returns true.
+            if (this.InvokeRequired)
+            {
+                EnableRefreshButtonCallback d = new EnableRefreshButtonCallback(EnableRefreshButton);
+                this.Invoke(d, new object[] { enable });
+            }
+            else
+            {
+                // enable or disable the wait cursor
+                this.toolStripButtonRefresh.Enabled = enable;
             }
         }
 

@@ -37,6 +37,11 @@
             this.updateCharacterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabPageRaidData = new System.Windows.Forms.TabPage();
             this.dataGridViewRaidGroup = new System.Windows.Forms.DataGridView();
+            this.contextMenuStripRaidMembers = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.updateThisCharacterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.moveCharacterUpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.moveCharacterDownToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deleteCharacterFromGridToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.dataGridViewRaidLootDrop = new System.Windows.Forms.DataGridView();
             this.tabPageSettings = new System.Windows.Forms.TabPage();
@@ -61,17 +66,14 @@
             this.toolStripComboBoxPickRaid = new System.Windows.Forms.ToolStripComboBox();
             this.toolStripLabelPickBoss = new System.Windows.Forms.ToolStripLabel();
             this.toolStripComboBoxPickBoss = new System.Windows.Forms.ToolStripComboBox();
-            this.contextMenuStripRaidMembers = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.updateThisCharacterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.moveCharacterUpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.moveCharacterDownToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.deleteCharacterFromGridToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripButtonSort = new System.Windows.Forms.ToolStripButton();
             this.tabControlWGO.SuspendLayout();
             this.tabPageGuildData.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewGuildData)).BeginInit();
             this.contextMenuStripGuildMembers.SuspendLayout();
             this.tabPageRaidData.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewRaidGroup)).BeginInit();
+            this.contextMenuStripRaidMembers.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewRaidLootDrop)).BeginInit();
             this.tabPageSettings.SuspendLayout();
@@ -79,7 +81,6 @@
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.toolStripMain.SuspendLayout();
-            this.contextMenuStripRaidMembers.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControlWGO
@@ -122,6 +123,7 @@
             this.dataGridViewGuildData.TabIndex = 0;
             this.dataGridViewGuildData.CellMouseDoubleClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.DataGridViewGuildData_CellMouseDoubleClick);
             this.dataGridViewGuildData.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.DataGridViewGuildData_ColumnHeaderMouseClick);
+            this.dataGridViewGuildData.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.DataGridViewGuildData_DataError);
             this.dataGridViewGuildData.RowPostPaint += new System.Windows.Forms.DataGridViewRowPostPaintEventHandler(this.DataGridViewGuildData_RowPostPaint);
             // 
             // contextMenuStripGuildMembers
@@ -163,6 +165,44 @@
             this.dataGridViewRaidGroup.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.DataGridViewRaidGroup_ColumnHeaderMouseClick);
             this.dataGridViewRaidGroup.RowPostPaint += new System.Windows.Forms.DataGridViewRowPostPaintEventHandler(this.DataGridViewRaidGroup_RowPostPaint);
             this.dataGridViewRaidGroup.SortCompare += new System.Windows.Forms.DataGridViewSortCompareEventHandler(this.DataGridViewRaidGroup_SortCompare);
+            // 
+            // contextMenuStripRaidMembers
+            // 
+            this.contextMenuStripRaidMembers.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.updateThisCharacterToolStripMenuItem,
+            this.moveCharacterUpToolStripMenuItem,
+            this.moveCharacterDownToolStripMenuItem,
+            this.deleteCharacterFromGridToolStripMenuItem});
+            this.contextMenuStripRaidMembers.Name = "contextMenuStrip1";
+            this.contextMenuStripRaidMembers.Size = new System.Drawing.Size(216, 92);
+            // 
+            // updateThisCharacterToolStripMenuItem
+            // 
+            this.updateThisCharacterToolStripMenuItem.Name = "updateThisCharacterToolStripMenuItem";
+            this.updateThisCharacterToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
+            this.updateThisCharacterToolStripMenuItem.Text = "Update this Character";
+            this.updateThisCharacterToolStripMenuItem.Click += new System.EventHandler(this.UpdateThisCharacterToolStripMenuItem_Click);
+            // 
+            // moveCharacterUpToolStripMenuItem
+            // 
+            this.moveCharacterUpToolStripMenuItem.Name = "moveCharacterUpToolStripMenuItem";
+            this.moveCharacterUpToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
+            this.moveCharacterUpToolStripMenuItem.Text = "Move Character Up";
+            this.moveCharacterUpToolStripMenuItem.Click += new System.EventHandler(this.MoveCharacterUpToolStripMenuItem_Click);
+            // 
+            // moveCharacterDownToolStripMenuItem
+            // 
+            this.moveCharacterDownToolStripMenuItem.Name = "moveCharacterDownToolStripMenuItem";
+            this.moveCharacterDownToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
+            this.moveCharacterDownToolStripMenuItem.Text = "Move Character Down";
+            this.moveCharacterDownToolStripMenuItem.Click += new System.EventHandler(this.MoveCharacterDownToolStripMenuItem_Click);
+            // 
+            // deleteCharacterFromGridToolStripMenuItem
+            // 
+            this.deleteCharacterFromGridToolStripMenuItem.Name = "deleteCharacterFromGridToolStripMenuItem";
+            this.deleteCharacterFromGridToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
+            this.deleteCharacterFromGridToolStripMenuItem.Text = "Delete Character from Grid";
+            this.deleteCharacterFromGridToolStripMenuItem.Click += new System.EventHandler(this.DeleteCharacterFromGridToolStripMenuItem_Click);
             // 
             // tabPage1
             // 
@@ -284,6 +324,7 @@
             this.toolStripTextBoxRealm,
             this.toolStripButtonAdd,
             this.toolStripButtonRefresh,
+            this.toolStripButtonSort,
             this.toolStripSeparator1,
             this.toolStripProgressBar1,
             this.toolStripLabelRefreshStatus,
@@ -293,31 +334,31 @@
             this.toolStripComboBoxPickBoss});
             this.toolStripMain.Location = new System.Drawing.Point(0, 0);
             this.toolStripMain.Name = "toolStripMain";
-            this.toolStripMain.Size = new System.Drawing.Size(721, 25);
+            this.toolStripMain.Size = new System.Drawing.Size(721, 27);
             this.toolStripMain.TabIndex = 1;
             this.toolStripMain.Text = "toolStrip2";
             // 
             // toolStripLabelGuild
             // 
             this.toolStripLabelGuild.Name = "toolStripLabelGuild";
-            this.toolStripLabelGuild.Size = new System.Drawing.Size(38, 22);
+            this.toolStripLabelGuild.Size = new System.Drawing.Size(38, 24);
             this.toolStripLabelGuild.Text = "Guild:";
             // 
             // toolStripTextBoxGuild
             // 
             this.toolStripTextBoxGuild.Name = "toolStripTextBoxGuild";
-            this.toolStripTextBoxGuild.Size = new System.Drawing.Size(100, 25);
+            this.toolStripTextBoxGuild.Size = new System.Drawing.Size(100, 27);
             // 
             // toolStripLabelRealm
             // 
             this.toolStripLabelRealm.Name = "toolStripLabelRealm";
-            this.toolStripLabelRealm.Size = new System.Drawing.Size(43, 22);
+            this.toolStripLabelRealm.Size = new System.Drawing.Size(43, 24);
             this.toolStripLabelRealm.Text = "Realm:";
             // 
             // toolStripTextBoxRealm
             // 
             this.toolStripTextBoxRealm.Name = "toolStripTextBoxRealm";
-            this.toolStripTextBoxRealm.Size = new System.Drawing.Size(100, 25);
+            this.toolStripTextBoxRealm.Size = new System.Drawing.Size(100, 27);
             // 
             // toolStripButtonAdd
             // 
@@ -336,14 +377,14 @@
             this.toolStripButtonRefresh.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonRefresh.Image")));
             this.toolStripButtonRefresh.ImageTransparentColor = System.Drawing.Color.Black;
             this.toolStripButtonRefresh.Name = "toolStripButtonRefresh";
-            this.toolStripButtonRefresh.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButtonRefresh.Size = new System.Drawing.Size(23, 24);
             this.toolStripButtonRefresh.Text = "Refresh";
             this.toolStripButtonRefresh.Click += new System.EventHandler(this.ToolStripButtonRefresh_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 27);
             // 
             // toolStripProgressBar1
             // 
@@ -369,14 +410,14 @@
             // 
             this.toolStripComboBoxPickRaid.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.toolStripComboBoxPickRaid.Name = "toolStripComboBoxPickRaid";
-            this.toolStripComboBoxPickRaid.Size = new System.Drawing.Size(175, 25);
+            this.toolStripComboBoxPickRaid.Size = new System.Drawing.Size(175, 23);
             this.toolStripComboBoxPickRaid.Visible = false;
             this.toolStripComboBoxPickRaid.SelectedIndexChanged += new System.EventHandler(this.toolStripComboBoxPickRaid_SelectedIndexChanged);
             // 
             // toolStripLabelPickBoss
             // 
             this.toolStripLabelPickBoss.Name = "toolStripLabelPickBoss";
-            this.toolStripLabelPickBoss.Size = new System.Drawing.Size(59, 22);
+            this.toolStripLabelPickBoss.Size = new System.Drawing.Size(59, 15);
             this.toolStripLabelPickBoss.Text = "Pick Boss:";
             this.toolStripLabelPickBoss.Visible = false;
             // 
@@ -385,47 +426,19 @@
             this.toolStripComboBoxPickBoss.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.toolStripComboBoxPickBoss.DropDownWidth = 150;
             this.toolStripComboBoxPickBoss.Name = "toolStripComboBoxPickBoss";
-            this.toolStripComboBoxPickBoss.Size = new System.Drawing.Size(121, 25);
+            this.toolStripComboBoxPickBoss.Size = new System.Drawing.Size(121, 23);
             this.toolStripComboBoxPickBoss.Visible = false;
             this.toolStripComboBoxPickBoss.SelectedIndexChanged += new System.EventHandler(this.toolStripComboBoxPickBoss_SelectedIndexChanged);
             // 
-            // contextMenuStripRaidMembers
+            // toolStripButtonSort
             // 
-            this.contextMenuStripRaidMembers.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.updateThisCharacterToolStripMenuItem,
-            this.moveCharacterUpToolStripMenuItem,
-            this.moveCharacterDownToolStripMenuItem,
-            this.deleteCharacterFromGridToolStripMenuItem});
-            this.contextMenuStripRaidMembers.Name = "contextMenuStrip1";
-            this.contextMenuStripRaidMembers.Size = new System.Drawing.Size(216, 92);
-            // 
-            // updateThisCharacterToolStripMenuItem
-            // 
-            this.updateThisCharacterToolStripMenuItem.Name = "updateThisCharacterToolStripMenuItem";
-            this.updateThisCharacterToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
-            this.updateThisCharacterToolStripMenuItem.Text = "Update this Character";
-            this.updateThisCharacterToolStripMenuItem.Click += new System.EventHandler(this.UpdateThisCharacterToolStripMenuItem_Click);
-            // 
-            // moveCharacterUpToolStripMenuItem
-            // 
-            this.moveCharacterUpToolStripMenuItem.Name = "moveCharacterUpToolStripMenuItem";
-            this.moveCharacterUpToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
-            this.moveCharacterUpToolStripMenuItem.Text = "Move Character Up";
-            this.moveCharacterUpToolStripMenuItem.Click += new System.EventHandler(this.MoveCharacterUpToolStripMenuItem_Click);
-            // 
-            // moveCharacterDownToolStripMenuItem
-            // 
-            this.moveCharacterDownToolStripMenuItem.Name = "moveCharacterDownToolStripMenuItem";
-            this.moveCharacterDownToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
-            this.moveCharacterDownToolStripMenuItem.Text = "Move Character Down";
-            this.moveCharacterDownToolStripMenuItem.Click += new System.EventHandler(this.MoveCharacterDownToolStripMenuItem_Click);
-            // 
-            // deleteCharacterFromGridToolStripMenuItem
-            // 
-            this.deleteCharacterFromGridToolStripMenuItem.Name = "deleteCharacterFromGridToolStripMenuItem";
-            this.deleteCharacterFromGridToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
-            this.deleteCharacterFromGridToolStripMenuItem.Text = "Delete Character from Grid";
-            this.deleteCharacterFromGridToolStripMenuItem.Click += new System.EventHandler(this.DeleteCharacterFromGridToolStripMenuItem_Click);
+            this.toolStripButtonSort.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButtonSort.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonSort.Image")));
+            this.toolStripButtonSort.ImageTransparentColor = System.Drawing.Color.Black;
+            this.toolStripButtonSort.Name = "toolStripButtonSort";
+            this.toolStripButtonSort.Size = new System.Drawing.Size(23, 24);
+            this.toolStripButtonSort.Text = "Sort";
+            this.toolStripButtonSort.Click += new System.EventHandler(this.ToolStripButtonSort_Click);
             // 
             // FormMain
             // 
@@ -445,6 +458,7 @@
             this.contextMenuStripGuildMembers.ResumeLayout(false);
             this.tabPageRaidData.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewRaidGroup)).EndInit();
+            this.contextMenuStripRaidMembers.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewRaidLootDrop)).EndInit();
             this.tabPageSettings.ResumeLayout(false);
@@ -453,7 +467,6 @@
             this.groupBox3.ResumeLayout(false);
             this.toolStripMain.ResumeLayout(false);
             this.toolStripMain.PerformLayout();
-            this.contextMenuStripRaidMembers.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -497,6 +510,7 @@
         private System.Windows.Forms.ToolStripLabel toolStripLabelPickBoss;
         private System.Windows.Forms.ToolStripComboBox toolStripComboBoxPickBoss;
         private System.Windows.Forms.GroupBox groupBoxErrors;
+        private System.Windows.Forms.ToolStripButton toolStripButtonSort;
     }
 }
 
