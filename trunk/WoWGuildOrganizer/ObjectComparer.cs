@@ -63,9 +63,11 @@ namespace WoWGuildOrganizer
             if (_MultiColumn) // Multi Column Sorting
             {
                 string[] sortExpressions = _propertyName.Trim().Split(',');
+
                 for (int i = 0; i < sortExpressions.Length; i++)
                 {
                     string fieldName, direction = "ASC";
+
                     if (sortExpressions[i].Trim().EndsWith(" DESC"))
                     {
                         fieldName = sortExpressions[i].Replace(" DESC", "").Trim();
@@ -78,10 +80,12 @@ namespace WoWGuildOrganizer
                     
                     //Get property by name
                     PropertyInfo val = t.GetProperty(fieldName);
+
                     if (val != null)
                     {
                         //Compare values, using IComparable interface of the property's type
                         int iResult = Comparer.DefaultInvariant.Compare(val.GetValue(x, null), val.GetValue(y, null));
+
                         if (iResult != 0)
                         {
                             //Return if not equal
