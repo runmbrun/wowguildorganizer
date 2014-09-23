@@ -323,6 +323,7 @@ namespace WoWGuildOrganizer
                 toolStripLabelRealm.Visible = true;
                 toolStripTextBoxRealm.Visible = true;
                 toolStripButtonRefresh.Visible = true;
+                toolStripButtonSort.Visible = true;
 
                 // Update Text as needed
                 toolStripLabelGuild.Text = "Guild:";
@@ -364,6 +365,7 @@ namespace WoWGuildOrganizer
                 toolStripTextBoxRealm.Visible = true;
                 toolStripButtonAdd.Visible = true;
                 toolStripButtonRefresh.Visible = true;
+                toolStripButtonSort.Visible = true;
 
                 // Update Text as needed
                 toolStripLabelGuild.Text = "Character:";
@@ -395,6 +397,7 @@ namespace WoWGuildOrganizer
                 toolStripButtonAdd.Visible = false;
                 toolStripProgressBar1.Visible = false;
                 toolStripLabelRefreshStatus.Visible = false;
+                toolStripButtonSort.Visible = false;
 
                 // Show all controls needed for this tab:
                 toolStripComboBoxPickRaid.Visible = true;
@@ -421,6 +424,7 @@ namespace WoWGuildOrganizer
                 toolStripProgressBar1.Visible = false;
                 toolStripSeparator1.Visible = false;
                 toolStripLabelRefreshStatus.Visible = false;
+                toolStripButtonSort.Visible = false;
             }
         }
 
@@ -661,18 +665,34 @@ namespace WoWGuildOrganizer
                 multipleSort = true;
             }
 
-            dataGridViewGuildData.DataSource = null;
+            if (this.tabControlWGO.SelectedTab.Text == "Guild Data")
+            {
+                dataGridViewGuildData.DataSource = null;
 
-            this.savedCharacters.SavedCharacters.Sort(new ObjectComparer(sorting, multipleSort));
+                this.savedCharacters.SavedCharacters.Sort(new ObjectComparer(sorting, multipleSort));
 
-            // refresh grid data
-            dataGridViewGuildData.DataSource = this.savedCharacters.SavedCharacters;
+                // refresh grid data
+                dataGridViewGuildData.DataSource = this.savedCharacters.SavedCharacters;
 
-            // Now update the grid
-            this.UpdateGrid();
+                // Now update the grid
+                this.UpdateGrid();
+            }
+            else if (this.tabControlWGO.SelectedTab.Text == "Raid Data")
+            {
+                dataGridViewRaidGroup.DataSource = null;
+
+                this.raidGroup.RaidGroup.Sort(new ObjectComparer(sorting, multipleSort));
+
+                // refresh grid data
+                dataGridViewRaidGroup.DataSource = this.raidGroup.RaidGroup;
+
+                // Now update the grid
+                this.UpdateRaidGrid();
+            }
 
             // Set the sorting glyphs
             string[] sortExpressions = sorting.Trim().Split(',');
+
             for (int i = 0; i < sortExpressions.Length; i++)
             {
                 string fieldName = string.Empty;
@@ -689,16 +709,36 @@ namespace WoWGuildOrganizer
                     direction = SortOrder.Ascending;
                 }
 
-                foreach (DataGridViewColumn col in dataGridViewGuildData.Columns)
+                if (this.tabControlWGO.SelectedTab.Text == "Guild Data")
                 {
-                    if (fieldName == col.HeaderText)
+                    foreach (DataGridViewColumn col in dataGridViewGuildData.Columns)
                     {
-                        col.HeaderCell.SortGlyphDirection = direction;
+                        if (fieldName == col.HeaderText)
+                        {
+                            col.HeaderCell.SortGlyphDirection = direction;
+                        }
+                    }
+                }
+                else if (this.tabControlWGO.SelectedTab.Text == "Raid Data")
+                {
+                    foreach (DataGridViewColumn col in dataGridViewRaidGroup.Columns)
+                    {
+                        if (fieldName == col.HeaderText)
+                        {
+                            col.HeaderCell.SortGlyphDirection = direction;
+                        }
                     }
                 }
             }
 
-            toolStripLabelRefreshStatus.Text = string.Format("Total Characters in guild: {0}", this.savedCharacters.SavedCharacters.Count);
+            if (this.tabControlWGO.SelectedTab.Text == "Guild Data")
+            {
+                toolStripLabelRefreshStatus.Text = string.Format("Total Characters in guild: {0}", this.savedCharacters.SavedCharacters.Count);
+            }
+            else if (this.tabControlWGO.SelectedTab.Text == "Guild Data")
+            {
+                //todo: toolStripLabelRefreshStatus.Text = string.Format("Total Characters in guild: {0}", this.savedCharacters.SavedCharacters.Count);
+            }
         }
 
         /// <summary>
@@ -2370,7 +2410,8 @@ namespace WoWGuildOrganizer
             }
             else if (this.tabControlWGO.SelectedTab.Text == "Raid Data")
             {
-                this.SortGrid("EquipediLevel DESC");
+                // todo: Need to sort by spec
+                this.SortGrid("Role DESC, EquipediLevel DESC");
             }
         }
     }
