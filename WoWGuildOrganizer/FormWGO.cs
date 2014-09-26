@@ -1084,7 +1084,7 @@ namespace WoWGuildOrganizer
                         this.savedCharacters = (GuildMemberGroup)bformatter.Deserialize(stream);
                         stream.Close();
 
-                        //todo: label3.Text = this.savedCharacters.SavedCharacters.Count.ToString() + " total characters";
+                        // Sort the data
                         this.SortGrid(this.basicGuildSort);
 
                         // update the text boxes                        
@@ -1768,7 +1768,6 @@ namespace WoWGuildOrganizer
             }
             else if (this.tabControlWGO.SelectedTab.Text == "Raid Data")
             {
-                //this.UpdateThisCharacterToolStripMenuItem_Click(null, null); //todo: remove this
                 this.UpdateCharacters(this.dataGridViewGuildData.Rows.Cast<DataGridViewRow>().ToList(), false);
             }
             else if (this.tabControlWGO.SelectedTab.Text == "Raid Loot Drops")
@@ -1784,115 +1783,34 @@ namespace WoWGuildOrganizer
                 }
             }
         }
+
+        /// <summary>
+        /// Fires when the sort button is pressed in the tool strip menu
+        /// If tab is on the Guild Data, then sorts by: Level DESC, EquipediLevel DESC, MaxiLevel DESC, AchievementPoints DESC
+        /// If tab is on the Raid Data, then sorts by: Role DESC, EquipediLevel DESC
+        /// </summary>
+        /// <param name="sender">sender parameter</param>
+        /// <param name="e">e parameter</param>
+        private void ToolStripButtonSort_Click(object sender, EventArgs e)
+        {
+            if (this.tabControlWGO.SelectedTab.Text == "Guild Data")
+            {
+                this.SortGrid(this.basicGuildSort);
+            }
+            else if (this.tabControlWGO.SelectedTab.Text == "Raid Data")
+            {
+                this.SortGrid("Role DESC, EquipediLevel DESC");
+            }
+        }
         
         /// <summary>
-        /// Fires when the "Update this Character" tool strip menu item is clicked
+        /// Fires when the "Update this Character" context strip menu item is clicked on the raid data tab
         /// </summary>
         /// <param name="sender">sender parameter</param>
         /// <param name="e">e parameter</param>
         private void UpdateThisCharacterToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            this.WaitCursor(true);
-
-            try
-            {
-                foreach (DataGridViewRow row in this.dataGridViewRaidGroup.SelectedRows)
-                {
-                    int currentRow = row.Index;
-                    GuildMember oldMember = (GuildMember)this.raidGroup.RaidGroup[currentRow];
-                    GuildMember gm = this.GetCharacterInformation(oldMember.Name, oldMember.Realm);
-
-                    if (gm != null)
-                    {
-                        // Success! Now we have the new info
-                        bool success = true;
-
-                        // Check the spec first... if spec is different then first 
-                        //  ask if the update should happen
-                        // This prevents from losing primary spec data
-                        if (oldMember.Spec != gm.Spec)
-                        {
-                            if (MessageBox.Show(string.Format("The spec for {0} has changed from {1} to {2}.\n  Are you sure that you want to update?", oldMember.Name, oldMember.Spec, gm.Spec), "Spec Change", MessageBoxButtons.YesNo) == DialogResult.No)
-                            {
-                                success = false;
-                            }
-                        }
-
-                        if (success)
-                        {
-                            // Success! Now we have the new info
-                            // Compare the new info with the old info
-                            //  And make updates as needed...
-
-                            // Level
-                            if (oldMember.Level != gm.Level)
-                            {
-                                oldMember.Level = gm.Level;
-                            }
-                            else
-                            {
-                                oldMember.ClearFlags();
-                                gm.ClearFlags();
-                            }
-
-                            // Achievement Points
-                            if (oldMember.AchievementPoints != gm.AchievementPoints)
-                            {
-                                oldMember.AchievementPoints = gm.AchievementPoints;
-                            }
-
-                            // Equiped iLevel
-                            if (oldMember.EquipediLevel != gm.EquipediLevel)
-                            {
-                                oldMember.EquipediLevel = gm.EquipediLevel;
-                            }
-                            else
-                            {
-                                oldMember.ClearEquipItemLevelFlag();
-                                gm.ClearEquipItemLevelFlag();
-                            }
-
-                            // Max iLevel
-                            if (oldMember.MaxiLevel != gm.MaxiLevel)
-                            {
-                                oldMember.MaxiLevel = gm.MaxiLevel;
-                            }
-                            else
-                            {
-                                oldMember.ClearMaxItemLevelFlag();
-                                gm.ClearMaxItemLevelFlag();
-                            }
-
-                            // Spec
-                            if (oldMember.Spec != gm.Spec)
-                            {
-                                oldMember.Spec = gm.Spec;
-                            }
-
-                            // Role
-                            if (oldMember.Role != gm.Role)
-                            {
-                                oldMember.Role = gm.Role;
-                            }
-
-                            // ItemAudit - always update, just in case
-                            oldMember.ItemAudits = gm.ItemAudits;
-
-                            // Update the last updated time with the current date and time
-                            oldMember.LastUpdated = DateTime.Now;
-                        }
-                    }
-                }
-
-                // refresh the grid data since it's been changed
-                this.UpdateRaidGrid();
-            }
-            catch (Exception ex)
-            {
-                Logging.Log("Error: " + ex.Message);
-            }
-
-            this.WaitCursor(false);
+            this.UpdateCharacters(this.dataGridViewRaidGroup.SelectedRows.Cast<DataGridViewRow>().ToList(), false);
         }
 
         /// <summary>
@@ -2395,24 +2313,6 @@ namespace WoWGuildOrganizer
         private void DataGridViewGuildData_DataError(object sender, DataGridViewDataErrorEventArgs e)
         {
             //todo: need to suppress any errors while
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ToolStripButtonSort_Click(object sender, EventArgs e)
-        {
-            if (this.tabControlWGO.SelectedTab.Text == "Guild Data")
-            {
-                this.SortGrid(this.basicGuildSort);
-            }
-            else if (this.tabControlWGO.SelectedTab.Text == "Raid Data")
-            {
-                // todo: Need to sort by spec
-                this.SortGrid("Role DESC, EquipediLevel DESC");
-            }
         }
     }
 }
