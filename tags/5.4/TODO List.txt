@@ -1,0 +1,28 @@
+A List of all the feature and bug fixes that will need to be incorportated at some point in time.  
+In no particular order...
+
+
+=====================
++ Updates and Fixes +
+=====================
+
+Global:
+1.  Add dual class functionality to the GuildMember class. 
+	a. Would be able to switch back and forth as needed. (Right click functionality)
+2.  
+
+Raid Data tab:
+1.  Can order by role... Tanks, then Healers, then DPS.
+	a. Will need a new button for this
+2.  
+
+Raid Loot Drop tab:
+1.  Finish Tier 16... 
+	a. Heroic?
+	b. Normal Warforged?
+2.  Need way to add this in via the gui
+	a. Save data to a file?
+3.  BUG - When a Boss is selected for the first time... grid doesn't display everything
+	a. maybe because item needed to be searched first???  grid refresh doesn't seem to work.
+
+
