@@ -32,13 +32,14 @@
             this.labelName = new System.Windows.Forms.Label();
             this.textBoxAuditStatus = new System.Windows.Forms.TextBox();
             this.dataGridViewItemAudit = new System.Windows.Forms.DataGridView();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.copyItemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.copyLineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label4 = new System.Windows.Forms.Label();
             this.textBoxMissingTotal = new System.Windows.Forms.TextBox();
-            this.label8 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.textBoxMissingProfessions = new System.Windows.Forms.TextBox();
             this.textBoxMissingGems = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.textBoxMissingEnchants = new System.Windows.Forms.TextBox();
@@ -54,14 +55,11 @@
             this.textBoxProfessions = new System.Windows.Forms.TextBox();
             this.labelSpec = new System.Windows.Forms.Label();
             this.labelRole = new System.Windows.Forms.Label();
-            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.copyItemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.copyLineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewItemAudit)).BeginInit();
+            this.contextMenuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
-            this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // labelName
@@ -95,6 +93,28 @@
             this.dataGridViewItemAudit.Size = new System.Drawing.Size(777, 404);
             this.dataGridViewItemAudit.TabIndex = 2;
             // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.copyItemToolStripMenuItem,
+            this.copyLineToolStripMenuItem});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(130, 48);
+            // 
+            // copyItemToolStripMenuItem
+            // 
+            this.copyItemToolStripMenuItem.Name = "copyItemToolStripMenuItem";
+            this.copyItemToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.copyItemToolStripMenuItem.Text = "Copy Item";
+            this.copyItemToolStripMenuItem.Click += new System.EventHandler(this.copyItemToolStripMenuItem_Click);
+            // 
+            // copyLineToolStripMenuItem
+            // 
+            this.copyLineToolStripMenuItem.Name = "copyLineToolStripMenuItem";
+            this.copyLineToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.copyLineToolStripMenuItem.Text = "Copy Line";
+            this.copyLineToolStripMenuItem.Click += new System.EventHandler(this.copyLineToolStripMenuItem_Click);
+            // 
             // panel1
             // 
             this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -110,9 +130,7 @@
             // 
             this.groupBox1.Controls.Add(this.label4);
             this.groupBox1.Controls.Add(this.textBoxMissingTotal);
-            this.groupBox1.Controls.Add(this.label8);
             this.groupBox1.Controls.Add(this.label3);
-            this.groupBox1.Controls.Add(this.textBoxMissingProfessions);
             this.groupBox1.Controls.Add(this.textBoxMissingGems);
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.textBoxMissingEnchants);
@@ -128,7 +146,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(188, 32);
+            this.label4.Location = new System.Drawing.Point(59, 104);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(97, 13);
             this.label4.TabIndex = 3;
@@ -136,20 +154,11 @@
             // 
             // textBoxMissingTotal
             // 
-            this.textBoxMissingTotal.Location = new System.Drawing.Point(214, 57);
+            this.textBoxMissingTotal.Location = new System.Drawing.Point(23, 101);
             this.textBoxMissingTotal.Name = "textBoxMissingTotal";
             this.textBoxMissingTotal.ReadOnly = true;
-            this.textBoxMissingTotal.Size = new System.Drawing.Size(37, 20);
+            this.textBoxMissingTotal.Size = new System.Drawing.Size(24, 20);
             this.textBoxMissingTotal.TabIndex = 2;
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(59, 100);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(137, 13);
-            this.label8.TabIndex = 1;
-            this.label8.Text = "Profession Specials Missing";
             // 
             // label3
             // 
@@ -159,14 +168,6 @@
             this.label3.Size = new System.Drawing.Size(72, 13);
             this.label3.TabIndex = 1;
             this.label3.Text = "Gems Missing";
-            // 
-            // textBoxMissingProfessions
-            // 
-            this.textBoxMissingProfessions.Location = new System.Drawing.Point(23, 97);
-            this.textBoxMissingProfessions.Name = "textBoxMissingProfessions";
-            this.textBoxMissingProfessions.ReadOnly = true;
-            this.textBoxMissingProfessions.Size = new System.Drawing.Size(24, 20);
-            this.textBoxMissingProfessions.TabIndex = 0;
             // 
             // textBoxMissingGems
             // 
@@ -302,28 +303,6 @@
             this.labelRole.TabIndex = 9;
             this.labelRole.Text = "Role: ";
             // 
-            // contextMenuStrip1
-            // 
-            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.copyItemToolStripMenuItem,
-            this.copyLineToolStripMenuItem});
-            this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(153, 70);
-            // 
-            // copyItemToolStripMenuItem
-            // 
-            this.copyItemToolStripMenuItem.Name = "copyItemToolStripMenuItem";
-            this.copyItemToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.copyItemToolStripMenuItem.Text = "Copy Item";
-            this.copyItemToolStripMenuItem.Click += new System.EventHandler(this.copyItemToolStripMenuItem_Click);
-            // 
-            // copyLineToolStripMenuItem
-            // 
-            this.copyLineToolStripMenuItem.Name = "copyLineToolStripMenuItem";
-            this.copyLineToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.copyLineToolStripMenuItem.Text = "Copy Line";
-            this.copyLineToolStripMenuItem.Click += new System.EventHandler(this.copyLineToolStripMenuItem_Click);
-            // 
             // FormItemAudit
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -348,12 +327,12 @@
             this.Text = "Character Audit";
             this.Load += new System.EventHandler(this.FormItemAudit_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewItemAudit)).EndInit();
+            this.contextMenuStrip1.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
-            this.contextMenuStrip1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -380,8 +359,6 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox textBoxMaxiLevel;
         private System.Windows.Forms.TextBox textBoxEquippediLevel;
-        private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.TextBox textBoxMissingProfessions;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.TextBox textBoxProfessions;
         private System.Windows.Forms.Label labelSpec;

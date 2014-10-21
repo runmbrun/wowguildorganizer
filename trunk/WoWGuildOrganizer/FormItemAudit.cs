@@ -138,9 +138,6 @@ namespace WoWGuildOrganizer
                 Int32 MissingItems = 0;
                 Int32 MissingEnchants = 0;
                 Int32 MissingGems = 0;
-                Int32 MissingJCGems = 0;
-                Int32 MissingCogs = 0;
-                Int32 MissingProfs = 0;
                 Int32 MissingTotal = 0;
                 Double iLevels = 0;
                 Int32 ItemCount = 0;
@@ -199,99 +196,6 @@ namespace WoWGuildOrganizer
                     {
                         MissingGems += Convert.ToInt32(item.MissingGem);
                     }
-
-                    // Check for Profession Specials
-
-                    // Blacksmith - Check for special Socket on bracer and hands
-                    if ((Profession1 == "Blacksmithing" || Profession2 == "Blacksmithing") && (item.Slot == "wrist" || item.Slot == "hands"))
-                    {
-                        if (!item.IsBlacksmithingSocket())
-                        {
-                            item.Profession = "1";
-                            MissingProfs++;
-                        }
-                        else
-                        {
-                            item.Profession = "0";
-                        }
-                    }
-
-                    // Enchanting - Check for enchants on both rings
-                    if ((Profession1 == "Enchanting" || Profession2 == "Enchanting") && (item.Slot == "finger1" || item.Slot == "finger2"))
-                    {   
-                        if (!item.IsEnchanted())
-                        {
-                            item.Profession = "1";
-                            MissingProfs++;
-                        }
-                        else
-                        {
-                            item.Profession = "0";
-                        }
-                    }
-
-                    // Enchanting - Check for enchants on both rings
-                    if ((Profession1 == "Engineering" || Profession2 == "Engineering") && (item.Slot == "head"))
-                    {
-                        // TODO - mmb fix this!
-                        if (item.IsEngineeringCog())
-                        {
-                            MissingCogs++;
-                        }
-                    }
-
-                    // Enchanting - Check for Inscription Enchant on shoulder
-                    if ((Profession1 == "Inscription" || Profession2 == "Inscription") && (item.Slot == "shoulder"))
-                    {
-                        if (!item.IsInscriptionEnchant())
-                        {
-                            item.Profession = "1";
-                            MissingProfs++;
-                        }
-                        else
-                        {
-                            item.Profession = "0";
-                        }
-                    }
-
-                    // Leatherworking - Check for Enchant on Bracer
-                    if ((Profession1 == "Leatherworking" || Profession2 == "Leatherworking") && (item.Slot == "wrist"))
-                    {
-                        if (!item.IsLeatherworkingEnchant())
-                        {
-                            item.Profession = "1";
-                            MissingProfs++;
-                        }
-                        else
-                        {
-                            item.Profession = "0";
-                        }
-                    }
-
-                    // Jewelcrafting - Check for 2 special JC gems                    
-                    if (Profession1 == "Jewelcrafting" || Profession2 == "Jewelcrafting")
-                    {
-                        int foundJCGems = item.IsJewelcraftingGem();
-                        if (foundJCGems > 0)
-                        {
-                            item.Profession = "0";
-                            MissingJCGems += foundJCGems;
-                        }
-                    }
-
-                    // Tailor - Check for special enchant on cloak
-                    if ((Profession1 == "Tailoring" || Profession2 == "Tailoring") && (item.Slot == "back"))
-                    {
-                        if (!item.IsTailorEnchant())
-                        {
-                            item.Profession = "1";
-                            MissingProfs++;
-                        }
-                        else
-                        {
-                            item.Profession = "0";
-                        }
-                    }
                 }
 
                 // Now double check the Equipped iLevel value!
@@ -308,36 +212,6 @@ namespace WoWGuildOrganizer
                 // Count the missing gems
                 MissingTotal += MissingGems;
                 textBoxMissingGems.Text = MissingGems.ToString();
-
-                // Count the missing Jewelcrafting Gems
-                if (Profession1 == "Jewelcrafting" || Profession2 == "Jewelcrafting")
-                {
-                    if (MissingJCGems < 2)
-                    {
-                        MissingJCGems = 2 - MissingJCGems;
-                        MissingProfs += MissingJCGems;
-                    }
-                }
-
-                // Engineering... more research needed!
-                if (Profession1 == "Engineering" || Profession2 == "Engineering")
-                {
-                    /*
-                     * // TODO - mmb
-                        // need to do something more to show this is missing.  but how?
-                    if (MissingCogs < 3)
-                    {
-                        MissingCogs = 3 - MissingCogs;
-                        MissingProfs += MissingCogs;
-
-                        
-                    }
-                     * */
-                }
-
-                // Count the missing profession specials
-                MissingTotal += MissingProfs;
-                textBoxMissingProfessions.Text = MissingProfs.ToString();
 
                 // Count the total missing 
                 textBoxMissingTotal.Text = MissingTotal.ToString();

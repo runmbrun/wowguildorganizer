@@ -15,7 +15,7 @@ namespace WoWGuildOrganizer
         //  2. Each line will contain a deduction if the item is ...
         //     a. item missing
         //     b. not enchanted
-        //     c. not gemmed - this could be very tricky... might need a 
+        //     c. not gemmed
         //     d. item level
 
         #region " Properties "
@@ -139,159 +139,6 @@ namespace WoWGuildOrganizer
             }
         }
 
-        public Boolean IsInscriptionEnchant()
-        {
-            // There are 4 inscription enchants.
-            //   Current Inscription Enchants for MoP:
-            if (
-                _toolTips.Contains(@"4912") || 
-                _toolTips.Contains(@"4913") || 
-                _toolTips.Contains(@"4914") || 
-                _toolTips.Contains(@"4915")
-                )
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public Boolean IsLeatherworkingEnchant()
-        {
-            // There are 4 current Leatherworking Enchants for the wrists.
-            //   for MoP they are:
-            if (
-                _toolTips.Contains(@"4875") ||
-                _toolTips.Contains(@"4877") ||
-                _toolTips.Contains(@"4878") ||
-                _toolTips.Contains(@"4879")
-                )
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public Boolean IsTailorEnchant()
-        {
-            // Tailoring currenlty has 3 enchants for the back
-            //   Here are the 3 enchants for MoP:
-            if (                
-                _toolTips.Contains("4892") ||
-                _toolTips.Contains("4893") ||
-                _toolTips.Contains("4894")
-                )
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public Boolean IsBlacksmithingSocket()
-        {
-            if (_toolTips.Contains(@"extraSocket"))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public int IsJewelcraftingGem()
-        {
-            int Found = 0;
-
-
-            //  This will change for every expansion!
-            // There are 12 JC Gems for MoP:            
-            if (_toolTips != null)
-            {
-                // If the tooltips contains one of them... return true
-                if (_toolTips.Contains("83141"))
-                {
-                    Found = Regex.Matches(_toolTips, "83141").Count;
-                }
-                if (_toolTips.Contains("83142"))
-                {
-                    Found = Regex.Matches(_toolTips, "83142").Count;
-                }
-                if (_toolTips.Contains("83143"))
-                {
-                    Found = Regex.Matches(_toolTips, "83143").Count;
-                }
-                if (_toolTips.Contains("83144"))
-                {
-                    Found = Regex.Matches(_toolTips, "83144").Count;
-                }
-                if (_toolTips.Contains("83145"))
-                {
-                    Found = Regex.Matches(_toolTips, "83145").Count;
-                }
-                if (_toolTips.Contains("83146"))
-                {
-                    Found = Regex.Matches(_toolTips, "83146").Count;
-                }
-                if (_toolTips.Contains("83147"))
-                {
-                    Found = Regex.Matches(_toolTips, "83147").Count;
-                }
-                if (_toolTips.Contains("83148"))
-                {
-                    Found = Regex.Matches(_toolTips, "83148").Count;
-                }
-                if (_toolTips.Contains("83149"))
-                {
-                    Found = Regex.Matches(_toolTips, "83149").Count;
-                }
-                                
-                if (_toolTips.Contains("83150"))
-                {
-                    Found = Regex.Matches(_toolTips, "83150").Count;
-                }
-
-                if (_toolTips.Contains("83151"))
-                {
-                    Found = Regex.Matches(_toolTips, "83151").Count;
-                }
-                if (_toolTips.Contains("83152"))
-                {
-                    Found = Regex.Matches(_toolTips, "83152").Count;
-                }
-            }
-
-            return Found;
-        }
-
-        public Boolean IsEngineeringCog()
-        {
-            // TODO - mmb.  Not sure how to do this...
-            //   I think special engineering helms can have cog wheel sockets
-            //   And only engineers can use them
-            // Almost have to check helm first to see if engineering helm,
-            //   and then check for cog wheels...
-            return true;
-
-            /*
-            if (_toolTips.Contains("1"))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }*/
-        }  
-
         private String _toolTips;
         public void SetToolTips(String t)
         {
@@ -372,29 +219,6 @@ namespace WoWGuildOrganizer
                     }
                 }
             }
-
-            // *** Profession Cases: ***
-            //TODO - Profession audits ->             
-            //  1. 2 x Ring enchants -> if Enchanter
-            //  2. 1 x Bracer special enchant -> if Leatherworker
-            //  3. 3 x Special Gems -> if Jewelcrafter
-            //  4. 2 x Sockets (bracer and hands) -> if Blacksmith
-            //  5. 1 x cloak special enchant -> if Tailor
-            /*
-             * skillLines
-                "185","Cooking"
-                "773","Inscription"
-                "755","Jewelcrafting"
-                "393","Skinning"
-                "333","Enchanting"
-                "202","Engineering"
-                "197","Tailoring"
-                "186","Mining"
-                "182","Herbalism"
-                "171","Alchemy"
-                "165","Leatherworking"
-                "164","Blacksmithing"
-             * */
         }
     }
 }
