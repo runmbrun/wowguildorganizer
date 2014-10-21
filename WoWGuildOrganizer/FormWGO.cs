@@ -2091,6 +2091,8 @@ namespace WoWGuildOrganizer
         {
             this.WaitCursor(false);
             EnableRefreshButton(true);
+            this.sw.Stop();
+            this.UpdateLabelMT(string.Format("{0} total characters in {1} seconds", this.savedCharacters.SavedCharacters.Count, (this.sw.GetElapsedTime()/1000).ToString("0")));
         }
 
         /// <summary>
@@ -2126,6 +2128,7 @@ namespace WoWGuildOrganizer
 
                 // Reset the Counter
                 //async.ReportProgress(0);
+                this.sw.Start();
 
                 // Get the guild information
                 GetGuildInfo guildInfo = new GetGuildInfo();
@@ -2221,6 +2224,9 @@ namespace WoWGuildOrganizer
                     // Go through all the guild members
                     foreach (GuildMember gm in this.savedCharacters.SavedCharacters)
                     {
+                        // Progress update
+                        this.UpdateLabelMT(this.savedCharacters.SavedCharacters.Count.ToString() + " total characters - On Character #" + (count + 1));
+
                         // Only check for Item Level for characters over level 10
                         //  Otherwise these characters won't be in the Armory
                         if (Convert.ToInt32(gm.Level) >= 10)
@@ -2265,6 +2271,9 @@ namespace WoWGuildOrganizer
 	                            {
                                     Logging.Warning(string.Format("Old vs New Achievement points.  [{0}] vs [{1}].", gm.AchievementPoints, charInfo.AchievementPoints));
 	                            }
+
+                                gm.SetArmoryCheckTime();
+                                gm.SetItemLevelCheckTime();
                             }
                             else
                             {
@@ -2272,9 +2281,6 @@ namespace WoWGuildOrganizer
                                 Logging.Error(string.Format("Failed to parse gear score for {0}", gm.Name));
                             }
                         }
-
-                        // Progress update
-                        this.UpdateLabelMT(this.savedCharacters.SavedCharacters.Count.ToString() + " total characters - On Character #" + count);
 
                         // Progress update for Progress Bar
                         double tempNum = (double)count++ / (double)total * 100;

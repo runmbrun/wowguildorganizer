@@ -105,6 +105,7 @@ namespace WoWGuildOrganizer
 
                 // Set the sorting glyphs
                 String[] sortExpressions = Sorting.Trim().Split(',');
+
                 for (Int32 i = 0; i < sortExpressions.Length; i++)
                 {
                     String fieldName = "";
