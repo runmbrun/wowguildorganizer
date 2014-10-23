@@ -334,31 +334,31 @@
             this.toolStripComboBoxPickBoss});
             this.toolStripMain.Location = new System.Drawing.Point(0, 0);
             this.toolStripMain.Name = "toolStripMain";
-            this.toolStripMain.Size = new System.Drawing.Size(721, 25);
+            this.toolStripMain.Size = new System.Drawing.Size(721, 27);
             this.toolStripMain.TabIndex = 1;
             this.toolStripMain.Text = "toolStrip2";
             // 
             // toolStripLabelGuild
             // 
             this.toolStripLabelGuild.Name = "toolStripLabelGuild";
-            this.toolStripLabelGuild.Size = new System.Drawing.Size(38, 22);
+            this.toolStripLabelGuild.Size = new System.Drawing.Size(38, 24);
             this.toolStripLabelGuild.Text = "Guild:";
             // 
             // toolStripTextBoxGuild
             // 
             this.toolStripTextBoxGuild.Name = "toolStripTextBoxGuild";
-            this.toolStripTextBoxGuild.Size = new System.Drawing.Size(100, 25);
+            this.toolStripTextBoxGuild.Size = new System.Drawing.Size(100, 27);
             // 
             // toolStripLabelRealm
             // 
             this.toolStripLabelRealm.Name = "toolStripLabelRealm";
-            this.toolStripLabelRealm.Size = new System.Drawing.Size(43, 22);
+            this.toolStripLabelRealm.Size = new System.Drawing.Size(43, 24);
             this.toolStripLabelRealm.Text = "Realm:";
             // 
             // toolStripTextBoxRealm
             // 
             this.toolStripTextBoxRealm.Name = "toolStripTextBoxRealm";
-            this.toolStripTextBoxRealm.Size = new System.Drawing.Size(100, 25);
+            this.toolStripTextBoxRealm.Size = new System.Drawing.Size(100, 27);
             // 
             // toolStripButtonAdd
             // 
@@ -377,7 +377,7 @@
             this.toolStripButtonRefresh.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonRefresh.Image")));
             this.toolStripButtonRefresh.ImageTransparentColor = System.Drawing.Color.Black;
             this.toolStripButtonRefresh.Name = "toolStripButtonRefresh";
-            this.toolStripButtonRefresh.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButtonRefresh.Size = new System.Drawing.Size(23, 24);
             this.toolStripButtonRefresh.Text = "Refresh";
             this.toolStripButtonRefresh.Click += new System.EventHandler(this.ToolStripButtonRefresh_Click);
             // 
@@ -387,14 +387,14 @@
             this.toolStripButtonSort.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonSort.Image")));
             this.toolStripButtonSort.ImageTransparentColor = System.Drawing.Color.Black;
             this.toolStripButtonSort.Name = "toolStripButtonSort";
-            this.toolStripButtonSort.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButtonSort.Size = new System.Drawing.Size(23, 24);
             this.toolStripButtonSort.Text = "Sort";
             this.toolStripButtonSort.Click += new System.EventHandler(this.ToolStripButtonSort_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 27);
             // 
             // toolStripProgressBar1
             // 
@@ -420,14 +420,14 @@
             // 
             this.toolStripComboBoxPickRaid.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.toolStripComboBoxPickRaid.Name = "toolStripComboBoxPickRaid";
-            this.toolStripComboBoxPickRaid.Size = new System.Drawing.Size(175, 25);
+            this.toolStripComboBoxPickRaid.Size = new System.Drawing.Size(175, 23);
             this.toolStripComboBoxPickRaid.Visible = false;
-            this.toolStripComboBoxPickRaid.SelectedIndexChanged += new System.EventHandler(this.toolStripComboBoxPickRaid_SelectedIndexChanged);
+            this.toolStripComboBoxPickRaid.SelectedIndexChanged += new System.EventHandler(this.ToolStripComboBoxPickRaid_SelectedIndexChanged);
             // 
             // toolStripLabelPickBoss
             // 
             this.toolStripLabelPickBoss.Name = "toolStripLabelPickBoss";
-            this.toolStripLabelPickBoss.Size = new System.Drawing.Size(59, 22);
+            this.toolStripLabelPickBoss.Size = new System.Drawing.Size(59, 15);
             this.toolStripLabelPickBoss.Text = "Pick Boss:";
             this.toolStripLabelPickBoss.Visible = false;
             // 
@@ -436,9 +436,9 @@
             this.toolStripComboBoxPickBoss.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.toolStripComboBoxPickBoss.DropDownWidth = 150;
             this.toolStripComboBoxPickBoss.Name = "toolStripComboBoxPickBoss";
-            this.toolStripComboBoxPickBoss.Size = new System.Drawing.Size(121, 25);
+            this.toolStripComboBoxPickBoss.Size = new System.Drawing.Size(121, 23);
             this.toolStripComboBoxPickBoss.Visible = false;
-            this.toolStripComboBoxPickBoss.SelectedIndexChanged += new System.EventHandler(this.toolStripComboBoxPickBoss_SelectedIndexChanged);
+            this.toolStripComboBoxPickBoss.SelectedIndexChanged += new System.EventHandler(this.ToolStripComboBoxPickBoss_SelectedIndexChanged);
             // 
             // FormMain
             // 

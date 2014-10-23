@@ -12,7 +12,7 @@ namespace WoWGuildOrganizer
     using System.Windows.Forms;
 
     /// <summary>
-    /// Parital class
+    /// Partial class
     /// </summary>
     public partial class FormMain : Form
     {

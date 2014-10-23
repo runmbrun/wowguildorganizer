@@ -116,11 +116,11 @@ namespace WoWGuildOrganizer
                     // Check to see what the currently saved guild is
                     if (this.savedCharacters.SavedCharacters.Count > 0)
                     {
-                        // todo: fix this
                         if (this.savedCharacters.Guild != string.Empty)
                         {
                             toolStripTextBoxGuild.Text = this.savedCharacters.Guild;
                         }
+
                         toolStripLabelRefreshStatus.Visible = true;
                         toolStripLabelRefreshStatus.Text = string.Format("Total Characters in guild: {0}", this.savedCharacters.SavedCharacters.Count);
                     }
@@ -726,6 +726,39 @@ namespace WoWGuildOrganizer
             }
         }
 
+        /// <summary>
+        /// Fires when the Guild data grid view is ready for Post Paint
+        /// </summary>
+        /// <param name="sender">sender parameter</param>
+        /// <param name="e">e parameter</param>
+        private void DataGridViewGuildData_RowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
+        {
+            var grid = sender as DataGridView;
+            var rowIdx = (e.RowIndex + 1).ToString();
+
+            var centerFormat = new StringFormat()
+            {
+                // right alignment might actually make more sense for numbers
+                Alignment = StringAlignment.Center,
+                LineAlignment = StringAlignment.Center
+            };
+
+            var headerBounds = new Rectangle(e.RowBounds.Left, e.RowBounds.Top, grid.RowHeadersWidth, e.RowBounds.Height);
+            e.Graphics.DrawString(rowIdx, this.Font, SystemBrushes.ControlText, headerBounds, centerFormat);
+        }
+
+        /// <summary>
+        /// This captures errors from the Guild's Data View Grid, and does not let them be shown
+        /// These errors are ignored on purpose!
+        /// </summary>
+        /// <param name="sender">sender parameter</param>
+        /// <param name="e">e parameter</param>
+        private void DataGridViewGuildData_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            // suppress all of these errors...
+            // These errors are from the clicks on the datagridview while it is being updated
+        }
+
         #endregion
 
         #region Guild Data Tab - Background Worker
@@ -743,7 +776,7 @@ namespace WoWGuildOrganizer
             // ReportProgress() function.  Note, e.UserState is a "tag" property
             // that can be used to send other information from the
             // BackgroundThread to the UI thread.
-            //todo: progressBarCollectData.Value = e.ProgressPercentage;
+            this.toolStripProgressBar1.Value = e.ProgressPercentage;
         }
 
         /// <summary>
@@ -762,9 +795,6 @@ namespace WoWGuildOrganizer
 
                 // start the wait cursor
                 this.WaitCursor(true);
-
-                // Stop updating the Grid until the end
-                this.SuspendGrid(true);
 
                 // Periodically check if a cancellation request is pending.
                 // If the user clicks cancel the line
@@ -791,7 +821,7 @@ namespace WoWGuildOrganizer
                         // Get the guild information
                         GetGuildInfo guildInfo = new GetGuildInfo();
 
-                        if (guildInfo.CollectData(string.Format("{0}guid/{1}/{2}?fields=members", this.URLWowAPI, toolStripTextBoxRealm.Text, toolStripTextBoxGuild.Text)))
+                        if (guildInfo.CollectData(string.Format("{0}guild/{1}/{2}?fields=members", this.URLWowAPI, toolStripTextBoxRealm.Text, toolStripTextBoxGuild.Text)))
                         {
                             // success!
 
@@ -852,14 +882,14 @@ namespace WoWGuildOrganizer
                                     }
                                 }
                                 else
-	                            {
+                                {
                                     // Either the guild or the realm changed... either way, a guild member compare isnt' needed
                                     this.savedCharacters.SavedCharacters = guildInfo.Characters;
 
                                     // Store the new guild and realm names
                                     this.savedCharacters.Guild = toolStripTextBoxGuild.Text;
                                     this.savedCharacters.Realm = toolStripTextBoxRealm.Text;
-	                            }
+                                }
                             }
                             else
                             {
@@ -882,6 +912,9 @@ namespace WoWGuildOrganizer
                             // Go through all the guild members
                             foreach (GuildMember gm in this.savedCharacters.SavedCharacters)
                             {
+                                // Progress update
+                                this.UpdateLabelMT(this.savedCharacters.SavedCharacters.Count.ToString() + " total characters - On Character #" + (count + 1));
+
                                 // Only check for Item Level for characters over level 10
                                 //  Otherwise these characters won't be in the Armory
                                 if (Convert.ToInt32(gm.Level) >= 10)
@@ -893,15 +926,27 @@ namespace WoWGuildOrganizer
                                         // success!
 
                                         // Fill out the data grid with the data we collected
-                                        gm.MaxiLevel = charInfo.MaxiLevel;
-                                        gm.EquipediLevel = charInfo.EquipediLevel;
+                                        if (gm.Level != charInfo.Level)
+                                        {
+                                            gm.Level = charInfo.Level;
+                                        }
+
+                                        if (gm.MaxiLevel != charInfo.MaxiLevel)
+                                        {
+                                            gm.MaxiLevel = charInfo.MaxiLevel;
+                                        }
+
+                                        if (gm.EquipediLevel != charInfo.EquipediLevel)
+                                        {
+                                            gm.EquipediLevel = charInfo.EquipediLevel;
+                                        }
+                                        
                                         gm.Profession1 = charInfo.Profession1;
                                         gm.Profession2 = charInfo.Profession2;
                                         gm.Spec = charInfo.Spec;
                                         gm.Role = charInfo.Role;
                                         gm.ItemAudits = charInfo.ItemAudits;
                                         gm.Class = charInfo.Class;
-                                        gm.Level = charInfo.Level;
                                         gm.Name = charInfo.Name;
                                         gm.Race = charInfo.Race;
                                         gm.Realm = charInfo.Realm;
@@ -911,9 +956,12 @@ namespace WoWGuildOrganizer
                                             gm.AchievementPoints = charInfo.AchievementPoints;
                                         }
                                         else if (gm.AchievementPoints != charInfo.AchievementPoints)
-	                                    {
-                                            Logging.Debug(string.Format("Old vs New Achievement points.  [{0}] vs [{1}].", gm.AchievementPoints, charInfo.AchievementPoints));
-	                                    }
+                                        {
+                                            Logging.Warning(string.Format("Old vs New Achievement points.  [{0}] vs [{1}].", gm.AchievementPoints, charInfo.AchievementPoints));
+                                        }
+
+                                        gm.SetArmoryCheckTime();
+                                        gm.SetItemLevelCheckTime();
                                     }
                                     else
                                     {
@@ -921,9 +969,6 @@ namespace WoWGuildOrganizer
                                         Logging.Error(string.Format("Failed to parse gear score for {0}", gm.Name));
                                     }
                                 }
-
-                                // Progress update
-                                this.UpdateLabelMT(this.savedCharacters.SavedCharacters.Count.ToString() + " total characters - On Character #" + count);
 
                                 // Progress update for Progress Bar
                                 double tempNum = (double)count++ / (double)total * 100;
@@ -984,21 +1029,17 @@ namespace WoWGuildOrganizer
                 // process the response using e.Result
                 Logging.Log("Search has been completed!");
 
-                // change the buttons back
-                //buttonGetGuildInfo.Text = "Get Guild Info";
-                //buttonRefreshGuildData.Text = "Refresh";
+                // Change the button text so that this can be cancelled
+                this.EnableRefreshButton(true);
+
+                // Show the progress bar
+                this.toolStripProgressBar1.Visible = false;
 
                 // start the wait cursor
                 this.WaitCursor(false);
 
-                this.UpdateLabelMT(string.Format("{0} total characters in {1} milliseconds", this.savedCharacters.SavedCharacters.Count, this.sw.GetElapsedTime()));
-
-                // now switch the tab
-                tabControlWGO.SelectTab(0);
+                this.UpdateLabelMT(string.Format("{0} total characters in {1} seconds", this.savedCharacters.SavedCharacters.Count, (this.sw.GetElapsedTime() / 1000).ToString("0")));
             }
-
-            // Stop updating the Grid until the end
-            this.SuspendGrid(false);
         }
 
         #endregion
@@ -1138,9 +1179,6 @@ namespace WoWGuildOrganizer
 
                 if (gm != null)
                 {
-                    //todo: is this needed?
-                    //  do we need to clear datasource, or can it just be updated
-
                     // Clear out the Grid Data Source to get it ready for the new data
                     dataGridViewRaidGroup.DataSource = null;
 
@@ -1161,7 +1199,7 @@ namespace WoWGuildOrganizer
         /// <summary>
         /// Grabs all the information about 1 character
         /// This is the Web Site to get the character info from...
-        /// http://us.battle.net/api/wow/character/Thrall/Purdee?fields=items,professions,talents
+        /// <c>http://us.battle.net/api/wow/character/Thrall/Purdee?fields=items,professions,talents</c>
         /// </summary>
         /// <param name="name">string of the name of the character to get the information about</param>
         /// <param name="realm">string of the realm of the character to get the information about</param>
@@ -1356,8 +1394,7 @@ namespace WoWGuildOrganizer
         /// </summary>
         /// <param name="sender">sender parameter</param>
         /// <param name="e">e parameter</param>
-
-        private void toolStripComboBoxPickRaid_SelectedIndexChanged(object sender, EventArgs e)
+        private void ToolStripComboBoxPickRaid_SelectedIndexChanged(object sender, EventArgs e)
         {
             // Clear out the results first
             dataGridViewRaidLootDrop.DataSource = null;
@@ -1383,10 +1420,8 @@ namespace WoWGuildOrganizer
         /// </summary>
         /// <param name="sender">sender parameter</param>
         /// <param name="e">e parameter</param>
-        private void toolStripComboBoxPickBoss_SelectedIndexChanged(object sender, EventArgs e)
+        private void ToolStripComboBoxPickBoss_SelectedIndexChanged(object sender, EventArgs e)
         {
-            //todo: this.GetLootResults();
-
             this.WaitCursor(true);
 
             int[] itemIds = null;
@@ -1399,14 +1434,14 @@ namespace WoWGuildOrganizer
                 // Remove focus from drop down so middle mouse wheel doesn't change accidently
                 this.dataGridViewRaidLootDrop.Focus();
 
-                // 
-                if (raidGroup.RaidGroup.Count > 0)
+                // Make sure there is at least 1 raid member in the group
+                if (this.raidGroup.RaidGroup.Count > 0)
                 {
                     // Now get the data
                     RaidInfo raidInfo = new RaidInfo();
                     DataTable loot = null;
 
-                    loot = raidInfo.GetLootResults(itemIds, raidGroup.RaidGroup);
+                    loot = raidInfo.GetLootResults(itemIds, this.raidGroup.RaidGroup);
 
                     // Check to see any loot was found for this boss
                     if (loot.Rows.Count > 0)
@@ -1451,7 +1486,6 @@ namespace WoWGuildOrganizer
                                 string updatedTooltip = item2.Tooltip;
 
                                 // Search and replace the iLvl with the current one
-                                //todo:
                                 if (updatedTooltip != string.Empty)
                                 {
                                     int firstOne = updatedTooltip.IndexOf("\n") + 1;
@@ -1475,7 +1509,6 @@ namespace WoWGuildOrganizer
 
                     if (dataGridViewRaidLootDrop.DataSource != null)
                     {
-                        // todo: fix this
                         dataGridViewRaidLootDrop.Update();
                         dataGridViewRaidLootDrop.Refresh();
                     }
@@ -1544,9 +1577,6 @@ namespace WoWGuildOrganizer
             else if (e.ColumnIndex == 5 && e.RowIndex >= 0 && dataGridViewRaidLootDrop.Rows.Count > 0)
             {
                 // TODO: Make this tooltip show the current item that would be replaced
-                //int id = Convert.ToInt32(dataGridViewRaidLootDrop.Rows[e.RowIndex].Cells["ItemId"].Value);
-                //ItemInfo item = Items.GetItem(id);
-                //dataGridViewRaidLootDrop.Rows[e.RowIndex].Cells["ItemName"].ToolTipText = item.Tooltip;
             }
         }
 
@@ -1570,27 +1600,6 @@ namespace WoWGuildOrganizer
             }
 
             dataGridViewRaidLootDrop.AutoResizeRowHeadersWidth(DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders);
-        }
-
-        /// <summary>
-        /// Fires when the Guild data grid view is ready for Post Paint
-        /// </summary>
-        /// <param name="sender">sender parameter</param>
-        /// <param name="e">e parameter</param>
-        private void DataGridViewGuildData_RowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
-        {
-            var grid = sender as DataGridView;
-            var rowIdx = (e.RowIndex + 1).ToString();
-
-            var centerFormat = new StringFormat()
-            {
-                // right alignment might actually make more sense for numbers
-                Alignment = StringAlignment.Center,
-                LineAlignment = StringAlignment.Center
-            };
-
-            var headerBounds = new Rectangle(e.RowBounds.Left, e.RowBounds.Top, grid.RowHeadersWidth, e.RowBounds.Height);
-            e.Graphics.DrawString(rowIdx, this.Font, SystemBrushes.ControlText, headerBounds, centerFormat);
         }
 
         /// <summary>
@@ -1653,53 +1662,31 @@ namespace WoWGuildOrganizer
             // Find out what tab we're currently on
             if (this.tabControlWGO.SelectedTab.Text == "Guild Data")
             {
-                this.WaitCursor(true);
-
                 // First check to make sure both Realm and Guild values have been filled out
                 if (toolStripTextBoxGuild.Text != string.Empty && toolStripTextBoxGuild.Text != string.Empty)
                 {
                     if (toolStripButtonRefresh.Text == "Refresh")
                     {
-                        //Func<bool> ActionGetGuildMembers = () => GetGuildMembers();
-                        //List<Task> tasks = new List<Task>();
+                        Logging.Log("Search Started...");
 
-                        // Start the task to get all the current guild members
-                        //tasks.Add(Task<bool>.Factory.StartNew(ActionGetGuildMembers));
+                        // start the wait cursor
+                        this.WaitCursor(true);
 
-                        //await tasks;
+                        // Change the button text so that this can be cancelled
+                        this.EnableRefreshButton(false);
 
-                        //Task doingWork = GetGuildMembers();
-                        //doingWork.ContineWith(OnWorkCompleted);
+                        // Show the progress bar
+                        this.toolStripProgressBar1.Visible = true;
 
-                        //Task<bool> longRunningTask = LongRunningTask();
+                        // Start the stop watch
+                        this.sw.Start();
 
-                        // Call the method that runs asynchronously.
-                        //bool result = await longRunningTask();
-
-                        // todo: eventually need to change this so cancelling request is allowed
-                        toolStripButtonRefresh.Enabled = false;                        
-
-                        Func<bool> ActionLookupConsumer = () => GetGuildMembers();
-                        List<Task> tasks = new List<Task>();
-
-                        // Create the first task
-                        tasks.Add(Task<bool>.Factory.StartNew(ActionLookupConsumer));
-
-                        // Now create a task that will start after the first task completes
-                        tasks.Add((tasks[0] as Task<bool>).ContinueWith(t => OnWorkCompleted()));
-
-                        // other tests
-                        //bool success = false;
-
-                        //await tasks.Run;// (Task<bool>.Factory.StartNew(ActionLookupConsumer));
-                        //Action action = new Action(GetGuildMembers());
-                        //Task task = new Task((ActionLookupConsumer);
-
-                        //toolStripButtonRefresh.Text = "Refresh";
+                        // Kickoff the worker thread to begin it's DoWork function.
+                        this.guildInfoAsyncWorker.RunWorkerAsync();
                     }
                     else
                     {
-                        // Cancel it
+                        // Cancel it - todo
                     }
                 }
             }
@@ -1716,15 +1703,15 @@ namespace WoWGuildOrganizer
                 }
                 else
                 {
-                    this.toolStripComboBoxPickBoss_SelectedIndexChanged(null, null);
+                    this.ToolStripComboBoxPickBoss_SelectedIndexChanged(null, null);
                 }
             }
         }
 
         /// <summary>
         /// Fires when the sort button is pressed in the tool strip menu
-        /// If tab is on the Guild Data, then sorts by: Level DESC, EquipediLevel DESC, MaxiLevel DESC, AchievementPoints DESC
-        /// If tab is on the Raid Data, then sorts by: Role DESC, EquipediLevel DESC
+        /// <c>If tab is on the Guild Data, then sorts by: "Level DESC, EquippediLevel DESC, MaxiLevel DESC, AchievementPoints DESC"</c>
+        /// <c>If tab is on the Raid Data, then sorts by: "Role DESC, EquippediLevel DESC"</c>
         /// </summary>
         /// <param name="sender">sender parameter</param>
         /// <param name="e">e parameter</param>
@@ -1968,10 +1955,11 @@ namespace WoWGuildOrganizer
         /// Will Audit the character that is passed in
         /// </summary>
         /// <param name="character">character that is to be audited</param>
-        void AuditCharacter(GuildMember character)
+        private void AuditCharacter(GuildMember character)
         {
             this.Cursor = Cursors.WaitCursor;
 
+            /*
             // This will be a audit function.
             //  So if a character is double clicked, an audit table will pop up.
             //  The Audit Table will show the following things:
@@ -1984,6 +1972,7 @@ namespace WoWGuildOrganizer
             // Future Ideas
             //  1. Missing Glyphs
             //  2. Raid Progression
+            */
 
             try
             {
@@ -2010,297 +1999,5 @@ namespace WoWGuildOrganizer
         }
 
         #endregion 
-
-        #region Old Code - Save
-
-        /// <summary>
-        /// 
-        /// </summary>
-        private void DoWorkOldWay()
-        {
-            // First check to make sure the vars are passed in
-            if (toolStripTextBoxGuild.Text.Length == 0 || toolStripTextBoxRealm.Text.Length == 0)
-            {
-                MessageBox.Show("Error: Both Guild Name and Realm need to be filled out.");
-            }
-            else
-            {
-                // If the background thread is running then clicking this
-                // button causes a cancel, otherwise clicking this button
-                // launches the background thread.
-                if (this.guildInfoAsyncWorker.IsBusy)
-                {
-                    Logging.Log("Cancelling Search...");
-
-                    //buttonGetGuildInfo.Enabled = false;
-                    //buttonRefreshGuildData.Enabled = false;
-
-                    // Notify the worker thread that a cancel has been requested.
-                    // The cancel will not actually happen until the thread in the
-                    // DoWork checks the bwAsync.CancellationPending flag, for this
-                    // reason we set the label to "Cancelling...", because we haven't
-                    // actually cancelled yet.
-                    this.guildInfoAsyncWorker.CancelAsync();
-                }
-                else
-                {
-                    Logging.Log("Search Started...");
-
-                    // start the wait cursor
-                    this.WaitCursor(true);
-
-                    // Change the button text so that this can be cancelled
-                    //buttonGetGuildInfo.Text = "Cancel";
-                    //buttonRefreshGuildData.Text = "Cancel";
-
-                    // Start the stop watch
-                    this.sw.Start();
-
-                    // Kickoff the worker thread to begin it's DoWork function.
-                    this.guildInfoAsyncWorker.RunWorkerAsync();
-                }
-            }
-        }
-
-        #endregion
-
-        #region TESTING
-
-        /// <summary>
-        /// todo
-        /// </summary>
-        private void OnWorkCompleted()
-        {
-            this.WaitCursor(false);
-            EnableRefreshButton(true);
-            this.sw.Stop();
-            this.UpdateLabelMT(string.Format("{0} total characters in {1} seconds", this.savedCharacters.SavedCharacters.Count, (this.sw.GetElapsedTime()/1000).ToString("0")));
-        }
-
-        /// <summary>
-        /// todo
-        /// </summary>
-        /// <returns></returns>
-        public async Task<bool> LongRunningOperation() // assume we return an int from this long running operation 
-        {
-            bool result = false;
-
-            await Task.Delay(1000); //1 seconds delay
-            //await Task.Run( GetGuildMembers;
-            return result;
-        }
-
-        /// <summary>
-        /// 1.  Get the Entire Guild Roster first from: http://us.battle.net/api/wow/guild/Thrall/Secondnorth?fields=members
-        /// 2.  Go through each guild member and pull out additional information from: http://us.battle.net/api/wow/character/Thrall/Purdee?fields=items,professions,talents
-        /// </summary>
-        /// <returns></returns>
-        private bool GetGuildMembers()
-        {
-            // First get the entire Guild Roster
-            //await Task.Run(Action
-
-            //Thread.Sleep(9000); //1 seconds delay
-
-            // First get the entire Guild Roster
-            try
-            {
-                // This is the Web Site to get the guild info from...
-                // http://us.battle.net/api/wow/guild/Thrall/Secondnorth?fields=members
-
-                // Reset the Counter
-                //async.ReportProgress(0);
-                this.sw.Start();
-
-                // Get the guild information
-                GetGuildInfo guildInfo = new GetGuildInfo();
-
-                if (guildInfo.CollectData(string.Format("{0}guild/{1}/{2}?fields=members", this.URLWowAPI, toolStripTextBoxRealm.Text, toolStripTextBoxGuild.Text)))
-                {
-                    // success!
-
-                    // now check to see if a grid needs to be updated or if it's the first time used
-                    if (this.savedCharacters.SavedCharacters.Count > 0)
-                    {
-                        // save the current data to a temp var
-                        ArrayList temp = new ArrayList();
-
-                        foreach (GuildMember m in this.savedCharacters.SavedCharacters)
-                        {
-                            temp.Add(m);
-                        }
-
-                        // erase the current data so we can start new
-                        this.savedCharacters.SavedCharacters.Clear();
-
-                        // Fill out the data grid with the data we collected
-                        this.savedCharacters.SavedCharacters = guildInfo.Characters;
-
-                        if (this.savedCharacters.Guild == toolStripTextBoxGuild.Text && 
-                            this.savedCharacters.Realm == toolStripTextBoxRealm.Text)
-                        {
-                            foreach (GuildMember newmember in this.savedCharacters.SavedCharacters)
-                            {
-                                // now see if this is a new char or if level was updated
-                                foreach (GuildMember oldmember in temp)
-                                {
-                                    if (newmember.Name == oldmember.Name)
-                                    {
-                                        // match!
-
-                                        // now check to see if level or achievement points have been updated
-                                        if (newmember.Level.CompareTo(oldmember.Level) == 0)
-                                        {
-                                            newmember.ClearFlags();
-                                        }
-
-                                        // always check to carry over the max iLevel value from old to new
-                                        //   since new will always be blank
-                                        if (newmember.MaxiLevel == 0 && oldmember.MaxiLevel != 0)
-                                        {
-                                            newmember.MaxiLevel = oldmember.MaxiLevel;
-                                            newmember.ClearMaxItemLevelFlag();
-                                        }
-
-                                        // always check to carry over the max iLevel value from old to new
-                                        //   since new will always be blank
-                                        if (newmember.EquipediLevel == 0 && oldmember.EquipediLevel != 0)
-                                        {
-                                            newmember.EquipediLevel = oldmember.EquipediLevel;
-                                            newmember.ClearEquipItemLevelFlag();
-                                        }
-
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                        else
-	                    {
-                            // Either the guild or the realm changed... either way, a guild member compare isnt' needed
-                            this.savedCharacters.SavedCharacters = guildInfo.Characters;
-
-                            // Store the new guild and realm names
-                            this.savedCharacters.Guild = toolStripTextBoxGuild.Text;
-                            this.savedCharacters.Realm = toolStripTextBoxRealm.Text;
-	                    }
-                    }
-                    else
-                    {
-                        // First time collection of the guild...
-                        //  Fill out the data grid with the data we collected
-                        this.savedCharacters.SavedCharacters = guildInfo.Characters;
-
-                        // Store the guild and realm names
-                        this.savedCharacters.Guild = this.toolStripTextBoxGuild.Text;
-                        this.savedCharacters.Realm = this.toolStripTextBoxRealm.Text;
-                    }
-                }
-
-                // Now get the individual Character data
-                int count = 0;
-                int total = this.savedCharacters.SavedCharacters.Count;
-
-                try
-                {
-                    // Go through all the guild members
-                    foreach (GuildMember gm in this.savedCharacters.SavedCharacters)
-                    {
-                        // Progress update
-                        this.UpdateLabelMT(this.savedCharacters.SavedCharacters.Count.ToString() + " total characters - On Character #" + (count + 1));
-
-                        // Only check for Item Level for characters over level 10
-                        //  Otherwise these characters won't be in the Armory
-                        if (Convert.ToInt32(gm.Level) >= 10)
-                        {
-                            GuildMember charInfo = this.GetCharacterInformation(gm.Name, this.savedCharacters.Realm);
-
-                            if (charInfo != null)
-                            {
-                                // success!
-
-                                // Fill out the data grid with the data we collected
-                                if (gm.Level != charInfo.Level)
-                                {
-                                    gm.Level = charInfo.Level;
-                                }
-
-                                if (gm.MaxiLevel != charInfo.MaxiLevel)
-                                {
-                                    gm.MaxiLevel = charInfo.MaxiLevel;
-                                }
-
-                                if (gm.EquipediLevel != charInfo.EquipediLevel)
-                                {
-                                    gm.EquipediLevel = charInfo.EquipediLevel;
-                                }
-
-                                gm.Profession1 = charInfo.Profession1;
-                                gm.Profession2 = charInfo.Profession2;
-                                gm.Spec = charInfo.Spec;
-                                gm.Role = charInfo.Role;
-                                gm.ItemAudits = charInfo.ItemAudits;
-                                gm.Class = charInfo.Class;                                
-                                gm.Name = charInfo.Name;
-                                gm.Race = charInfo.Race;
-                                gm.Realm = charInfo.Realm;
-
-                                if (gm.AchievementPoints != charInfo.AchievementPoints && charInfo.AchievementPoints > 0)
-                                {
-                                    gm.AchievementPoints = charInfo.AchievementPoints;
-                                }
-                                else if (gm.AchievementPoints != charInfo.AchievementPoints)
-	                            {
-                                    Logging.Warning(string.Format("Old vs New Achievement points.  [{0}] vs [{1}].", gm.AchievementPoints, charInfo.AchievementPoints));
-	                            }
-
-                                gm.SetArmoryCheckTime();
-                                gm.SetItemLevelCheckTime();
-                            }
-                            else
-                            {
-                                // Failure!
-                                Logging.Error(string.Format("Failed to parse gear score for {0}", gm.Name));
-                            }
-                        }
-
-                        // Progress update for Progress Bar
-                        double tempNum = (double)count++ / (double)total * 100;
-                        //async.ReportProgress((int)tempNum);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Logging.Error(ex.Message);
-                }
-
-                // Data has been gathered now...
-                //async.ReportProgress(100);
-
-                // re-sort by Item Level
-                this.SortGridMT(this.sortGuild);
-
-                // Stop the stopwatch
-                this.sw.Stop();
-            }
-            catch (Exception ex)
-            {
-                Logging.Error(ex.Message);
-            }
-
-            return true;
-        }
-
-        #endregion
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void DataGridViewGuildData_DataError(object sender, DataGridViewDataErrorEventArgs e)
-        {
-            //todo: need to suppress any errors while
-        }
     }
 }
