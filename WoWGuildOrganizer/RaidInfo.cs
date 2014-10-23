@@ -156,7 +156,7 @@ namespace WoWGuildOrganizer
             RaidLoot.Add(RaidName, tempLoot);
 
             // Tier 16 Raid - Flex
-            RaidName = "Siege of Orgrimmar - Flex";
+            RaidName = "Siege of Orgrimmar - Normal";
             tempLoot = new Dictionary<string, int[]>();
 
             // Wing 1
@@ -222,7 +222,7 @@ namespace WoWGuildOrganizer
             RaidLoot.Add(RaidName, tempLoot);
 
             // Tier 16 Raid - Normal
-            RaidName = "Siege of Orgrimmar - Normal";
+            RaidName = "Siege of Orgrimmar - Heroic";
             tempLoot = new Dictionary<string, int[]>();
 
             // Wing 1
@@ -288,7 +288,7 @@ namespace WoWGuildOrganizer
             RaidLoot.Add(RaidName, tempLoot);
 
             // Tier 16 Raid - Heroic
-            RaidName = "Siege of Orgrimmar - Heroic";
+            RaidName = "Siege of Orgrimmar - Mythic";
             tempLoot = new Dictionary<string, int[]>();
 
             // Wing 1:

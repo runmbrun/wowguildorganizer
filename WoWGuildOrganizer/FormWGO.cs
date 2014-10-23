@@ -38,7 +38,12 @@ namespace WoWGuildOrganizer
         /// <summary>
         /// String of how a basic guild sort should be
         /// </summary>
-        private readonly string basicGuildSort = "Level DESC, EquipediLevel DESC, MaxiLevel DESC, AchievementPoints DESC";
+        private readonly string sortGuild = "Level DESC, EquipediLevel DESC, MaxiLevel DESC, AchievementPoints DESC";
+
+        /// <summary>
+        /// String of how a basic raid sort should be
+        /// </summary>
+        private readonly string sortRaid = "Role DESC, EquipediLevel DESC";
 
         /// <summary>
         /// All the persistently saved guild characters
@@ -218,11 +223,7 @@ namespace WoWGuildOrganizer
         /// Gets or sets a value indicating whether to let the app know if it should attempt to connect
         ///  to the Blizzard Battle.net web site
         /// </summary>
-        public static bool WebSiteOnline
-        {
-            get;
-            set;
-        }
+        public static bool WebSiteOnline { get; set; }
 
         #endregion
 
@@ -291,7 +292,7 @@ namespace WoWGuildOrganizer
             dataGridViewRaidGroup.DataSource = this.raidGroup.RaidGroup;
             this.UpdateRaidGrid();
             
-            this.SortGrid(this.basicGuildSort);
+            this.SortGrid(this.sortGuild);
         }
 
         #endregion
@@ -598,57 +599,12 @@ namespace WoWGuildOrganizer
             }
             else
             {
-                this.Cursor = Cursors.WaitCursor;
-
-                // This will be a audit function.
-                //  So if a character is double clicked, an audit table will pop up.
-                //  The Audit Table will show the following things:
-                //  1. One line for each character slot
-                //  2. Each line will contain a deduction if the item is ...
-                //     a. item missing
-                //     b. not enchanted
-                //     c. not gemmed - URL = Host + "/api/wow/data/item/" + ItemId => "hasSockets":false,
-                //         - Will need a item cache though
-                //     d. item level
-                //  3. Ordered by item level, lowest to highest
-                // Future Ideas
-                //  1. Missing Glyphs
-                //  2. Raid Progression
-                //  3. Professions
-
-                // Create the new form to be used
-                FormItemAudit charAudit = new FormItemAudit();
-
-                // Get the name
-                string charName = ((GuildMember)this.savedCharacters.SavedCharacters[currentRow]).Name;
-
-                // Pass the name to the new form
-                charAudit.CharacterName = charName;
-
-                charAudit.EquippediLevel = ((GuildMember)this.savedCharacters.SavedCharacters[currentRow]).EquipediLevel.ToString();
-                charAudit.MaxiLevel = ((GuildMember)this.savedCharacters.SavedCharacters[currentRow]).MaxiLevel.ToString();
-
-                charAudit.Profession1 = ((GuildMember)this.savedCharacters.SavedCharacters[currentRow]).Profession1;
-                charAudit.Profession2 = ((GuildMember)this.savedCharacters.SavedCharacters[currentRow]).Profession2;
-
-                charAudit.Spec = ((GuildMember)this.savedCharacters.SavedCharacters[currentRow]).Spec;
-                charAudit.Role = ((GuildMember)this.savedCharacters.SavedCharacters[currentRow]).Role;
-
+                // Get the character data
                 GuildMember character = (GuildMember)this.savedCharacters.SavedCharacters[currentRow];
 
-                // Pass the Data to the Form
-                if (charAudit.PassData(character))
-                {
-                    // Show the new form
-                    charAudit.Show();
-                }
-                else
-                {
-                    Logging.DisplayError("Can't Audit Character: " + charName);
-                }
-            }
-
-            this.Cursor = Cursors.Default;
+                // do the audit
+                this.AuditCharacter(character);
+            }            
         }
 
         /// <summary>
@@ -734,10 +690,6 @@ namespace WoWGuildOrganizer
             if (this.tabControlWGO.SelectedTab.Text == "Guild Data")
             {
                 toolStripLabelRefreshStatus.Text = string.Format("Total Characters in guild: {0}", this.savedCharacters.SavedCharacters.Count);
-            }
-            else if (this.tabControlWGO.SelectedTab.Text == "Guild Data")
-            {
-                //todo: toolStripLabelRefreshStatus.Text = string.Format("Total Characters in guild: {0}", this.savedCharacters.SavedCharacters.Count);
             }
         }
 
@@ -987,7 +939,7 @@ namespace WoWGuildOrganizer
                         async.ReportProgress(100);
 
                         // re-sort by Item Level
-                        this.SortGridMT(this.basicGuildSort);
+                        this.SortGridMT(this.sortGuild);
 
                         // Stop the stopwatch
                         this.sw.Stop();
@@ -1085,7 +1037,7 @@ namespace WoWGuildOrganizer
                         stream.Close();
 
                         // Sort the data
-                        this.SortGrid(this.basicGuildSort);
+                        this.SortGrid(this.sortGuild);
 
                         // update the text boxes                        
                         toolStripTextBoxRealm.Text = this.savedCharacters.Realm;
@@ -1271,27 +1223,12 @@ namespace WoWGuildOrganizer
             }
             else
             {
-                this.Cursor = Cursors.WaitCursor;
-
-                // Create the new form to be used
-                FormItemAudit charAudit = new FormItemAudit();
-
                 // Get the character data
                 GuildMember character = (GuildMember)this.raidGroup.RaidGroup[currentRow];
 
-                // Pass the Data to the Form
-                if (charAudit.PassData(character))
-                {
-                    // Show the new form
-                    charAudit.Show();
-                }
-                else
-                {
-                    Logging.DisplayError("Can't Audit Character: " + character.Name);
-                }
+                // do the audit
+                this.AuditCharacter(character);
             }
-
-            this.Cursor = Cursors.Default;
         }
 
         /// <summary>
@@ -1795,11 +1732,11 @@ namespace WoWGuildOrganizer
         {
             if (this.tabControlWGO.SelectedTab.Text == "Guild Data")
             {
-                this.SortGrid(this.basicGuildSort);
+                this.SortGrid(this.sortGuild);
             }
             else if (this.tabControlWGO.SelectedTab.Text == "Raid Data")
             {
-                this.SortGrid("Role DESC, EquipediLevel DESC");
+                this.SortGrid(this.sortRaid);
             }
         }
         
@@ -2025,6 +1962,51 @@ namespace WoWGuildOrganizer
             }
 
             this.WaitCursor(false);
+        }
+
+        /// <summary>
+        /// Will Audit the character that is passed in
+        /// </summary>
+        /// <param name="character">character that is to be audited</param>
+        void AuditCharacter(GuildMember character)
+        {
+            this.Cursor = Cursors.WaitCursor;
+
+            // This will be a audit function.
+            //  So if a character is double clicked, an audit table will pop up.
+            //  The Audit Table will show the following things:
+            //  1. One line for each character slot
+            //  2. Each line will contain a deduction if the item is ...
+            //     a. missing
+            //     b. not enchanted
+            //     c. not fully gemmed
+            //     d. item level - if too low compared to rest of gear
+            // Future Ideas
+            //  1. Missing Glyphs
+            //  2. Raid Progression
+
+            try
+            {
+                // Create the new form to be used
+                FormItemAudit charAudit = new FormItemAudit();
+
+                // Pass the Data to the Form
+                if (charAudit.PassData(character))
+                {
+                    // Show the new form
+                    charAudit.Show();
+                }
+                else
+                {
+                    Logging.DisplayError(string.Format("Can't Audit Character: {0}.", character.Name));
+                }
+            }
+            catch (Exception ex)
+            {
+                Logging.DisplayError(string.Format("Can't Audit Character: {0}. Error: {1}.", character.Name, ex.Message));
+            }
+
+            this.Cursor = Cursors.Default;
         }
 
         #endregion 
@@ -2296,7 +2278,7 @@ namespace WoWGuildOrganizer
                 //async.ReportProgress(100);
 
                 // re-sort by Item Level
-                this.SortGridMT(this.basicGuildSort);
+                this.SortGridMT(this.sortGuild);
 
                 // Stop the stopwatch
                 this.sw.Stop();
