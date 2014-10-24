@@ -64,7 +64,7 @@ namespace WoWGuildOrganizer
             }
             catch (Exception ex)
             {
-                String Error = String.Format("ERROR: ", ex.Message);
+                Logging.Debug(String.Format("ERROR: {0}", ex.Message));
             }
 
             return Success;

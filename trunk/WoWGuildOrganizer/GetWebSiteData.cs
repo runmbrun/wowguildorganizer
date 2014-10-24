@@ -15,7 +15,7 @@ namespace WoWGuildOrganizer
     /// <summary>
     /// Super class to make parsing web sites more consistent
     /// </summary>
-    class GetWebSiteData
+    public class GetWebSiteData
     {        
         #region Class Variables
                 

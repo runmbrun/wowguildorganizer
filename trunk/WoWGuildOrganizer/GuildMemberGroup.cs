@@ -1,39 +1,94 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-
+﻿// -----------------------------------------------------------------------
+// <copyright file="GuildMemberGroup.cs" company="Vangent, Inc.">
+// TODO: Update copyright text.
+// </copyright>
+// -----------------------------------------------------------------------
 
 namespace WoWGuildOrganizer
 {
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    
+    /// <summary>
+    /// Class of a group of guild members
+    /// </summary>
     [Serializable]
-    class GuildMemberGroup
+    public class GuildMemberGroup
     {
-        public ArrayList SavedCharacters = null;
+        /// <summary>
+        /// An array list of all the characters in this guild
+        /// </summary>
+        private ArrayList savedCharacters = null;
 
-
-        private String _guild;
-        public String Guild
-        {
-            get { return _guild; }
-            set { _guild = value; }
-        }
-
-        private String _realm;
-        public String Realm
-        {
-            get { return _realm; }
-            set { _realm = value; }
-        }
-        
-        
+        /// <summary>
+        /// The guild name
+        /// </summary>
+        private string guild;
+                
+        /// <summary>
+        /// The realm where the guild is
+        /// </summary>
+        private string realm;
+                
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GuildMemberGroup" /> class.
+        /// </summary>
         public GuildMemberGroup()
         {
-            SavedCharacters = new ArrayList();
-            _guild = "";
-            _realm = "";
+            this.savedCharacters = new ArrayList();
+            this.guild = string.Empty;
+            this.realm = string.Empty;
+        }
+
+        /// <summary>
+        /// Gets or sets the array list of all the guild members
+        /// </summary>
+        public ArrayList SavedCharacters
+        {
+            get
+            {
+                return this.savedCharacters;
+            }
+
+            set
+            {
+                this.savedCharacters = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the guild name
+        /// </summary>
+        public string Guild
+        {
+            get 
+            {
+                return this.guild; 
+            }
+
+            set 
+            {
+                this.guild = value; 
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the realm name
+        /// </summary>
+        public string Realm
+        {
+            get 
+            {
+                return this.realm; 
+            }
+
+            set 
+            {
+                this.realm = value; 
+            }
         }
     }
 }
