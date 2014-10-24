@@ -17,37 +17,101 @@ namespace WoWGuildOrganizer
     /// <summary>
     /// Converter Class
     /// </summary>
-    static class Converter
+    public static class Converter
     {
         /// <summary>
         /// Enumeration for the item slot values
         /// </summary>
-        enum ItemSlot
+        public enum ItemSlot
         {
             /// <summary>
-            /// 
+            /// Head Slot
             /// </summary>
             head = 0,
 
             /// <summary>
-            /// 
+            /// Neck Slot
             /// </summary>
             neck = 1,
+
+            /// <summary>
+            /// Shoulder Slot
+            /// </summary>
             shoulder = 2,
+
+            /// <summary>
+            /// Back Slot
+            /// </summary>
             back = 3,
+
+            /// <summary>
+            /// Chest Slot
+            /// </summary>
             chest = 4,
+
+            /// <summary>
+            /// Tabard Slot
+            /// </summary>
             tabard = 5,
+
+            /// <summary>
+            /// Shirt Slot
+            /// </summary>
             shirt = 6,
+
+            /// <summary>
+            /// Wrist Slot
+            /// </summary>
             wrist = 7,
+
+            /// <summary>
+            /// Hands Slot
+            /// </summary>
             hands = 8,
+
+            /// <summary>
+            /// Waist Slot
+            /// </summary>
             waist = 9,
+
+            /// <summary>
+            /// Legs Slot
+            /// </summary>
             legs = 10,
+
+            /// <summary>
+            /// Feet Slot
+            /// </summary>
             feet = 11,
+
+            /// <summary>
+            /// Finger Slot
+            /// </summary>
             finger1 = 12,
+
+            /// <summary>
+            /// Finger Slot
+            /// </summary>
             finger2 = 13,
+
+            /// <summary>
+            /// Trinket Slot
+            /// </summary>
             trinket1 = 14,
+
+            /// <summary>
+            /// Trinket Slot
+            /// </summary>
             trinket2 = 15,
+
+            /// <summary>
+            /// Main Hand Slot
+            /// </summary>
             mainhand = 16,
+
+            /// <summary>
+            /// Off Hand Slot
+            /// </summary>
             offhand = 17
         }
 
@@ -56,407 +120,482 @@ namespace WoWGuildOrganizer
         /// </summary>
         public enum WoWClass
         {
-            DeathKnight, // todo: this might cause issues...
+            /// <summary>
+            /// Death Knight Class
+            /// </summary>
+            DeathKnight,
+
+            /// <summary>
+            /// Druid Class
+            /// </summary>
             Druid,
+
+            /// <summary>
+            /// Hunter Class
+            /// </summary>
             Hunter,
+
+            /// <summary>
+            /// Mage Class
+            /// </summary>
             Mage,
+
+            /// <summary>
+            /// Monk Class
+            /// </summary>
             Monk,
+
+            /// <summary>
+            /// Paladin Class
+            /// </summary>
             Paladin,
+
+            /// <summary>
+            /// Priest Class
+            /// </summary>
             Priest,
+
+            /// <summary>
+            /// Rogue Class
+            /// </summary>
             Rogue,
+
+            /// <summary>
+            /// Shaman Class
+            /// </summary>
             Shaman,
+
+            /// <summary>
+            /// Warlock Class
+            /// </summary>
             Warlock,
+
+            /// <summary>
+            /// Warrior Class
+            /// </summary>
             Warrior
         }
 
         /// <summary>
-        /// 
+        /// A list of all the specializations for every class in the game
         /// </summary>
         public enum WoWSpecs
         {
+            /// <summary>
+            /// Survival Specialization
+            /// </summary>
             Survival,
-            Marksmenship,
+
+            /// <summary>
+            /// Marksmanship Specialization
+            /// </summary>
+            Marksmanship,
+
+            /// <summary>
+            /// Beast Mastery Specialization
+            /// </summary>
             BeastMastery,
+
+            /// <summary>
+            /// Arms Specialization
+            /// </summary>
             Arms,
+
+            /// <summary>
+            /// Fury Specialization
+            /// </summary>
             Fury,
+
+            /// <summary>
+            /// Protection Specialization
+            /// </summary>
             Protection
         }
 
         /// <summary>
-        /// 
+        /// A list of all 3 roles in the game
         /// </summary>
         public enum WoWRole
         {
+            /// <summary>
+            /// Damage Per Second
+            /// </summary>
             DPS,
+
+            /// <summary>
+            /// Healing Role
+            /// </summary>
             HEALING,
+
+            /// <summary>
+            /// Tanking Role
+            /// </summary>
             TANK
         }
 
         /// <summary>
         /// Converts a number from Blizzard's web site into a class type
         /// </summary>
-        /// <param name="inClass"></param>
-        /// <returns></returns>
-        static public String ConvertClass(String In)
+        /// <param name="i">the numeric value of a wow class</param>
+        /// <returns>string value of the number passed in</returns>
+        public static string ConvertClass(string i)
         {
-            String Converted = In;
+            string converted = i;
 
-
-            switch (In)
+            switch (i)
             {
                 case "1":
-                    Converted = "Warrior";
+                    converted = "Warrior";
                     break;
                 case "2":
-                    Converted = "Paladin";
+                    converted = "Paladin";
                     break;
                 case "3":
-                    Converted = "Hunter";
+                    converted = "Hunter";
                     break;
                 case "4":
-                    Converted = "Rogue";
+                    converted = "Rogue";
                     break;
                 case "5":
-                    Converted = "Priest";
+                    converted = "Priest";
                     break;
                 case "6":
-                    Converted = "Death Knight";
+                    converted = "Death Knight";
                     break;
                 case "7":
-                    Converted = "Shaman";
+                    converted = "Shaman";
                     break;
                 case "8":
-                    Converted = "Mage";
+                    converted = "Mage";
                     break;
                 case "9":
-                    Converted = "Warlock";
+                    converted = "Warlock";
                     break;
                 case "10":
-                    Converted = "Monk";
+                    converted = "Monk";
                     break;
                 case "11":
-                    Converted = "Druid";
+                    converted = "Druid";
                     break;                
                 default:
-                    Converted = "error: " + In;
+                    converted = "error: " + i;
                     break;
             }
 
-            return Converted;
+            return converted;
         }
 
         /// <summary>
         /// Converts a number from Blizzard's web site into a Race type
         /// </summary>
-        /// <param name="inClass"></param>
-        /// <returns></returns>
-        static public String ConvertRace(String In)
+        /// <param name="i">The numeric value of a race passed in</param>
+        /// <returns>string value of the number passed in</returns>
+        public static string ConvertRace(string i)
         {
-            String Converted = "error";
+            string converted = "error";
 
-
-            switch (In)
+            switch (i)
             {
                 case "1":
-                    Converted = "Human";
+                    converted = "Human";
                     break;
                 case "2":
-                    Converted = "Orc";
+                    converted = "Orc";
                     break;
                 case "3":
-                    Converted = "Dwarf";
+                    converted = "Dwarf";
                     break;
                 case "4":
-                    Converted = "Night Elf";
+                    converted = "Night Elf";
                     break;
                 case "5":
-                    Converted = "Undead";
+                    converted = "Undead";
                     break;
                 case "6":
-                    Converted = "Tauren";
+                    converted = "Tauren";
                     break;
                 case "7":
-                    Converted = "Gnome";
+                    converted = "Gnome";
                     break;
                 case "8":
-                    Converted = "Troll";
+                    converted = "Troll";
                     break;
                 case "9":
-                    Converted = "Goblin";
+                    converted = "Goblin";
                     break;
                 case "10":
-                    Converted = "Blood Elf";
+                    converted = "Blood Elf";
                     break;
                 case "11":
-                    Converted = "Draenei";
+                    converted = "Draenei";
                     break;
                 case "22":
-                    Converted = "Worgen";
+                    converted = "Worgen";
                     break;
                 case "26":
-                    Converted = "Pandaren";
+                    converted = "Pandaren";
                     break;
                 default:
-                    Converted = "error";
+                    converted = "error";
                     break;
             }
 
-            return Converted;
+            return converted;
         }
 
         /// <summary>
-        /// 
+        /// Converts a number from Blizzard's web site into a Item Class type
         /// </summary>
-        /// <param name="In"></param>
-        /// <returns></returns>
-        static public String ConvertItemClass(Int32 In)
+        /// <param name="i">numeric value of an item class</param>
+        /// <returns>string conversion of that passed in number</returns>
+        public static string ConvertItemClass(int i)
         {
-            String Converted = "error";
+            string converted = "error";
 
-            switch (In)
+            switch (i)
             {
                 case 0:
-                    Converted = "Consumable";
+                    converted = "Consumable";
                     break;
                 case 1:
-                    Converted = "Container";
+                    converted = "Container";
                     break;
                 case 2:
-                    Converted = "Weapon";
+                    converted = "Weapon";
                     break;
                 case 4:
-                    Converted = "Armor";
+                    converted = "Armor";
                     break;
                 case 5:
-                    Converted = "Reagent";
+                    converted = "Reagent";
                     break;
                 case 6:
-                    Converted = "Projectile";
+                    converted = "Projectile";
                     break;
                 case 7:
-                    Converted = "Trade Goods";
+                    converted = "Trade Goods";
                     break;
                 case 9:
-                    Converted = "Recipe";
+                    converted = "Recipe";
                     break;
                 case 11:
-                    Converted = "Quiver";
+                    converted = "Quiver";
                     break;
                 case 12:
-                    Converted = "Quest";
+                    converted = "Quest";
                     break;
                 case 13:
-                    Converted = "Key";
+                    converted = "Key";
                     break;
                 case 15:
-                    Converted = "Miscellaneous";
+                    converted = "Miscellaneous";
                     break;
             }
 
-            return Converted;
+            return converted;
         }
 
         /// <summary>
-        /// 
+        /// Converts a number from Blizzard's web site into a Item Sub Class type
         /// </summary>
-        /// <param name="Class"></param>
-        /// <param name="In"></param>
-        /// <returns></returns>
-        static public String ConvertItemSubClass(Int32 Class, Int32 In)
+        /// <param name="wowClass">numeric value of an class</param>
+        /// <param name="i">numeric value</param>
+        /// <returns>string conversion of that passed in number</returns>
+        public static string ConvertItemSubClass(int wowClass, int i)
         {
-            String Converted = "error";
+            string converted = "error";
 
-            if (Class == 2)
+            if (wowClass == 2)
             {
                 // Weapon
-                switch (In)
+                switch (i)
                 {
                     case 0:
-                        Converted = "1 Axe"; // 1 Handed
+                        converted = "1 Axe"; // 1 Handed
                         break;
                     case 1:
-                        Converted = "2 Axe"; // 2 Handed
+                        converted = "2 Axe"; // 2 Handed
                         break;
                     case 2:
-                        Converted = "Bow";
+                        converted = "Bow";
                         break;
                     case 3:
-                        Converted = "Rifle";
+                        converted = "Rifle";
                         break;
                     case 4:
-                        Converted = "1 Mace"; // 1 handed
+                        converted = "1 Mace"; // 1 handed
                         break;
                     case 5:
-                        Converted = "2 Mace"; // 2 handed
+                        converted = "2 Mace"; // 2 handed
                         break;
                     case 6:
-                        Converted = "Polearm";
+                        converted = "Polearm";
                         break;
                     case 7:
-                        Converted = "1 Sword"; // 1 handed
+                        converted = "1 Sword"; // 1 handed
                         break;
                     case 8:
-                        Converted = "2 Sword"; // 2 handed
+                        converted = "2 Sword"; // 2 handed
                         break;
                     case 10:
-                        Converted = "Staff";
+                        converted = "Staff";
                         break;
                     case 11:
-                        Converted = "1 Exotic"; // 1 handed
+                        converted = "1 Exotic"; // 1 handed
                         break;
                     case 12:
-                        Converted = "2 Exotic"; // 2 handed
+                        converted = "2 Exotic"; // 2 handed
                         break;
                     case 13:
-                        Converted = "Fist Weapon";
+                        converted = "Fist Weapon";
                         break;
                     case 14:
-                        Converted = "Miscellaneous Weapon"; // Blacksmith Hammer, Mining Pick, etc.
+                        converted = "Miscellaneous Weapon"; // Blacksmith Hammer, Mining Pick, etc.
                         break;
                     case 15:
-                        Converted = "Dagger";
+                        converted = "Dagger";
                         break;
                     case 16:
-                        Converted = "Thrown";
+                        converted = "Thrown";
                         break;
                     case 17:
-                        Converted = "Spear";
+                        converted = "Spear";
                         break;
                     case 18:
-                        Converted = "Crossbow";
+                        converted = "Crossbow";
                         break;
                     case 19:
-                        Converted = "Wand";
+                        converted = "Wand";
                         break;
                     case 20:
-                        Converted = "Fishing Pole";
+                        converted = "Fishing Pole";
                         break;
                 }
             }
-            else if (Class == 4)
+            else if (wowClass == 4)
             {
                 // Armor           
-                switch (In)
+                switch (i)
                 {
                     case 0:
-                        Converted = "Micellaneous";
+                        converted = "Micellaneous";
                         break;
                     case 1:
-                        Converted = "Cloth";
+                        converted = "Cloth";
                         break;
                     case 2:
-                        Converted = "Leather";
+                        converted = "Leather";
                         break;
                     case 3:
-                        Converted = "Mail";
+                        converted = "Mail";
                         break;
                     case 4:
-                        Converted = "Plate";
+                        converted = "Plate";
                         break;
                     case 6:
-                        Converted = "Shield";
+                        converted = "Shield";
                         break;
                 }
             }
 
-            return Converted;
+            return converted;
         }
 
         /// <summary>
-        /// 
+        /// Converts a number from Blizzard's web site into an Inventory type
         /// </summary>
-        /// <param name="In"></param>
-        /// <returns></returns>
-        static public String ConvertInventoryType(Int32 In)
+        /// <param name="i">numeric value</param>
+        /// <returns>string conversion of that passed in number</returns>
+        public static string ConvertInventoryType(int i)
         {
-            String Converted = "error";
+            string converted = "error";
 
-            switch (In)
+            switch (i)
             {
                 case 1:
-                    Converted = "head";
+                    converted = "head";
                     break;
                 case 2:
-                    Converted = "neck";
+                    converted = "neck";
                     break;
                 case 3:
-                    Converted = "shoulder";
+                    converted = "shoulder";
                     break;
                 case 4:
-                    Converted = "shirt";
+                    converted = "shirt";
                     break;
                 case 5:
-                    Converted = "chest";
+                    converted = "chest";
                     break;
                 case 6:
-                    Converted = "waist"; // Belt
+                    converted = "waist"; // Belt
                     break;
                 case 7:
-                    Converted = "legs"; // Pants
+                    converted = "legs"; // Pants
                     break;
                 case 8:
-                    Converted = "feet"; // Boots
+                    converted = "feet"; // Boots
                     break;
                 case 9:
-                    Converted = "wrist"; // Bracers
+                    converted = "wrist"; // Bracers
                     break;
                 case 10:
-                    Converted = "hands"; // Gloves
+                    converted = "hands"; // Gloves
                     break;
                 case 11:
-                    Converted = "finger"; // ring
+                    converted = "finger"; // ring
                     break;
                 case 12:
-                    Converted = "trinket";
+                    converted = "trinket";
                     break;
                 case 13:
-                    Converted = "one hand"; // dagger
-                    Converted = "mainHand";
+                    converted = "one hand"; // dagger
+                    converted = "mainHand";
                     break;
                 case 14:
-                    Converted = "off hand";
-                    Converted = "offHand";
+                    converted = "off hand";
+                    converted = "offHand";
                     break;
                 case 15:
-                    Converted = "bow";
-                    Converted = "mainHand";
+                    converted = "bow";
+                    converted = "mainHand";
                     break;
                 case 16:
-                    Converted = "back";
+                    converted = "back";
                     break;
                 case 17:
-                    Converted = "two hand";
-                    Converted = "mainHand";
+                    converted = "two hand";
+                    converted = "mainHand";
                     break;
                 case 18:
-                    Converted = "bag"; // incl. quivers
+                    converted = "bag"; // incl. quivers
                     break;
                 case 19:
-                    Converted = "tabard";
+                    converted = "tabard";
                     break;
                 case 20:
-                    Converted = "robe";
-                    Converted = "chest";
+                    converted = "robe";
+                    converted = "chest";
                     break;
                 case 21:
-                    Converted = "main hand";
+                    converted = "main hand";
                     break;
                 case 22:
-                    Converted = "off hand"; // misc items
+                    converted = "off hand"; // misc items
                     break;
                 case 23:
-                    Converted = "tome";
-                    Converted = "offHand";
+                    converted = "tome";
+                    converted = "offHand";
                     break;
                 case 24:
-                    Converted = "ammunition";
+                    converted = "ammunition";
                     break;
                 case 25:
-                    Converted = "thrown";
+                    converted = "thrown";
                     break;
                 case 26:
-                    Converted = "gun";
-                    Converted = "mainHand";
+                    converted = "gun";
+                    converted = "mainHand";
                     break;
             }
 
@@ -543,15 +682,15 @@ namespace WoWGuildOrganizer
                     break;
             }*/
 
-            return Converted;
+            return converted;
         }
 
         /// <summary>
-        /// 
+        /// Converts a number from Blizzard's web site into a Stat type
         /// </summary>
-        /// <param name="i"></param>
-        /// <returns></returns>
-        static public string ConvertStat(int i)
+        /// <param name="i">numeric value</param>
+        /// <returns>string conversion of that passed in number</returns>
+        public static string ConvertStat(int i)
         {
             string stat = string.Empty;
 

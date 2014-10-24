@@ -95,10 +95,10 @@ namespace WoWGuildOrganizer
 
                 dataGridViewGuildData.DataSource = null;
 
-                savedCharacters.SavedCharacters.Sort(new ObjectComparer(Sorting, MultipleSort));
+                savedCharacters.savedCharacters.Sort(new ObjectComparer(Sorting, MultipleSort));
 
                 // refresh grid data
-                dataGridViewGuildData.DataSource = savedCharacters.SavedCharacters;
+                dataGridViewGuildData.DataSource = savedCharacters.savedCharacters;
 
                 // Now update the grid
                 UpdateGrid();

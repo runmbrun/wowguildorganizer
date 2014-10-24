@@ -114,7 +114,7 @@ namespace WoWGuildOrganizer
                     stream.Close();
 
                     // Check to see what the currently saved guild is
-                    if (this.savedCharacters.SavedCharacters.Count > 0)
+                    if (this.savedCharacters.savedCharacters.Count > 0)
                     {
                         if (this.savedCharacters.Guild != string.Empty)
                         {
@@ -122,7 +122,7 @@ namespace WoWGuildOrganizer
                         }
 
                         toolStripLabelRefreshStatus.Visible = true;
-                        toolStripLabelRefreshStatus.Text = string.Format("Total Characters in guild: {0}", this.savedCharacters.SavedCharacters.Count);
+                        toolStripLabelRefreshStatus.Text = string.Format("Total Characters in guild: {0}", this.savedCharacters.savedCharacters.Count);
                     }
                     else
                     {
@@ -250,7 +250,7 @@ namespace WoWGuildOrganizer
 
             try
             {
-                if (this.savedCharacters.SavedCharacters.Count > 0)
+                if (this.savedCharacters.savedCharacters.Count > 0)
                 {
                     Stream stream = File.Open("SavedCharacters.dat", FileMode.Create);
                     BinaryFormatter bformatter = new BinaryFormatter();
@@ -330,11 +330,11 @@ namespace WoWGuildOrganizer
                 toolStripLabelGuild.Text = "Guild:";
 
                 // Check to see what the currently saved guild is
-                if (this.savedCharacters.SavedCharacters.Count > 0)
+                if (this.savedCharacters.savedCharacters.Count > 0)
                 {
                     toolStripTextBoxGuild.Text = this.savedCharacters.Guild;
                     toolStripLabelRefreshStatus.Visible = true;
-                    toolStripLabelRefreshStatus.Text = string.Format("Total Characters in guild: {0}", this.savedCharacters.SavedCharacters.Count);
+                    toolStripLabelRefreshStatus.Text = string.Format("Total Characters in guild: {0}", this.savedCharacters.savedCharacters.Count);
                 }
                 else
                 {
@@ -498,7 +498,7 @@ namespace WoWGuildOrganizer
             dataGridViewGuildData.AutoResizeRows();
 
             // Now check to see if the Item Level has changed and if their level has changed
-            foreach (GuildMember gm in this.savedCharacters.SavedCharacters)
+            foreach (GuildMember gm in this.savedCharacters.savedCharacters)
             {
                 if (gm.IsItemLevelChanged())
                 {
@@ -600,7 +600,7 @@ namespace WoWGuildOrganizer
             else
             {
                 // Get the character data
-                GuildMember character = (GuildMember)this.savedCharacters.SavedCharacters[currentRow];
+                GuildMember character = (GuildMember)this.savedCharacters.savedCharacters[currentRow];
 
                 // do the audit
                 this.AuditCharacter(character);
@@ -625,10 +625,10 @@ namespace WoWGuildOrganizer
             {
                 dataGridViewGuildData.DataSource = null;
 
-                this.savedCharacters.SavedCharacters.Sort(new ObjectComparer(sorting, multipleSort));
+                this.savedCharacters.savedCharacters.Sort(new ObjectComparer(sorting, multipleSort));
 
                 // refresh grid data
-                dataGridViewGuildData.DataSource = this.savedCharacters.SavedCharacters;
+                dataGridViewGuildData.DataSource = this.savedCharacters.savedCharacters;
 
                 // Now update the grid
                 this.UpdateGrid();
@@ -689,7 +689,7 @@ namespace WoWGuildOrganizer
 
             if (this.tabControlWGO.SelectedTab.Text == "Guild Data")
             {
-                toolStripLabelRefreshStatus.Text = string.Format("Total Characters in guild: {0}", this.savedCharacters.SavedCharacters.Count);
+                toolStripLabelRefreshStatus.Text = string.Format("Total Characters in guild: {0}", this.savedCharacters.savedCharacters.Count);
             }
         }
 
@@ -826,26 +826,26 @@ namespace WoWGuildOrganizer
                             // success!
 
                             // now check to see if a grid needs to be updated or if it's the first time used
-                            if (this.savedCharacters.SavedCharacters.Count > 0)
+                            if (this.savedCharacters.savedCharacters.Count > 0)
                             {
                                 // save the current data to a temp var
                                 ArrayList temp = new ArrayList();
 
-                                foreach (GuildMember m in this.savedCharacters.SavedCharacters)
+                                foreach (GuildMember m in this.savedCharacters.savedCharacters)
                                 {
                                     temp.Add(m);
                                 }
 
                                 // erase the current data so we can start new
-                                this.savedCharacters.SavedCharacters.Clear();
+                                this.savedCharacters.savedCharacters.Clear();
 
                                 // Fill out the data grid with the data we collected
-                                this.savedCharacters.SavedCharacters = guildInfo.Characters;
+                                this.savedCharacters.savedCharacters = guildInfo.Characters;
 
                                 if (this.savedCharacters.Guild == toolStripTextBoxGuild.Text && 
                                     this.savedCharacters.Realm == toolStripTextBoxRealm.Text)
                                 {
-                                    foreach (GuildMember newmember in this.savedCharacters.SavedCharacters)
+                                    foreach (GuildMember newmember in this.savedCharacters.savedCharacters)
                                     {
                                         // now see if this is a new char or if level was updated
                                         foreach (GuildMember oldmember in temp)
@@ -884,7 +884,7 @@ namespace WoWGuildOrganizer
                                 else
                                 {
                                     // Either the guild or the realm changed... either way, a guild member compare isnt' needed
-                                    this.savedCharacters.SavedCharacters = guildInfo.Characters;
+                                    this.savedCharacters.savedCharacters = guildInfo.Characters;
 
                                     // Store the new guild and realm names
                                     this.savedCharacters.Guild = toolStripTextBoxGuild.Text;
@@ -895,7 +895,7 @@ namespace WoWGuildOrganizer
                             {
                                 // First time collection of the guild...
                                 //  Fill out the data grid with the data we collected
-                                this.savedCharacters.SavedCharacters = guildInfo.Characters;
+                                this.savedCharacters.savedCharacters = guildInfo.Characters;
 
                                 // Store the guild and realm names
                                 this.savedCharacters.Guild = this.toolStripTextBoxGuild.Text;
@@ -905,15 +905,15 @@ namespace WoWGuildOrganizer
 
                         // Now get the individual Character data
                         int count = 0;
-                        int total = this.savedCharacters.SavedCharacters.Count;
+                        int total = this.savedCharacters.savedCharacters.Count;
 
                         try
                         {
                             // Go through all the guild members
-                            foreach (GuildMember gm in this.savedCharacters.SavedCharacters)
+                            foreach (GuildMember gm in this.savedCharacters.savedCharacters)
                             {
                                 // Progress update
-                                this.UpdateLabelMT(this.savedCharacters.SavedCharacters.Count.ToString() + " total characters - On Character #" + (count + 1));
+                                this.UpdateLabelMT(this.savedCharacters.savedCharacters.Count.ToString() + " total characters - On Character #" + (count + 1));
 
                                 // Only check for Item Level for characters over level 10
                                 //  Otherwise these characters won't be in the Armory
@@ -1038,7 +1038,7 @@ namespace WoWGuildOrganizer
                 // start the wait cursor
                 this.WaitCursor(false);
 
-                this.UpdateLabelMT(string.Format("{0} total characters in {1} seconds", this.savedCharacters.SavedCharacters.Count, (this.sw.GetElapsedTime() / 1000).ToString("0")));
+                this.UpdateLabelMT(string.Format("{0} total characters in {1} seconds", this.savedCharacters.savedCharacters.Count, (this.sw.GetElapsedTime() / 1000).ToString("0")));
             }
         }
 
@@ -1116,7 +1116,7 @@ namespace WoWGuildOrganizer
                 // save it
                 try
                 {
-                    if (this.savedCharacters.SavedCharacters.Count > 0)
+                    if (this.savedCharacters.savedCharacters.Count > 0)
                     {
                         Stream stream = File.Open(save.FileName, FileMode.Create);
                         BinaryFormatter bformatter = new BinaryFormatter();
@@ -1838,7 +1838,7 @@ namespace WoWGuildOrganizer
 
                     if (guildUpdate)
                     {
-                        oldMember = (GuildMember)this.savedCharacters.SavedCharacters[currentRow];
+                        oldMember = (GuildMember)this.savedCharacters.savedCharacters[currentRow];
                         gm = this.GetCharacterInformation(oldMember.Name, this.savedCharacters.Realm);
                     }
                     else
