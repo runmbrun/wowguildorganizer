@@ -107,14 +107,14 @@ namespace WoWGuildOrganizer
             this.copyItemToolStripMenuItem.Name = "copyItemToolStripMenuItem";
             this.copyItemToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
             this.copyItemToolStripMenuItem.Text = "Copy Item";
-            this.copyItemToolStripMenuItem.Click += new System.EventHandler(this.copyItemToolStripMenuItem_Click);
+            this.copyItemToolStripMenuItem.Click += new System.EventHandler(this.CopyItemToolStripMenuItem_Click);
             // 
             // copyLineToolStripMenuItem
             // 
             this.copyLineToolStripMenuItem.Name = "copyLineToolStripMenuItem";
             this.copyLineToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
             this.copyLineToolStripMenuItem.Text = "Copy Line";
-            this.copyLineToolStripMenuItem.Click += new System.EventHandler(this.copyLineToolStripMenuItem_Click);
+            this.copyLineToolStripMenuItem.Click += new System.EventHandler(this.CopyLineToolStripMenuItem_Click);
             // 
             // panel1
             // 

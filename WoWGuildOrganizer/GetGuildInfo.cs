@@ -17,7 +17,7 @@ namespace WoWGuildOrganizer
     /// <summary>
     /// Class to get all the guild information
     /// </summary>
-    class GetGuildInfo
+    public class GetGuildInfo
     {
         #region Class Variables
 
