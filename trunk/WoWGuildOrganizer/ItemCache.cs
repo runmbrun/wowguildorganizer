@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
-
-
 
 namespace WoWGuildOrganizer
 {
@@ -12,16 +11,23 @@ namespace WoWGuildOrganizer
     public class ItemCache
     {
         /// <summary>
-        /// Dictionary that contains all the items
+        /// DataTable that contains all the items
         /// </summary>
-        Dictionary<Int32, ItemInfo> Items = null;
+        DataTable items;
         
         /// <summary>
         /// Constructor
         /// </summary>
         public ItemCache()
         {
-            Items = new Dictionary<Int32, ItemInfo>();
+            // Create the datatable
+            items = new DataTable();
+
+            // Add the columns needed
+            items.Columns.Add("id", typeof(int));
+            items.Columns.Add("name", typeof(string));
+            items.Columns.Add("context", typeof(string));
+            items.Columns.Add("iteminfo", typeof(ItemInfo));
         }
 
         /// <summary>
@@ -29,9 +35,30 @@ namespace WoWGuildOrganizer
         /// </summary>
         /// <param name="i"></param>
         /// <returns></returns>
-        public Boolean Contains(Int32 i)
+        public bool Contains(int i, string context = "null")
         {
-            return Items.ContainsKey(i);
+            bool found = false;
+            DataRow[] rows = null;
+
+            // Check to see if a context has been provided
+            if (string.Compare(context, "null") == 0)
+            {
+                // no context
+                rows = items.Select(string.Format("id = {0}", i));                
+            }
+            else
+            {
+                // context has been provided
+                rows = items.Select(string.Format("id = {0} and context = '{1}'", i, context));
+            }
+
+            // now see if the item was found
+            if (rows != null && rows.Length > 0)
+            {
+                found = true;
+            }
+
+            return found;
         }
 
         /// <summary>
@@ -42,32 +69,65 @@ namespace WoWGuildOrganizer
         /// </summary>
         /// <param name="i"></param>
         /// <returns></returns>
-        public ItemInfo GetItem(Int32 i)
+        public ItemInfo GetItem(int i, string context = "null")
         {
             ItemInfo item = new ItemInfo();
 
             // Does the current Dictionary have this item?
-            if (Items.ContainsKey(i))
+            if (this.Contains(i, context))
             {
                 // Yes, return the item requested
-                item = Items[i];
+                //item = Items[i];
+                DataRow[] rows = null;
+
+                // Check to see if a context has been provided
+                if (string.Compare(context, "null") == 0)
+                {
+                    // no context
+                    rows = items.Select(string.Format("id = {0}", i));
+                }
+                else
+                {
+                    // context has been provided
+                    rows = items.Select(string.Format("id = {0} and context = {1}", i, context));
+                }
+
+                item = (ItemInfo)rows[0]["iteminfo"];
             }
-            else if (i != 0)
+            else
             {
                 // Now, the item doesn't exist in the Dictionary                
                 GetItemInfo getNewItem = new GetItemInfo();
 
-                // Fetch the data
-                if (getNewItem.CollectData(i))
+                if (string.Compare(context, "null") == 0)
                 {
-                    ItemInfo newItem = getNewItem.Item;
+                    // Fetch the data
+                    if (getNewItem.CollectData(i))
+                    {
+                        ItemInfo newItem = getNewItem.Item;
 
-                    // Now add the new item to the Dictionary
-                    this.AddItem(newItem);
+                        // Now add the new item to the Dictionary
+                        this.AddItem(newItem);
+                    }
+                    else
+                    {
+                        WoWGuildOrganizer.Logging.Log(string.Format("Error: Can't retrieve information about item: {0} with context: {1}", i, context));
+                    }
                 }
                 else
                 {
-                    WoWGuildOrganizer.Logging.Log(string.Format("Error: Can't retrieve information about item {0}", i));
+                    // Fetch the data
+                    if (getNewItem.CollectDataWithContext(i, context))
+                    {
+                        ItemInfo newItem = getNewItem.Item;
+
+                        // Now add the new item to the Dictionary
+                        this.AddItem(newItem);
+                    }
+                    else
+                    {
+                        WoWGuildOrganizer.Logging.Log(string.Format("Error: Can't retrieve information about item: {0} with context: {1}", i, context));
+                    }
                 }
             }
 
@@ -79,14 +139,38 @@ namespace WoWGuildOrganizer
         /// </summary>
         /// <param name="i"></param>
         /// <returns></returns>
-        public Boolean AddItem(ItemInfo i)
+        public bool AddItem(ItemInfo i, string context = "null")
         {
-            Boolean Success = false;
+            bool success = false;
 
             // Add the new item to the Dictionary
-            Items.Add(i.Id, i);
+            //Items.Add(i.Id, i);
+            if (!this.Contains(i.Id, context))
+            {
+                try
+                {
+                    DataRow row = items.NewRow();
 
-            return Success;
+                    row["id"] = i.Id;
+                    row["name"] = i.Name;
+                    row["context"] = context;
+                    row["iteminfo"] = i;
+
+                    items.Rows.Add(row);
+
+                    success = true;
+                }
+                catch (Exception ex)
+                {
+                    WoWGuildOrganizer.Logging.Error(string.Format("Can't add information to cache about item: {0} with context: {1}. {2}", i, context, ex.Message));
+                }
+            }
+            else
+            {
+                success = true;
+            }
+
+            return success;
         }
 
         /// <summary>
@@ -95,32 +179,16 @@ namespace WoWGuildOrganizer
         /// <returns></returns>
         public Int32 GetCount()
         {   
-            return Items.Count;
-        }
-
-        public Dictionary<Int32, ItemInfo> GetData()
-        {
-            return Items;
+            return items.Rows.Count;
         }
 
         /// <summary>
-        /// todo
+        /// 
         /// </summary>
-        /// <param name="text"></param>
         /// <returns></returns>
-        /*public List<int> Search(int ident)
+        public DataTable GetData()
         {
-            //List<int> tests = Items.Keys.ToList<int>();
-            List<int> results = null; // tests.FindAll(ident);
-
-            results = Items.Keys.ToList<int>().FindAll(
-                delegate(int bk)
-                {
-                    return Items.Keys.Any(ident);
-                }
-                );
-
-            return results;
-        }*/
+            return items;
+        }
     }
 }

@@ -305,13 +305,13 @@ namespace WoWGuildOrganizer
         public Dictionary<string, ItemAudit> ParseItems(string data)
         {
             Dictionary<string, ItemAudit> items = this.FillOutItemAuditsArrayList();
-            string search = @"(?<Slot>\w+)"":{""id"":(?<Id>\d+).*?""name"":""(?<Name>[A-Za-z ',:-]+?)"",.*?""quality"":(?<Quality>\d+).*?,""itemLevel"":(?<ItemLevel>\d+).*?""tooltipParams"":{(?<ToolTips>.*?)}.*?}";
+            string search = @"(?<Slot>\w+):{id:(?<Id>\d+).*?name:(?<Name>[A-Za-z ',:-]+?),icon.*?quality:(?<Quality>\d+).*?,itemLevel:(?<ItemLevel>\d+).*?tooltipParams:{(?<ToolTips>.*?)}.*?context:(?<Context>.*?),.*?bonusLists:\[(?<BonusLists>.*?)\]}";
             Regex test = new Regex(search, RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
 
-            this.Debug(search, data);
+            this.Debug(search, data.Replace("\"", ""));
 
             // Get the item info
-            foreach (Match result in test.Matches(data))
+            foreach (Match result in test.Matches(data.Replace("\"", "")))
             {
                 // First get the slot, if no slot then it's an missing item
                 if (result.Groups["Slot"].Success)
@@ -338,13 +338,24 @@ namespace WoWGuildOrganizer
                         // Now check for the item in the item cache
                         if (!WoWGuildOrganizer.FormMain.Items.Contains(audit.Id))
                         {
-                            // Need to add in this item to the Item Cache
-
                             // First fetch the data
                             GetItemInfo get = new GetItemInfo();
-                            if (get.CollectData(audit.Id))
+
+                            if (result.Groups["Context"].Success && result.Groups["Context"].Value.ToString() != "" && result.Groups["Context"].Value.ToString() != "quest-reward")
+                            {
+                                if (get.CollectDataWithContext(audit.Id, result.Groups["Context"].Value.ToString()))
+                                {
+                                    item = get.Item;
+
+                                    // Need to add in this item to the Item Cache
+                                    WoWGuildOrganizer.FormMain.Items.AddItem(item, result.Groups["Context"].Value.ToString());
+                                }
+                            }
+                            else if (get.CollectData(audit.Id))
                             {
                                 item = get.Item;
+
+                                // Need to add in this item to the Item Cache
                                 WoWGuildOrganizer.FormMain.Items.AddItem(item);
                             }
                         }
@@ -360,6 +371,10 @@ namespace WoWGuildOrganizer
                             audit.CanSocket(item.CanSocket);
                             audit.SocketCount(item.SocketCount);
                             audit.MissingItem = "0";
+                        }
+                        else
+                        {
+                            audit.MissingItem = "1";
                         }
 
                         if (result.Groups["Name"].Success)
@@ -380,6 +395,16 @@ namespace WoWGuildOrganizer
                         if (result.Groups["ToolTips"].Success)
                         {
                             audit.SetToolTips(result.Groups["ToolTips"].Value.ToString());
+                        }
+
+                        if (result.Groups["Context"].Success)
+                        {
+                            audit.SetContext(result.Groups["Context"].Value.ToString());
+                        }
+
+                        if (result.Groups["BonusLists"].Success)
+                        {
+                            audit.SetBonusLists(result.Groups["BonusLists"].Value.ToString());
                         }
                     }
                 }

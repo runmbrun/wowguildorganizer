@@ -10,13 +10,30 @@ using System.IO;
 
 namespace WoWGuildOrganizer
 {
+    /// <summary>
+    /// 
+    /// </summary>
     class GetItemInfo
     {
-        private ItemInfo _item;
+        /// <summary>
+        /// 
+        /// </summary>
+        private ItemInfo item;
+
+        /// <summary>
+        /// 
+        /// </summary>
         public ItemInfo Item
         {
-            set { _item = value; }
-            get { return _item; }
+            set 
+            { 
+                item = value; 
+            }
+
+            get 
+            { 
+                return item; 
+            }
         }
 
 
@@ -28,10 +45,21 @@ namespace WoWGuildOrganizer
             Item = new ItemInfo();
         }
 
-        public Boolean CollectData(Int32 Id)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public bool CollectData(int id)
         {
             // URL = Host + "/api/wow/item/" + ItemId => "hasSockets":false,
-            return CollectData(@"http://us.battle.net/api/wow/item/" + Id.ToString());
+            return CollectData(@"http://us.battle.net/api/wow/item/" + id.ToString());
+        }
+
+        public bool CollectDataWithContext(int id, string context)
+        {
+            // URL = Host + "/api/wow/item/" + ItemId + / + Context => "hasSockets":false,
+            return CollectData(@"http://us.battle.net/api/wow/item/" + id.ToString() + "/" + context);
         }
 
         /// <summary>
@@ -39,9 +67,9 @@ namespace WoWGuildOrganizer
         /// </summary>
         /// <param name="WebPage"></param>
         /// <returns></returns>
-        public Boolean CollectData(String WebPage)
+        public bool CollectData(string WebPage)
         {
-            Boolean Success = false;
+            bool Success = false;
 
             try
             {                
@@ -77,11 +105,7 @@ namespace WoWGuildOrganizer
         /// <returns></returns>
         public ItemInfo[] ParseOutItems(string data)
         {
-            ItemInfo[] items;
-
-            // piece in web site that is important
-            // code to expresso => replace "" with "
-            // expresso to code => replace " with ""
+            ItemInfo[] foundItems = null;
 
             #region " Example "
             /* Example:
@@ -210,110 +234,138 @@ namespace WoWGuildOrganizer
 
             #endregion
 
-            //string DataString = getSiteData.Data;
-            string Search = @"id"":(?<id>\d+),.*?name"":""(?<name>[A-Za-z ',:-]+)?"".*?bonusStats"":\[(?<stats>.*?)\],.*itemClass"":(?<itemClass>\d+?),""itemSubClass"":(?<itemSubClass>\d+?),.*?inventoryType"":(?<inventoryType>\d+?),.*?itemLevel"":(?<itemLevel>\d+?),.*?quality"":(?<quality>\d+?),.*?hasSockets"":(?<hasSockets>\w+?),.*?(socketInfo"":{(?<socketInfo>.*?)},)?";
-            Regex test = new Regex(Search, RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
-
-            // See how many matches there are
-            MatchCollection matches = test.Matches(data);
-            items = new ItemInfo[matches.Count];
-            int count = 0;
-
-            // Get the item info
-            foreach (Match result in matches)
+            // First check for available contexts
+            try
             {
-                ItemInfo item = new ItemInfo();
+                string searchContext = @"id:(?<id>\d+),availableContexts:\[";
+                Regex testContext = new Regex(searchContext, RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
+                string newData = data.Replace("\"", "");
 
-                // First get the slot, if no slot then it's an missing item
-                if (result.Groups["id"].Success)
+                // See how many matches there are            
+                MatchCollection matchesContext = testContext.Matches(newData);
+
+                if (matchesContext.Count > 0)
                 {
-                    item.Id = Convert.ToInt32(result.Groups["id"].Value);
+                    // We have a item id that needs more information
+                    Logging.Error(string.Format("This is an item that needs a context to gather more information about the item."));
                 }
-
-                if (result.Groups["name"].Success)
-                {
-                    item.Name = result.Groups["name"].Value;
-                }
-
-                if (result.Groups["stats"].Success)
-                {
-                    item.Stats = result.Groups["stats"].Value;
-                }
-
-                if (result.Groups["itemClass"].Success)
-                {
-                    item.ItemClass = Convert.ToInt32(result.Groups["itemClass"].Value);
-                }
-
-                if (result.Groups["itemSubClass"].Success)
-                {
-                    item.ItemSubClass = Convert.ToInt32(result.Groups["itemSubClass"].Value);
-                }
-
-                if (result.Groups["inventoryType"].Success)
-                {
-                    item.InventoryType = Convert.ToInt32(result.Groups["inventoryType"].Value);
-
-                    // Find if the Item is enchantable
-                    if (DetermineIfCanEnchantItem(item.InventoryType))
-                    {
-                        item.CanEnchant = true;
-                    }
-                }
-
-                if (result.Groups["itemLevel"].Success)
-                {
-                    item.ItemLevel = Convert.ToInt32(result.Groups["itemLevel"].Value);
-                }
-
-                if (result.Groups["quality"].Success)
-                {
-                    item.Quality = Convert.ToInt32(result.Groups["quality"].Value);
-                }
-
-                if (result.Groups["hasSockets"].Success)
-                {
-                    if (result.Groups["hasSockets"].Value.ToUpper() == "TRUE")
-                    {
-                        item.CanSocket = true;
-
-                        // Capture the number of sockets
-                        int i = 0;
-
-                        while ((i = data.IndexOf(@"""type"":""", i + 1)) != -1)
-                        {
-                            item.SocketCount += 1;
-                        }
-                    }
-                }
-
-                // Get the armor if it exists:
-                item.Armor = 0;
-                string searchArmorString = "\"armor\":";
-                int locBegin = data.IndexOf(searchArmorString);
-
-                if (locBegin > -1)
-                {
-                    try
-                    {
-                        int locEnd = data.IndexOf(",", locBegin + searchArmorString.Length);
-
-                        // armor has been found, grab it
-                        string testArmor = data.Substring(locBegin + searchArmorString.Length, locEnd - (locBegin + searchArmorString.Length));
-
-                        // Convert armor to a int
-                        item.Armor = Convert.ToInt32(testArmor);
-                    }
-                    catch (Exception ex)
-                    {                        
-                        Logging.DisplayError(ex.Message);
-                    }
-                }
-
-                items[count++] = item;
+            }
+            catch (Exception ex)
+            {
+                Logging.Error(string.Format("{0}", ex.Message));
             }
 
-            return items;
+            try
+            {
+                string search = @"id:(?<id>\d+),.*?name:(?<name>[A-Za-z ',:-]+),icon.*?bonusStats:\[(?<stats>.*?)\],.*itemClass:(?<itemClass>\d+?),itemSubClass:(?<itemSubClass>\d+?),.*?inventoryType:(?<inventoryType>\d+?),.*?itemLevel:(?<itemLevel>\d+?),.*?quality:(?<quality>\d+?),.*?hasSockets:(?<hasSockets>\w+?),.*?(socketInfo:{(?<socketInfo>.*?)},)?";
+                Regex test = new Regex(search, RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
+                string newData = data.Replace("\"", "");
+
+                // See how many matches there are
+                MatchCollection matches = test.Matches(newData);
+                foundItems = new ItemInfo[matches.Count];
+                int count = 0;
+
+                // Get the item info
+                foreach (Match result in matches)
+                {
+                    ItemInfo item = new ItemInfo();
+
+                    // First get the slot, if no slot then it's an missing item
+                    if (result.Groups["id"].Success)
+                    {
+                        item.Id = Convert.ToInt32(result.Groups["id"].Value);
+                    }
+
+                    if (result.Groups["name"].Success)
+                    {
+                        item.Name = result.Groups["name"].Value;
+                    }
+
+                    if (result.Groups["stats"].Success)
+                    {
+                        item.Stats = result.Groups["stats"].Value;
+                    }
+
+                    if (result.Groups["itemClass"].Success)
+                    {
+                        item.ItemClass = Convert.ToInt32(result.Groups["itemClass"].Value);
+                    }
+
+                    if (result.Groups["itemSubClass"].Success)
+                    {
+                        item.ItemSubClass = Convert.ToInt32(result.Groups["itemSubClass"].Value);
+                    }
+
+                    if (result.Groups["inventoryType"].Success)
+                    {
+                        item.InventoryType = Convert.ToInt32(result.Groups["inventoryType"].Value);
+
+                        // Find if the Item is enchantable
+                        if (DetermineIfCanEnchantItem(item.InventoryType))
+                        {
+                            item.CanEnchant = true;
+                        }
+                    }
+
+                    if (result.Groups["itemLevel"].Success)
+                    {
+                        item.ItemLevel = Convert.ToInt32(result.Groups["itemLevel"].Value);
+                    }
+
+                    if (result.Groups["quality"].Success)
+                    {
+                        item.Quality = Convert.ToInt32(result.Groups["quality"].Value);
+                    }
+
+                    if (result.Groups["hasSockets"].Success)
+                    {
+                        if (result.Groups["hasSockets"].Value.ToUpper() == "TRUE")
+                        {
+                            item.CanSocket = true;
+
+                            // Capture the number of sockets
+                            int i = 0;
+
+                            while ((i = data.IndexOf(@"""type"":""", i + 1)) != -1)
+                            {
+                                item.SocketCount += 1;
+                            }
+                        }
+                    }
+
+                    // Get the armor if it exists:
+                    item.Armor = 0;
+                    string searchArmorString = "\"armor\":";
+                    int locBegin = data.IndexOf(searchArmorString);
+
+                    if (locBegin > -1)
+                    {
+                        try
+                        {
+                            int locEnd = data.IndexOf(",", locBegin + searchArmorString.Length);
+
+                            // armor has been found, grab it
+                            string testArmor = data.Substring(locBegin + searchArmorString.Length, locEnd - (locBegin + searchArmorString.Length));
+
+                            // Convert armor to a int
+                            item.Armor = Convert.ToInt32(testArmor);
+                        }
+                        catch (Exception ex)
+                        {
+                            Logging.DisplayError(ex.Message);
+                        }
+                    }
+
+                    foundItems[count++] = item;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logging.Error(string.Format("{0}", ex.Message));
+            }
+
+            return foundItems;
         }
 
         /// <summary>
@@ -321,7 +373,7 @@ namespace WoWGuildOrganizer
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        Boolean DetermineIfCanEnchantItem(Int32 type)
+        Boolean DetermineIfCanEnchantItem(int type)
         {
             Boolean CanEnchant = false;
 
@@ -345,11 +397,11 @@ namespace WoWGuildOrganizer
                     break;
                 // neck
                 case 2:
-                    CanEnchant = false;
+                    CanEnchant = true;
                     break;
                 // shoulder
                 case 3:
-                    CanEnchant = true;
+                    CanEnchant = false;
                     break;
                 // shirt
                 case 4:
@@ -357,31 +409,31 @@ namespace WoWGuildOrganizer
                     break; 
                 // chest
                 case 5:
-                    CanEnchant = true;
+                    CanEnchant = false;
                     break;
                 // waist
                 case 6:
-                    CanEnchant = false;  // This is extraSocket, not an enchant
+                    CanEnchant = false;
                     break;
                 // legs
                 case 7:
-                    CanEnchant = true;
+                    CanEnchant = false;
                     break;
                 // feet
                 case 8:
-                    CanEnchant = true;
+                    CanEnchant = false;
                     break;
                 // wrist
                 case 9:
-                    CanEnchant = true;
+                    CanEnchant = false;
                     break;
                 // hands
                 case 10:
-                    CanEnchant = true;
+                    CanEnchant = false;
                     break;
                 // finger
                 case 11:
-                    CanEnchant = false;
+                    CanEnchant = true;
                     break;
                 // trinket
                 case 12:
@@ -393,7 +445,7 @@ namespace WoWGuildOrganizer
                     break;
                 // shield
                 case 14:
-                    CanEnchant = true;
+                    CanEnchant = false;
                     break;
                 // ranged
                 case 15:
@@ -413,7 +465,7 @@ namespace WoWGuildOrganizer
                     break;
                 // chest - robe
                 case 20:
-                    CanEnchant = true;
+                    CanEnchant = false;
                     break;
                 // main hand weapon
                 case 21:
@@ -425,7 +477,7 @@ namespace WoWGuildOrganizer
                     break;
                 // off hand frill
                 case 23:
-                    CanEnchant = true;
+                    CanEnchant = false;
                     break;
                 // thrown
                 case 25:

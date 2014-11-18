@@ -20,53 +20,46 @@ namespace WoWGuildOrganizer
 
         #region " Properties "
 
-        private String _slot;
-        public String Slot
+        private string _slot;
+        public string Slot
         {
             get { return _slot; }
             set { _slot = value; }
         }
 
-        private String _name;
-        public String Name
+        private string _name;
+        public string Name
         {
             get { return _name; }
             set { _name = value; }
         }
 
-        private Int32 _itemLevel;
-        public Int32 ItemLevel
+        private int _itemLevel;
+        public int ItemLevel
         {
             get { return _itemLevel; }
             set { _itemLevel = value; }
         }
 
-        private String _missingItem;
-        public String MissingItem
+        private string _missingItem;
+        public string MissingItem
         {
             get { return _missingItem; }
             set { _missingItem = value; }
         }
 
-        private String _missingEnchant;
-        public String MissingEnchant
+        private string _missingEnchant;
+        public string MissingEnchant
         {
             get { return _missingEnchant; }
             set { _missingEnchant = value; }
         }
 
-        private String _missingGem;
-        public String MissingGem
+        private string _missingGem;
+        public string MissingGem
         {
             get { return _missingGem; }
             set { _missingGem = value; }
-        }
-
-        private String _professions;
-        public String Profession
-        {
-            get { return _professions; }
-            set { _professions = value; }
         }
 
         #endregion
@@ -82,52 +75,58 @@ namespace WoWGuildOrganizer
         }
 
         #endregion
-        
-        private Int32 _id;
+
+        private int _id;
 
         [Browsable(false)]
-        public Int32 Id
+        public int Id
         {
             get { return _id; }
             set { _id = value; }
         }
 
-        private Int32 _quality;
+        private int _quality;
 
         [Browsable(false)]
-        public Int32 Quality
+        public int Quality
         {
             get { return _quality; }
             set { _quality = value; }
         }
 
-        private Boolean _canenchant;
+        private bool _canenchant;
         public void CanEnchant(Boolean e)
         {
             _canenchant = e;
         }
-        public Boolean CanEnchant()
+        public bool CanEnchant()
         {
             return _canenchant;
         }
 
-        private Boolean _cansocket;
+        private bool _cansocket;
         public void CanSocket(Boolean s)
         {
             _cansocket = s;
         }
-        public Boolean CanSocket()
+        public bool CanSocket()
         {
             return _cansocket;
         }
 
-        private Int32 _socketcount;
+        private int _socketcount;
         public void SocketCount(Int32 s)
         {
             _socketcount = s;
         }
 
-        public Boolean IsEnchanted()
+        private string context;
+        public void Context(string context)
+        {
+            this.context = context;
+        }
+
+        public bool IsEnchanted()
         {
             if (_toolTips.Contains(@"enchant"))
             {
@@ -139,13 +138,12 @@ namespace WoWGuildOrganizer
             }
         }
 
-        private String _toolTips;
-        public void SetToolTips(String t)
+        private string _toolTips;
+        public void SetToolTips(string t)
         {
             _toolTips = t;
-            Int32 GemCount = 0;
-            Boolean ExtraSocket = false;
-
+            int GemCount = 0;
+            bool ExtraSocket = false;
 
             // now parse this out and fix the unknown properties...
             //  1. MissingItem
@@ -153,22 +151,9 @@ namespace WoWGuildOrganizer
             //  3. MissingGem
             //  4. LastUpdated
 
-
-            if (Slot == "waist")
-            {
-                // Check to see if Extra Socket if filled or not...
-                if (_toolTips.Contains(@"extraSocket"":true"))
-                {
-                    ExtraSocket = true;
-                }
-                else
-                {
-                    MissingEnchant = "1";
-                }
-            }
-
             // Find the number of Gems in the item
-            Int32 start = 0;
+            int start = -1;
+
             if (_toolTips.Length > 0)
             {
                 while ((start = _toolTips.IndexOf("gem", start + 1)) != -1)
@@ -176,7 +161,6 @@ namespace WoWGuildOrganizer
                     GemCount++;
                 }
             }
-
 
             // 2. MissingEnchant
             //   Enchants Example:  "enchant":4209
@@ -207,18 +191,18 @@ namespace WoWGuildOrganizer
                     }
                 }
             }
-            else
-            {
-                if (Slot == "waist")
-                {
-                    // no other sockets exist in the waist, make sure there is 
-                    //  at least 1 gem for it though
-                    if (GemCount != 1)
-                    {
-                        MissingGem = "1";
-                    }
-                }
-            }
+        }
+
+        private string _context;
+        public void SetContext(string t)
+        {
+            _context = t;
+        }
+
+        private string _bonuslists;
+        public void SetBonusLists(string t)
+        {
+            _bonuslists = t;
         }
     }
 }

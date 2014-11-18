@@ -729,14 +729,29 @@ namespace WoWGuildOrganizer
                 case 37:
                     stat = "Expertise";
                     break;
+                case 40:
+                    stat = "Versatility";
+                    break;
                 case 45:
                     stat = "Spell Power";
                     break;
                 case 49:
                     stat = "Mastery";
                     break;
+                case 57:
+                    stat = "Unk57";
+                    break;
+                case 59:
+                    stat = "Multistrike";
+                    break;
+                case 73:
+                    stat = "Versatility";
+                    break;
+                case 74:
+                    stat = "Str/Int";
+                    break;
                 default:
-                    stat = "Unknown";
+                    stat = "Unknown" + i.ToString();
                     break;
             }
 

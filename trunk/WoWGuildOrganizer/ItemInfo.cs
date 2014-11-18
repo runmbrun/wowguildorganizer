@@ -18,64 +18,64 @@ namespace WoWGuildOrganizer
         //  6.  Quality
         //  7.  ItemLevel
 
-        private Int32 _id;
-        public Int32 Id
+        private int _id;
+        public int Id
         {
             get { return _id; }
             set { _id = value; }
         }
 
-        private Boolean _canenchant;
-        public Boolean CanEnchant
+        private bool _canenchant;
+        public bool CanEnchant
         {
             get { return _canenchant; }
             set { _canenchant = value; }
         }
 
-        private Boolean _cansocket;
-        public Boolean CanSocket
+        private bool _cansocket;
+        public bool CanSocket
         {
             get { return _cansocket; }
             set { _cansocket = value; }
         }
 
-        private Int32 _socketcount;
-        public Int32 SocketCount
+        private int _socketcount;
+        public int SocketCount
         {
             get { return _socketcount; }
             set { _socketcount = value; }
         }
 
-        private Int32 _inventorytype;
-        public Int32 InventoryType
+        private int _inventorytype;
+        public int InventoryType
         {
             get { return _inventorytype; }
             set { _inventorytype = value; }
         }
 
-        private Int32 _quality;
-        public Int32 Quality
+        private int _quality;
+        public int Quality
         {
             get { return _quality; }
             set { _quality = value; }
         }
 
-        private Int32 _itemlevel;
-        public Int32 ItemLevel
+        private int _itemlevel;
+        public int ItemLevel
         {
             get { return _itemlevel; }
             set { _itemlevel = value; }
         }
 
-        private String _name;
-        public String Name
+        private string _name;
+        public string Name
         {
             get { return _name; }
             set { _name = value; }
         }
 
-        private Dictionary<Int32, Int32> _stats = new Dictionary<Int32, Int32>();
-        public String Stats
+        private Dictionary<int, int> _stats = new Dictionary<int, int>();
+        public string Stats
         {            
             set 
             { 
@@ -83,7 +83,7 @@ namespace WoWGuildOrganizer
                 // Example:
                 //{"stat":4,"amount":485},{"stat":13,"amount":638},{"stat":7,"amount":958},{"stat":37,"amount":323}
 
-                string Search = @"stat"":(?<stat>\d+?),""amount"":(?<amount>\d+?)}";
+                string Search = @"stat:(?<stat>\d+?),amount:(?<amount>\d+?)}";
                 Regex test = new Regex(Search, RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
 
                 // Get the item info
@@ -101,29 +101,29 @@ namespace WoWGuildOrganizer
             }
         }
         
-        private Int32 _itemclass;
-        public Int32 ItemClass
+        private int _itemclass;
+        public int ItemClass
         {
             get { return _itemclass; }
             set { _itemclass = value; }
         }
-        
-        private Int32 _itemsubclass;
-        public Int32 ItemSubClass
+
+        private int _itemsubclass;
+        public int ItemSubClass
         {
             get { return _itemsubclass; }
             set { _itemsubclass = value; }
         }
 
-        private Int32 _armor;
-        public Int32 Armor
+        private int _armor;
+        public int Armor
         {
             get { return _armor; }
             set { _armor = value; }
         }
 
-        private String _tooltip;
-        public String Tooltip
+        private string _tooltip;
+        public string Tooltip
         {
             get 
             {
@@ -143,7 +143,7 @@ namespace WoWGuildOrganizer
 
         public bool HasIntellect()
         {
-            if (_stats.ContainsKey(5))
+            if (_stats.ContainsKey(5) || _stats.ContainsKey(74))
             {
                 return true;
             }
@@ -155,7 +155,7 @@ namespace WoWGuildOrganizer
 
         public bool HasStrength()
         {
-            if (_stats.ContainsKey(4))
+            if (_stats.ContainsKey(4) || _stats.ContainsKey(74))
             {
                 return true;
             }
@@ -191,6 +191,7 @@ namespace WoWGuildOrganizer
 
         public bool HasHit()
         {
+            // todo: remove this
             if (_stats.ContainsKey(31))
             {
                 return true;
@@ -203,6 +204,7 @@ namespace WoWGuildOrganizer
 
         public bool HasTankStats()
         {
+            // todo: remove this
             // Does it contain dodge or parry?
             if (_stats.ContainsKey(13) || _stats.ContainsKey(14))
             {
@@ -216,7 +218,7 @@ namespace WoWGuildOrganizer
 
         private string GetStamina()
         {
-            string sta = "";
+            string sta = string.Empty;
 
             if (_stats.ContainsKey(7))
             {
@@ -228,11 +230,18 @@ namespace WoWGuildOrganizer
 
         private string GetStrength()
         {
-            string sta = "";
+            string sta = string.Empty;
 
             if (HasStrength())
             {
-                sta = _stats[4].ToString();
+                if (_stats.ContainsKey(4))
+                {
+                    sta = _stats[4].ToString();
+                }
+                else if (_stats.ContainsKey(74))
+                {
+                    sta = _stats[74].ToString();
+                }
             }
 
             return sta;
@@ -265,12 +274,6 @@ namespace WoWGuildOrganizer
         public string CreateTooltip()
         {
             string tooltip = string.Empty;
-
-            // DEBUG:
-            //if (true)
-            //{
-            //    tooltip += "[DEBUG] ID=" + this.Id + "\n";
-            //}
 
             // is this a weapon or armor?
             if (Converter.ConvertItemClass(this.ItemClass) == "Armor")
@@ -315,12 +318,12 @@ namespace WoWGuildOrganizer
                 }
 
                 // Blank Line
-                string line = "";
+                string line = string.Empty;
 
                 // Add Stats here...
 
                 // Primary Stat
-                if (GetStrength() != "")
+                if (GetStrength() != string.Empty)
                 {
                     line = "+" + GetStrength() + " Strength \n";
                 }
@@ -328,26 +331,26 @@ namespace WoWGuildOrganizer
                 {
                     line = "+" + GetAgility() + " Agility \n";
                 }
-                else if (GetIntellect() != "")
+                else if (GetIntellect() != string.Empty)
                 {
                     line = "+" + GetIntellect() + " Intellect \n";
                 }
 
                 // Stamina Stat
-                if (GetStamina() != "")
+                if (GetStamina() != string.Empty)
                 {
                     tooltip += line + "+" + GetStamina() + " Stamina \n";
                 }
 
                 // Blank Line in between the main stats and secondary ones
-                line = "";
+                line = string.Empty;
 
                 Dictionary<Int32, Int32> dict = _stats.OrderBy(x => x.Key).ToDictionary(x => x.Key, x => x.Value);
 
                 // All Secondary stats
                 foreach (int stat in dict.Keys)
                 {
-                    if (stat != 3 && stat != 4 && stat != 5 && stat != 7)
+                    if (stat != 3 && stat != 4 && stat != 5 && stat != 7 && stat != 74)
                     {
                         line += "+" + dict[stat].ToString() + " " + Converter.ConvertStat(stat) + "\n";
                     }
@@ -365,22 +368,22 @@ namespace WoWGuildOrganizer
                     this.ItemLevel + "\n" +
                     Converter.ConvertInventoryType(this.InventoryType) + "\t\t" + Converter.ConvertItemSubClass(this.ItemClass, this.ItemSubClass) + "\n";
 
-                string line = "";
+                string line = string.Empty;
 
-                if (GetStrength() != "")
+                if (GetStrength() != string.Empty)
                 {
                     line = "+" + GetStrength() + " Strength \n";
                 }
-                else if (GetAgility() != "")
+                else if (GetAgility() != string.Empty)
                 {
                     line = "+" + GetAgility() + " Agility \n";
                 }
-                else if (GetIntellect() != "")
+                else if (GetIntellect() != string.Empty)
                 {
                     line = "+" + GetIntellect() + " Intellect \n";
                 }
 
-                if (GetStamina() != "")
+                if (GetStamina() != string.Empty)
                 {
                     tooltip += line + "+" + GetStamina() + " Stamina \n";
                 }
@@ -388,7 +391,7 @@ namespace WoWGuildOrganizer
                 // Blank Line in between the main stats and secondary ones
                 line = "";
                                 
-                Dictionary<Int32, Int32> dict = _stats.OrderBy(x => x.Key).ToDictionary(x => x.Key, x => x.Value);
+                Dictionary<int, int> dict = _stats.OrderBy(x => x.Key).ToDictionary(x => x.Key, x => x.Value);
 
                 foreach (int stat in dict.Keys)
                 {
@@ -405,20 +408,5 @@ namespace WoWGuildOrganizer
 
             return tooltip;
         }
-
-        // Good Stat Info:
-        // Agility = 3
-        // Strength = 4
-        // Intellect = 5
-        // Spirit = 6
-        // Stamina = 7
-        // Parry = 14
-        // Hit = 31
-        // Haste = 36
-        // Mastery = 49
-        // Dodge = 13
-        // Spell Power = 45
-
-        // PVP Power = ?
     }
 }

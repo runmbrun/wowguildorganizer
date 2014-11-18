@@ -110,31 +110,44 @@ namespace WoWGuildOrganizer
             return results;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)
         {
 
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void bindingNavigator1_RefreshItems(object sender, EventArgs e)
         {
 
         }
 
-
-        //public DictionaryBindingList<TKey, TValue> ToBindingList<TKey, TValue>(this IDictionary<TKey, TValue> data)
-        //{
-            //return new DictionaryBindingList<TKey, TValue>(data);
-        //}
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TKey"></typeparam>
+        /// <typeparam name="TValue"></typeparam>
         public sealed class Pair<TKey, TValue>
         {
             private readonly TKey key;
             private readonly IDictionary<TKey, TValue> data;
+
             public Pair(TKey key, IDictionary<TKey, TValue> data)
             {
                 this.key = key;
                 this.data = data;
             }
+
             public TKey Key { get { return key; } }
+
             public TValue Value
             {
                 get
@@ -146,18 +159,27 @@ namespace WoWGuildOrganizer
                 set { data[key] = value; }
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TKey"></typeparam>
+        /// <typeparam name="TValue"></typeparam>
         public class DictionaryBindingList<TKey, TValue> : BindingList<Pair<TKey, TValue>>
         {
             private readonly IDictionary<TKey, TValue> data;
+
             public DictionaryBindingList(IDictionary<TKey, TValue> data)
             {
                 this.data = data;
                 Reset();
             }
+
             public void Reset()
             {
                 bool oldRaise = RaiseListChangedEvents;
                 RaiseListChangedEvents = false;
+
                 try
                 {
                     Clear();
@@ -174,6 +196,11 @@ namespace WoWGuildOrganizer
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button1_Click(object sender, EventArgs e)
         {
             if (bindingSource1.DataSource == null)
@@ -189,16 +216,15 @@ namespace WoWGuildOrganizer
                 textBox3.DataBindings.Add("Text", bindingSource1, "Value");
                  * */
 
-                List<ItemInfo> test = new List<ItemInfo>();
+                DataTable dt = WoWGuildOrganizer.FormMain.Items.GetData();
 
-                test = WoWGuildOrganizer.FormMain.Items.GetData().Values.ToList<ItemInfo>();
-                bindingSource1.DataSource = test;
+                bindingSource1.DataSource = dt;
                 bindingNavigator1.BindingSource = bindingSource1;
 
                 textBoxItemId.DataBindings.Add("Text", bindingSource1, "id");
                 textBoxItemName.DataBindings.Add("Text", bindingSource1, "name");
-                textBox3.DataBindings.Add("Text", bindingSource1, "itemlevel");
-                textBox4.DataBindings.Add("Text", bindingSource1, "tooltip");
+                textBox3.DataBindings.Add("Text", bindingSource1, "context");
+                textBox4.DataBindings.Add("Text", bindingSource1, "iteminfo");
             }
             else
             {
@@ -206,5 +232,106 @@ namespace WoWGuildOrganizer
             }            
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void buttonFindItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                int index = bindingSource1.Find("id", this.textBox1FindItem.Text);
+
+                if (index >= 0)
+                {
+                    bindingSource1.Position = index;
+                }
+                else
+                {
+                    MessageBox.Show("Item not found");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Item not found. [" + ex.Message + "]");
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        private DataTable ConvertToDatatable<T>(List<T> data)
+        {
+            PropertyDescriptorCollection props = TypeDescriptor.GetProperties(typeof(T));
+            DataTable table = new DataTable();
+
+            for (int i = 0; i < props.Count; i++)
+            {
+                PropertyDescriptor prop = props[i];
+
+                if (prop.PropertyType.IsGenericType && prop.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>))
+                {
+                    table.Columns.Add(prop.Name, prop.PropertyType.GetGenericArguments()[0]);
+                }
+                else
+                {
+                    table.Columns.Add(prop.Name, prop.PropertyType);
+                }
+            }
+
+            object[] values = new object[props.Count];
+
+            foreach (T item in data)
+            {
+                for (int i = 0; i < values.Length; i++)
+                {
+                    values[i] = props[i].GetValue(item);
+                }
+
+                table.Rows.Add(values);
+            }
+
+            return table;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void buttonRegetItem_Click(object sender, EventArgs e)
+        {
+            // reget the item
+            
+            // First fetch the data
+            GetItemInfo get = new GetItemInfo();
+            int itemId = Convert.ToInt32(textBoxItemId.Text);
+            string itemContext = textBoxItemName.Text;
+
+            if (itemContext != "" && get.CollectDataWithContext(itemId, itemContext))
+            {
+                ItemInfo item = new ItemInfo();
+
+                item = get.Item;
+
+                MessageBox.Show(string.Format("{0} - {1}\n\n{2}", item.Id.ToString(), item.Name, item.Tooltip));
+            }
+            else if (itemContext != "" && get.CollectData(itemId))
+            {
+                ItemInfo item = new ItemInfo();
+
+                item = get.Item;
+
+                MessageBox.Show(string.Format("{0} - {1}\n\n{2}", item.Id.ToString(), item.Name, item.Tooltip));
+            }
+            else
+            {
+                MessageBox.Show("Item not found. [" + itemId.ToString() + "]");
+            }
+        }
     }
 }
