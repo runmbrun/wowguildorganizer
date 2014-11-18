@@ -43,7 +43,7 @@ namespace WoWGuildOrganizer
         /// <summary>
         /// String of how a basic raid sort should be
         /// </summary>
-        private readonly string sortRaid = "Role DESC, EquipediLevel DESC";
+        private readonly string sortRaid = "Role DESC, Level DESC, EquipediLevel DESC";
 
         /// <summary>
         /// All the persistently saved guild characters
@@ -648,11 +648,10 @@ namespace WoWGuildOrganizer
             }
             else if (this.tabControlWGO.SelectedTab.Text == "Raid Data")
             {
-                dataGridViewRaidGroup.DataSource = null;
-
                 this.raidGroup.RaidGroup.Sort(new ObjectComparer(sorting, multipleSort));
 
                 // refresh grid data
+                dataGridViewRaidGroup.DataSource = null;
                 dataGridViewRaidGroup.DataSource = this.raidGroup.RaidGroup;
 
                 // Now update the grid
@@ -1199,6 +1198,7 @@ namespace WoWGuildOrganizer
                     this.raidGroup.RaidGroup.Add(gm);
                                         
                     // refresh grid data
+                    dataGridViewRaidGroup.DataSource = null;
                     dataGridViewRaidGroup.DataSource = this.raidGroup.RaidGroup;
 
                     // refresh the grid data since it's been changed
@@ -1310,6 +1310,7 @@ namespace WoWGuildOrganizer
 
                 // Sort the selected column.                
                 this.raidGroup.RaidGroup.Sort(new ObjectComparer(sorting, false));
+                dataGridViewRaidGroup.DataSource = null;
                 dataGridViewRaidGroup.DataSource = this.raidGroup.RaidGroup;
                 dataGridViewRaidGroup.Columns[e.ColumnIndex].HeaderCell.SortGlyphDirection = direction == ListSortDirection.Ascending ? SortOrder.Ascending : SortOrder.Descending;
                 this.UpdateRaidGrid();

@@ -79,6 +79,7 @@ namespace WoWGuildOrganizer
         #endregion
 
         #region " Class Properties "
+
         /// <summary>
         /// Gets or sets the Array list of all the items for audit
         /// </summary>
@@ -482,14 +483,6 @@ namespace WoWGuildOrganizer
                 if (dataGridViewItemAudit.Rows[i].Cells[5].Value.ToString() != "0")
                 {
                     dataGridViewItemAudit.Rows[i].Cells[5].Style.BackColor = Color.Red;
-                }
-
-                // Any Missing Profession Specials? -> Column 6
-                if (dataGridViewItemAudit.Rows[i].Cells[6].Value != null && 
-                    dataGridViewItemAudit.Rows[i].Cells[6].Value.ToString() != "0" &&
-                    dataGridViewItemAudit.Rows[i].Cells[6].Value.ToString() != string.Empty)
-                {
-                    dataGridViewItemAudit.Rows[i].Cells[6].Style.BackColor = Color.Red;
                 }
 
                 // Create tooltips

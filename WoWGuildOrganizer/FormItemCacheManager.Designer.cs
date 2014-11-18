@@ -54,6 +54,10 @@ namespace WoWGuildOrganizer
             this.textBox5 = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
             this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
+            this.label2 = new System.Windows.Forms.Label();
+            this.buttonFindItem = new System.Windows.Forms.Button();
+            this.textBox1FindItem = new System.Windows.Forms.TextBox();
+            this.buttonRegetItem = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.bindingNavigator1)).BeginInit();
             this.bindingNavigator1.SuspendLayout();
@@ -62,9 +66,9 @@ namespace WoWGuildOrganizer
             // 
             // buttonDeleteCache
             // 
-            this.buttonDeleteCache.Location = new System.Drawing.Point(86, 200);
+            this.buttonDeleteCache.Location = new System.Drawing.Point(298, 87);
             this.buttonDeleteCache.Name = "buttonDeleteCache";
-            this.buttonDeleteCache.Size = new System.Drawing.Size(75, 38);
+            this.buttonDeleteCache.Size = new System.Drawing.Size(68, 38);
             this.buttonDeleteCache.TabIndex = 0;
             this.buttonDeleteCache.Text = "Delete Cache";
             this.buttonDeleteCache.UseVisualStyleBackColor = true;
@@ -79,8 +83,7 @@ namespace WoWGuildOrganizer
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 117F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 94F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 70F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 21F));
-            this.tableLayoutPanel1.Controls.Add(this.buttonDeleteCache, 1, 4);
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 22F));
             this.tableLayoutPanel1.Controls.Add(this.label1, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.textBoxItemId, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.bindingNavigator1, 0, 2);
@@ -89,17 +92,22 @@ namespace WoWGuildOrganizer
             this.tableLayoutPanel1.Controls.Add(this.textBox3, 3, 1);
             this.tableLayoutPanel1.Controls.Add(this.textBox4, 4, 1);
             this.tableLayoutPanel1.Controls.Add(this.textBox5, 5, 1);
-            this.tableLayoutPanel1.Controls.Add(this.button1, 2, 2);
+            this.tableLayoutPanel1.Controls.Add(this.button1, 0, 3);
+            this.tableLayoutPanel1.Controls.Add(this.buttonDeleteCache, 2, 3);
+            this.tableLayoutPanel1.Controls.Add(this.label2, 0, 4);
+            this.tableLayoutPanel1.Controls.Add(this.buttonFindItem, 2, 2);
+            this.tableLayoutPanel1.Controls.Add(this.textBox1FindItem, 3, 2);
+            this.tableLayoutPanel1.Controls.Add(this.buttonRegetItem, 3, 3);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 7;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 32.14286F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 67.85714F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 109F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 32F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 47F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 32F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 101F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(673, 285);
             this.tableLayoutPanel1.TabIndex = 1;
@@ -150,7 +158,7 @@ namespace WoWGuildOrganizer
             this.bindingNavigator1.MovePreviousItem = this.bindingNavigatorMovePreviousItem;
             this.bindingNavigator1.Name = "bindingNavigator1";
             this.bindingNavigator1.PositionItem = this.bindingNavigatorPositionItem;
-            this.bindingNavigator1.Size = new System.Drawing.Size(296, 25);
+            this.bindingNavigator1.Size = new System.Drawing.Size(295, 25);
             this.bindingNavigator1.TabIndex = 3;
             this.bindingNavigator1.Text = "bindingNavigator1";
             this.bindingNavigator1.RefreshItems += new System.EventHandler(this.bindingNavigator1_RefreshItems);
@@ -245,12 +253,12 @@ namespace WoWGuildOrganizer
             this.textBoxItemName.Location = new System.Drawing.Point(86, 21);
             this.textBoxItemName.Name = "textBoxItemName";
             this.textBoxItemName.ReadOnly = true;
-            this.textBoxItemName.Size = new System.Drawing.Size(207, 20);
+            this.textBoxItemName.Size = new System.Drawing.Size(206, 20);
             this.textBoxItemName.TabIndex = 4;
             // 
             // textBoxItemSlot
             // 
-            this.textBoxItemSlot.Location = new System.Drawing.Point(299, 21);
+            this.textBoxItemSlot.Location = new System.Drawing.Point(298, 21);
             this.textBoxItemSlot.Name = "textBoxItemSlot";
             this.textBoxItemSlot.ReadOnly = true;
             this.textBoxItemSlot.Size = new System.Drawing.Size(68, 20);
@@ -258,7 +266,7 @@ namespace WoWGuildOrganizer
             // 
             // textBox3
             // 
-            this.textBox3.Location = new System.Drawing.Point(373, 21);
+            this.textBox3.Location = new System.Drawing.Point(372, 21);
             this.textBox3.Name = "textBox3";
             this.textBox3.ReadOnly = true;
             this.textBox3.Size = new System.Drawing.Size(100, 20);
@@ -267,17 +275,17 @@ namespace WoWGuildOrganizer
             // textBox4
             // 
             this.textBox4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textBox4.Location = new System.Drawing.Point(490, 21);
+            this.textBox4.Location = new System.Drawing.Point(489, 21);
             this.textBox4.Multiline = true;
             this.textBox4.Name = "textBox4";
             this.textBox4.ReadOnly = true;
             this.tableLayoutPanel1.SetRowSpan(this.textBox4, 4);
-            this.textBox4.Size = new System.Drawing.Size(88, 220);
+            this.textBox4.Size = new System.Drawing.Size(88, 139);
             this.textBox4.TabIndex = 7;
             // 
             // textBox5
             // 
-            this.textBox5.Location = new System.Drawing.Point(584, 21);
+            this.textBox5.Location = new System.Drawing.Point(583, 21);
             this.textBox5.Name = "textBox5";
             this.textBox5.ReadOnly = true;
             this.textBox5.Size = new System.Drawing.Size(64, 20);
@@ -285,13 +293,49 @@ namespace WoWGuildOrganizer
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(299, 59);
+            this.button1.Location = new System.Drawing.Point(3, 87);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(68, 23);
+            this.button1.Size = new System.Drawing.Size(68, 38);
             this.button1.TabIndex = 9;
-            this.button1.Text = "button1";
+            this.button1.Text = "Open Cache";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(3, 131);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(52, 13);
+            this.label2.TabIndex = 10;
+            this.label2.Text = "Find item:";
+            // 
+            // buttonFindItem
+            // 
+            this.buttonFindItem.Location = new System.Drawing.Point(298, 59);
+            this.buttonFindItem.Name = "buttonFindItem";
+            this.buttonFindItem.Size = new System.Drawing.Size(68, 22);
+            this.buttonFindItem.TabIndex = 11;
+            this.buttonFindItem.Text = "Find Item";
+            this.buttonFindItem.UseVisualStyleBackColor = true;
+            this.buttonFindItem.Click += new System.EventHandler(this.buttonFindItem_Click);
+            // 
+            // textBox1FindItem
+            // 
+            this.textBox1FindItem.Location = new System.Drawing.Point(372, 59);
+            this.textBox1FindItem.Name = "textBox1FindItem";
+            this.textBox1FindItem.Size = new System.Drawing.Size(100, 20);
+            this.textBox1FindItem.TabIndex = 12;
+            // 
+            // buttonRegetItem
+            // 
+            this.buttonRegetItem.Location = new System.Drawing.Point(372, 87);
+            this.buttonRegetItem.Name = "buttonRegetItem";
+            this.buttonRegetItem.Size = new System.Drawing.Size(75, 23);
+            this.buttonRegetItem.TabIndex = 13;
+            this.buttonRegetItem.Text = "Reget Item";
+            this.buttonRegetItem.UseVisualStyleBackColor = true;
+            this.buttonRegetItem.Click += new System.EventHandler(this.buttonRegetItem_Click);
             // 
             // FormItemCacheManager
             // 
@@ -336,5 +380,9 @@ namespace WoWGuildOrganizer
         private System.Windows.Forms.TextBox textBox5;
         private System.Windows.Forms.BindingSource bindingSource1;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Button buttonFindItem;
+        private System.Windows.Forms.TextBox textBox1FindItem;
+        private System.Windows.Forms.Button buttonRegetItem;
     }
 }
