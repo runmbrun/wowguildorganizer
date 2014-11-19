@@ -78,8 +78,7 @@ namespace WoWGuildOrganizer
         public string Stats
         {            
             set 
-            { 
-                //_stats = value; 
+            {
                 // Example:
                 //{"stat":4,"amount":485},{"stat":13,"amount":638},{"stat":7,"amount":958},{"stat":37,"amount":323}
 
@@ -92,10 +91,38 @@ namespace WoWGuildOrganizer
                     // First get the slot, if no slot then it's an missing item
                     if (result.Groups["stat"].Success)
                     {
-                        Int32 stat = Convert.ToInt32(result.Groups["stat"].Value);
-                        Int32 amount = Convert.ToInt32(result.Groups["amount"].Value);
+                        int stat = Convert.ToInt32(result.Groups["stat"].Value);
+                        int amount = Convert.ToInt32(result.Groups["amount"].Value);
 
                         _stats.Add(stat, amount);
+                    }
+                }
+            }
+        }
+
+        private int _itemspells;
+        public string Spells
+        {
+            set
+            {
+                // Example:
+                //itemSpells":[{"spellId":146195,"spell":{"id":146195,"name":"Flurry of Xuen","icon":"monk_stance_whitetiger","description":"Your damaging attacks have a chance to trigger a Flurry of Xuen, causing you to deal 1,204 damage to your current target and up to 4 enemies around them, every 0.30 sec for 3 sec. (Approximately 1.82 procs per minute)","castTime":"Passive"},"nCharges":0,"consumable":false,"categoryId":0,"trigger":"ON_EQUIP"}]
+
+                string Search = @"description:(?<spell>.*),castTime:(?<cast>.*?)}";
+                Regex test = new Regex(Search, RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
+
+                // Get the item info
+                foreach (Match result in test.Matches(value.Replace("\"", "")))
+                {
+                    // First get the slot, if no slot then it's an missing item
+                    if (result.Groups["spell"].Success)
+                    {
+                        // todo:
+                    }
+                    
+                    if (result.Groups["cast"].Success)
+                    {
+                        // todo:
                     }
                 }
             }

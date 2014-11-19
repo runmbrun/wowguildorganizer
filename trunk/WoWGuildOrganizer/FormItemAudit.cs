@@ -266,6 +266,7 @@ namespace WoWGuildOrganizer
                 double itemLevels = 0;
                 int itemCount = 0;
                 bool twoHanded = false;
+                bool dualMainHands = false;
                 
                 // Check each item that the character has equiped
                 foreach (ItemAudit item in this.ItemAuditList)
@@ -280,16 +281,24 @@ namespace WoWGuildOrganizer
                         {
                             twoHanded = true;
                         }
+                        else if (FormMain.Items.GetItem(item.Id).InventoryType == 13)// ||  // one hander
+                            //FormMain.Items.GetItem(item.Id).InventoryType == 26 ||  // Gun
+                            //FormMain.Items.GetItem(item.Id).InventoryType == 15)    // Bow
+                        {
+                            dualMainHands = true;
+                        }
                     }
 
                     // Check for missing Items
                     if (item.MissingItem != "0")
                     {
                         // Make sure only two handed weapons don't have off hand
-                        if (!(item.Slot == "offHand" && twoHanded) && item.Slot != "tabard" && item.Slot != "shirt")
+                        // Make sure that offHands allow One Hand also
+                        if (!(item.Slot == "offHand" && twoHanded) && !(item.Slot == "offHand" && dualMainHands) && item.Slot != "tabard" && item.Slot != "shirt")
                         {
                             // Missing this item
                             missingItems++;
+                            Logging.Error(string.Format("This item is missing: [{0}] - [{1}]", item.Slot, item.Name));
                         }
                         else
                         {
@@ -487,8 +496,12 @@ namespace WoWGuildOrganizer
 
                 // Create tooltips
                 ItemAudit audit = (ItemAudit)this.ItemAuditList[i];
-                ItemInfo info = FormMain.Items.GetItem(audit.Id);
-                dataGridViewItemAudit.Rows[i].Cells[1].ToolTipText = info.Tooltip;
+
+                if (audit.Id > 0)
+                {
+                    ItemInfo info = FormMain.Items.GetItem(audit.Id);
+                    dataGridViewItemAudit.Rows[i].Cells[1].ToolTipText = info.Tooltip;
+                }
 
                 // Passed or Failed!
                 //   - Red = Failed!

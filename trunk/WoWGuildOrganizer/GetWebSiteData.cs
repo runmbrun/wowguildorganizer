@@ -109,7 +109,7 @@ namespace WoWGuildOrganizer
                     
                     // This is a 404 error, usually because a character hasn't been logged into for a while
                     //   collect this error for use in the function that is calling this function
-                    Logging.Log(string.Format("ERROR: {0}", ex.Message));
+                    Logging.Error(string.Format("(404) {0} in Parse() in GetWebSiteData.cs", ex.Message));
                     
                     // Check for Debugging
                     this.Debug(response);
@@ -119,7 +119,7 @@ namespace WoWGuildOrganizer
                     WoWGuildOrganizer.FormMain.WebSiteOnline = success = false;
 
                     // collect this error for use in the function that is calling this function
-                    Logging.Log(string.Format("ERROR: {0}", ex.Message));
+                    Logging.Error(string.Format("{0} in Parse() in GetWebSiteData.cs", ex.Message));
 
                     // Check for Debugging
                     this.Debug(response);

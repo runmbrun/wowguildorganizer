@@ -150,7 +150,7 @@ namespace WoWGuildOrganizer
             }
             catch (Exception ex)
             {
-                Logging.Debug(string.Format("ERROR: {0}", ex.Message));
+                Logging.Debug(string.Format("ERROR: {0} in CollectData() in GetCharacterInfo.cs", ex.Message));
             }
 
             return success;
@@ -291,7 +291,7 @@ namespace WoWGuildOrganizer
             }
             catch (Exception ex)
             {
-                Logging.Debug(string.Format("ERROR: {0}", ex.Message));
+                Logging.Debug(string.Format("ERROR: {0} in CollectFullData() in GetCharacterInfo.cs", ex.Message));
             }
 
             return success;
@@ -375,6 +375,7 @@ namespace WoWGuildOrganizer
                         else
                         {
                             audit.MissingItem = "1";
+                            Logging.Error(string.Format("Found a Item with ID = 0. [{0}]", audit.Id));
                         }
 
                         if (result.Groups["Name"].Success)

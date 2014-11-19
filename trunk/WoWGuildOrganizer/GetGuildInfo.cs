@@ -140,7 +140,7 @@ namespace WoWGuildOrganizer
             catch (Exception ex)
             {
                 // Log the error
-                Logging.Log(string.Format("ERROR: {0}", ex.Message));
+                Logging.Log(string.Format("ERROR: {0} in CollectData() in GetGuildInfo.cs", ex.Message));
 
                 // Check for Debugging
                 this.Debug(dataString, search);

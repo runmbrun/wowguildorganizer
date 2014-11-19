@@ -111,7 +111,7 @@ namespace WoWGuildOrganizer
                     }
                     else
                     {
-                        WoWGuildOrganizer.Logging.Log(string.Format("Error: Can't retrieve information about item: {0} with context: {1}", i, context));
+                        Logging.Error(string.Format("Can't retrieve information about item: {0} with context: {1}", i, context));
                     }
                 }
                 else
@@ -126,7 +126,7 @@ namespace WoWGuildOrganizer
                     }
                     else
                     {
-                        WoWGuildOrganizer.Logging.Log(string.Format("Error: Can't retrieve information about item: {0} with context: {1}", i, context));
+                        Logging.Error(string.Format("Can't retrieve information about item: {0} with context: {1}", i, context));
                     }
                 }
             }
