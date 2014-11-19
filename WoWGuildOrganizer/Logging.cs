@@ -56,6 +56,7 @@ namespace WoWGuildOrganizer
         public static void Error(string message)
         {
             logging.Add(string.Format("ERROR: {0}", message));
+            logging.Add(string.Format("\tStackTrace: {0}", Environment.StackTrace));
         }
 
         /// <summary>

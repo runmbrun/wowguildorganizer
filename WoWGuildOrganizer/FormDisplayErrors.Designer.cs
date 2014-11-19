@@ -30,10 +30,10 @@ namespace WoWGuildOrganizer
         private void InitializeComponent()
         {
             this.groupBoxErrors = new System.Windows.Forms.GroupBox();
+            this.listBoxErrors = new System.Windows.Forms.ListBox();
             this.buttonTop = new System.Windows.Forms.Button();
             this.buttonBottom = new System.Windows.Forms.Button();
             this.buttonOk = new System.Windows.Forms.Button();
-            this.listBoxErrors = new System.Windows.Forms.ListBox();
             this.groupBoxErrors.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -42,14 +42,24 @@ namespace WoWGuildOrganizer
             this.groupBoxErrors.Controls.Add(this.listBoxErrors);
             this.groupBoxErrors.Location = new System.Drawing.Point(12, 12);
             this.groupBoxErrors.Name = "groupBoxErrors";
-            this.groupBoxErrors.Size = new System.Drawing.Size(390, 218);
+            this.groupBoxErrors.Size = new System.Drawing.Size(717, 218);
             this.groupBoxErrors.TabIndex = 0;
             this.groupBoxErrors.TabStop = false;
             this.groupBoxErrors.Text = "Errors Logged";
             // 
+            // listBoxErrors
+            // 
+            this.listBoxErrors.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listBoxErrors.FormattingEnabled = true;
+            this.listBoxErrors.HorizontalScrollbar = true;
+            this.listBoxErrors.Location = new System.Drawing.Point(3, 16);
+            this.listBoxErrors.Name = "listBoxErrors";
+            this.listBoxErrors.Size = new System.Drawing.Size(711, 199);
+            this.listBoxErrors.TabIndex = 0;
+            // 
             // buttonTop
             // 
-            this.buttonTop.Location = new System.Drawing.Point(12, 236);
+            this.buttonTop.Location = new System.Drawing.Point(15, 236);
             this.buttonTop.Name = "buttonTop";
             this.buttonTop.Size = new System.Drawing.Size(75, 23);
             this.buttonTop.TabIndex = 1;
@@ -59,7 +69,7 @@ namespace WoWGuildOrganizer
             // 
             // buttonBottom
             // 
-            this.buttonBottom.Location = new System.Drawing.Point(327, 236);
+            this.buttonBottom.Location = new System.Drawing.Point(177, 236);
             this.buttonBottom.Name = "buttonBottom";
             this.buttonBottom.Size = new System.Drawing.Size(75, 23);
             this.buttonBottom.TabIndex = 2;
@@ -70,28 +80,18 @@ namespace WoWGuildOrganizer
             // buttonOk
             // 
             this.buttonOk.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.buttonOk.Location = new System.Drawing.Point(152, 236);
+            this.buttonOk.Location = new System.Drawing.Point(96, 236);
             this.buttonOk.Name = "buttonOk";
             this.buttonOk.Size = new System.Drawing.Size(75, 23);
             this.buttonOk.TabIndex = 3;
             this.buttonOk.Text = "Ok";
             this.buttonOk.UseVisualStyleBackColor = true;
             // 
-            // listBoxErrors
-            // 
-            this.listBoxErrors.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listBoxErrors.FormattingEnabled = true;
-            this.listBoxErrors.HorizontalScrollbar = true;
-            this.listBoxErrors.Location = new System.Drawing.Point(3, 16);
-            this.listBoxErrors.Name = "listBoxErrors";
-            this.listBoxErrors.Size = new System.Drawing.Size(384, 199);
-            this.listBoxErrors.TabIndex = 0;
-            // 
             // FormDisplayErrors
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(414, 262);
+            this.ClientSize = new System.Drawing.Size(741, 262);
             this.Controls.Add(this.buttonOk);
             this.Controls.Add(this.buttonBottom);
             this.Controls.Add(this.buttonTop);

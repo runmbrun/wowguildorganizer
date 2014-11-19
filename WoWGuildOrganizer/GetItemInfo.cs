@@ -92,7 +92,7 @@ namespace WoWGuildOrganizer
             }
             catch (Exception ex)
             {
-                Logging.Debug(String.Format("ERROR: {0}", ex.Message));
+                Logging.Debug(String.Format("ERROR: {0} in CollectData() in GetItemInfo.cs", ex.Message));
             }
 
             return Success;
@@ -257,7 +257,7 @@ namespace WoWGuildOrganizer
 
             try
             {
-                string search = @"id:(?<id>\d+),.*?name:(?<name>[A-Za-z ',:-]+),icon.*?bonusStats:\[(?<stats>.*?)\],.*itemClass:(?<itemClass>\d+?),itemSubClass:(?<itemSubClass>\d+?),.*?inventoryType:(?<inventoryType>\d+?),.*?itemLevel:(?<itemLevel>\d+?),.*?quality:(?<quality>\d+?),.*?hasSockets:(?<hasSockets>\w+?),.*?(socketInfo:{(?<socketInfo>.*?)},)?";
+                string search = @"id:(?<id>\d+),.*?name:(?<name>[A-Za-z ',:-]+),icon.*?bonusStats:\[(?<stats>.*?)\],itemSpells:\[(?<itemspells>.*?)\],.*itemClass:(?<itemClass>\d+?),itemSubClass:(?<itemSubClass>\d+?),.*?inventoryType:(?<inventoryType>\d+?),.*?itemLevel:(?<itemLevel>\d+?),.*?quality:(?<quality>\d+?),.*?hasSockets:(?<hasSockets>\w+?),.*?(socketInfo:{(?<socketInfo>.*?)},)?";
                 Regex test = new Regex(search, RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
                 string newData = data.Replace("\"", "");
 
@@ -285,6 +285,11 @@ namespace WoWGuildOrganizer
                     if (result.Groups["stats"].Success)
                     {
                         item.Stats = result.Groups["stats"].Value;
+                    }
+
+                    if (result.Groups["itemspells"].Success)
+                    {
+                        item.Spells = result.Groups["itemspells"].Value;
                     }
 
                     if (result.Groups["itemClass"].Success)
