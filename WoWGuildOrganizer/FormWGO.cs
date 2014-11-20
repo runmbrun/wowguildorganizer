@@ -1706,7 +1706,7 @@ namespace WoWGuildOrganizer
             }
             else if (this.tabControlWGO.SelectedTab.Text == "Raid Data")
             {
-                this.UpdateCharacters(this.dataGridViewGuildData.Rows.Cast<DataGridViewRow>().ToList(), false);
+                this.UpdateCharacters(this.dataGridViewRaidGroup.Rows.Cast<DataGridViewRow>().ToList(), false);
             }
             else if (this.tabControlWGO.SelectedTab.Text == "Raid Loot Drops")
             {
