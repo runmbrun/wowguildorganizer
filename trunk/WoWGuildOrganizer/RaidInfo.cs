@@ -339,8 +339,9 @@ namespace WoWGuildOrganizer
                 foreach (int itemId in itemIds)
                 {
                     ItemInfo item = null;
+                    string context = string.Empty;  // todo: need to get the proper item context for this!  or does all raid gear not need a context?
 
-                    item = FormMain.Items.GetItem(itemId);
+                    item = FormMain.Items.GetItem(itemId, context);
 
                     if (item != null)
                     {
@@ -1113,8 +1114,9 @@ namespace WoWGuildOrganizer
                                             int itemIdMainHand = gm.ItemAudits["mainHand"].Id;
                                             int slotType = 0;
                                             ItemInfo itemMainHand = null;
+                                            string itemContextMainHand = gm.ItemAudits["mainHand"].Context;
 
-                                            itemMainHand = FormMain.Items.GetItem(itemIdMainHand);
+                                            itemMainHand = FormMain.Items.GetItem(itemIdMainHand, itemContextMainHand);
 
                                             if (itemMainHand != null)
                                             {
@@ -1170,8 +1172,8 @@ namespace WoWGuildOrganizer
                                         if (Converter.ConvertInventoryType(item.InventoryType) == "trinket")
                                         {
                                             // Get the original iLevel of both trinkets
-                                            int testTrinket1 = FormMain.Items.GetItem(gm.ItemAudits[Converter.ConvertInventoryType(item.InventoryType) + "1"].Id).ItemLevel;
-                                            int testTrinket2 = FormMain.Items.GetItem(gm.ItemAudits[Converter.ConvertInventoryType(item.InventoryType) + "2"].Id).ItemLevel;
+                                            int testTrinket1 = FormMain.Items.GetItem(gm.ItemAudits[Converter.ConvertInventoryType(item.InventoryType) + "1"].Id, gm.ItemAudits[Converter.ConvertInventoryType(item.InventoryType) + "1"].Context).ItemLevel;
+                                            int testTrinket2 = FormMain.Items.GetItem(gm.ItemAudits[Converter.ConvertInventoryType(item.InventoryType) + "2"].Id, gm.ItemAudits[Converter.ConvertInventoryType(item.InventoryType) + "2"].Context).ItemLevel;
 
                                             // Need to account for any trinket duplicates
                                             if (item.Name == gm.ItemAudits["trinket1"].Name)
@@ -1196,8 +1198,8 @@ namespace WoWGuildOrganizer
                                         }
                                         else if (Converter.ConvertInventoryType(item.InventoryType) == "finger")
                                         {
-                                            int testRing1 = FormMain.Items.GetItem(gm.ItemAudits[Converter.ConvertInventoryType(item.InventoryType) + "1"].Id).ItemLevel;
-                                            int testRing2 = FormMain.Items.GetItem(gm.ItemAudits[Converter.ConvertInventoryType(item.InventoryType) + "2"].Id).ItemLevel;
+                                            int testRing1 = FormMain.Items.GetItem(gm.ItemAudits[Converter.ConvertInventoryType(item.InventoryType) + "1"].Id, gm.ItemAudits[Converter.ConvertInventoryType(item.InventoryType) + "1"].Context).ItemLevel;
+                                            int testRing2 = FormMain.Items.GetItem(gm.ItemAudits[Converter.ConvertInventoryType(item.InventoryType) + "2"].Id, gm.ItemAudits[Converter.ConvertInventoryType(item.InventoryType) + "2"].Context).ItemLevel;
 
                                             // Need to account for any ring duplicates
                                             if (item.Name == gm.ItemAudits["finger1"].Name)
@@ -1223,7 +1225,7 @@ namespace WoWGuildOrganizer
                                         else
                                         {
                                             // upgrade!
-                                            ilvlOriginal = FormMain.Items.GetItem(gm.ItemAudits[Converter.ConvertInventoryType(item.InventoryType)].Id).ItemLevel;
+                                            ilvlOriginal = FormMain.Items.GetItem(gm.ItemAudits[Converter.ConvertInventoryType(item.InventoryType)].Id, gm.ItemAudits[Converter.ConvertInventoryType(item.InventoryType)].Context).ItemLevel;
                                         }
 
                                         // Now that we have both the item's base iLevel and the new item's base iLevel, 

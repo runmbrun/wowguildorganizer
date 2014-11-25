@@ -187,8 +187,17 @@ namespace WoWGuildOrganizer
                     Stream stream = File.Open("ItemCache.dat", FileMode.Open);
                     BinaryFormatter bformatter = new BinaryFormatter();
 
+                    // Attempt to get the stored items from the file
                     Items = (ItemCache)bformatter.Deserialize(stream);
+
+                    // close the stream
                     stream.Close();
+
+                    // Now check to see if the items were imported in
+                    if (Items.GetData() == null)
+                    {
+                        Items = new ItemCache();
+                    }
                 }
             }
             catch (Exception ex)
@@ -1468,7 +1477,8 @@ namespace WoWGuildOrganizer
                             {
                                 if (loot.Select("upgrade > 0 and ItemId = " + itemId, "upgrade desc").Length == 0)
                                 {
-                                    ItemInfo item = Items.GetItem(itemId);
+                                    string context = string.Empty; // todo: does raid gear have a context value?
+                                    ItemInfo item = Items.GetItem(itemId, context);
 
                                     DataRow dr = loot.NewRow();
                                     dr["Upgrade"] = 0;
@@ -1495,8 +1505,9 @@ namespace WoWGuildOrganizer
                             {
                                 int id1 = Convert.ToInt32(row.Cells["ItemId"].Value);
                                 int id2 = Convert.ToInt32(row.Cells["OldItemId"].Value);
-                                ItemInfo item1 = Items.GetItem(id1);
-                                ItemInfo item2 = Items.GetItem(id2);
+                                string context = string.Empty; // todo: does raid gear have a context value?
+                                ItemInfo item1 = Items.GetItem(id1, context);
+                                ItemInfo item2 = Items.GetItem(id2, context);
                                 string updatedTooltip = item2.Tooltip;
 
                                 // Search and replace the iLvl with the current one
@@ -1585,7 +1596,9 @@ namespace WoWGuildOrganizer
             if (e.ColumnIndex == 3 && e.RowIndex >= 0 && dataGridViewRaidLootDrop.Rows.Count > 0)
             {
                 int id = Convert.ToInt32(dataGridViewRaidLootDrop.Rows[e.RowIndex].Cells["ItemId"].Value);
-                ItemInfo item = Items.GetItem(id);
+                string context = string.Empty;  // todo: how to get this in the grid?  need to add a hidden column?
+
+                ItemInfo item = Items.GetItem(id, context);
                 dataGridViewRaidLootDrop.Rows[e.RowIndex].Cells["ItemName"].ToolTipText = item.Tooltip;
             }
             else if (e.ColumnIndex == 5 && e.RowIndex >= 0 && dataGridViewRaidLootDrop.Rows.Count > 0)

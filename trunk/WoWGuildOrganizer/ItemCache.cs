@@ -35,13 +35,13 @@ namespace WoWGuildOrganizer
         /// </summary>
         /// <param name="i"></param>
         /// <returns></returns>
-        public bool Contains(int i, string context = "null")
+        public bool Contains(int i, string context)
         {
             bool found = false;
             DataRow[] rows = null;
 
             // Check to see if a context has been provided
-            if (string.Compare(context, "null") == 0)
+            if (context == null || context == string.Empty)
             {
                 // no context
                 rows = items.Select(string.Format("id = {0}", i));                
@@ -69,7 +69,7 @@ namespace WoWGuildOrganizer
         /// </summary>
         /// <param name="i"></param>
         /// <returns></returns>
-        public ItemInfo GetItem(int i, string context = "null")
+        public ItemInfo GetItem(int i, string context)
         {
             ItemInfo item = new ItemInfo();
 
@@ -81,7 +81,7 @@ namespace WoWGuildOrganizer
                 DataRow[] rows = null;
 
                 // Check to see if a context has been provided
-                if (string.Compare(context, "null") == 0)
+                if (context == null || context == string.Empty)
                 {
                     // no context
                     rows = items.Select(string.Format("id = {0}", i));
@@ -98,36 +98,18 @@ namespace WoWGuildOrganizer
             {
                 // Now, the item doesn't exist in the Dictionary                
                 GetItemInfo getNewItem = new GetItemInfo();
-
-                if (string.Compare(context, "null") == 0)
+                
+                // Fetch the data
+                if (getNewItem.CollectData(i, context))
                 {
-                    // Fetch the data
-                    if (getNewItem.CollectData(i))
-                    {
-                        ItemInfo newItem = getNewItem.Item;
+                    ItemInfo newItem = getNewItem.Item;
 
-                        // Now add the new item to the Dictionary
-                        this.AddItem(newItem);
-                    }
-                    else
-                    {
-                        Logging.Error(string.Format("Can't retrieve information about item: {0} with context: {1}", i, context));
-                    }
+                    // Now add the new item to the Dictionary
+                    this.AddItem(newItem, context);
                 }
                 else
                 {
-                    // Fetch the data
-                    if (getNewItem.CollectDataWithContext(i, context))
-                    {
-                        ItemInfo newItem = getNewItem.Item;
-
-                        // Now add the new item to the Dictionary
-                        this.AddItem(newItem);
-                    }
-                    else
-                    {
-                        Logging.Error(string.Format("Can't retrieve information about item: {0} with context: {1}", i, context));
-                    }
+                    Logging.Error(string.Format("Can't retrieve information about item: {0} with context: {1}", i, context));
                 }
             }
 
@@ -139,12 +121,11 @@ namespace WoWGuildOrganizer
         /// </summary>
         /// <param name="i"></param>
         /// <returns></returns>
-        public bool AddItem(ItemInfo i, string context = "null")
+        public bool AddItem(ItemInfo i, string context)
         {
             bool success = false;
 
             // Add the new item to the Dictionary
-            //Items.Add(i.Id, i);
             if (!this.Contains(i.Id, context))
             {
                 try
