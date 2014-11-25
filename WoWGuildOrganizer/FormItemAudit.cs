@@ -275,15 +275,13 @@ namespace WoWGuildOrganizer
                     if (item.Slot == "mainHand")
                     {
                         // Check to see if weapon is two handed
-                        if (FormMain.Items.GetItem(item.Id).InventoryType == 17 ||  // 2 hander
-                            FormMain.Items.GetItem(item.Id).InventoryType == 26 ||  // Gun
-                            FormMain.Items.GetItem(item.Id).InventoryType == 15)    // Bow
+                        if (FormMain.Items.GetItem(item.Id, item.Context).InventoryType == 17 ||  // 2 hander
+                            FormMain.Items.GetItem(item.Id, item.Context).InventoryType == 26 ||  // Gun
+                            FormMain.Items.GetItem(item.Id, item.Context).InventoryType == 15)    // Bow
                         {
                             twoHanded = true;
                         }
-                        else if (FormMain.Items.GetItem(item.Id).InventoryType == 13)// ||  // one hander
-                            //FormMain.Items.GetItem(item.Id).InventoryType == 26 ||  // Gun
-                            //FormMain.Items.GetItem(item.Id).InventoryType == 15)    // Bow
+                        else if (FormMain.Items.GetItem(item.Id, item.Context).InventoryType == 13)  // one hander
                         {
                             dualMainHands = true;
                         }
@@ -499,7 +497,7 @@ namespace WoWGuildOrganizer
 
                 if (audit.Id > 0)
                 {
-                    ItemInfo info = FormMain.Items.GetItem(audit.Id);
+                    ItemInfo info = FormMain.Items.GetItem(audit.Id, audit.Context);
                     dataGridViewItemAudit.Rows[i].Cells[1].ToolTipText = info.Tooltip;
                 }
 

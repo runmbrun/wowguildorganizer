@@ -305,7 +305,7 @@ namespace WoWGuildOrganizer
         public Dictionary<string, ItemAudit> ParseItems(string data)
         {
             Dictionary<string, ItemAudit> items = this.FillOutItemAuditsArrayList();
-            string search = @"(?<Slot>\w+):{id:(?<Id>\d+).*?name:(?<Name>[A-Za-z ',:-]+?),icon.*?quality:(?<Quality>\d+).*?,itemLevel:(?<ItemLevel>\d+).*?tooltipParams:{(?<ToolTips>.*?)}.*?context:(?<Context>.*?),.*?bonusLists:\[(?<BonusLists>.*?)\]}";
+            string search = @"(?<Slot>\w+):{id:(?<Id>\d+).*?name:(?<Name>[A-Za-z '""\\.,:-]+?),icon.*?quality:(?<Quality>\d+).*?,itemLevel:(?<ItemLevel>\d+).*?tooltipParams:{(?<ToolTips>.*?)}.*?context:(?<Context>.*?),.*?bonusLists:\[(?<BonusLists>.*?)\]}";
             Regex test = new Regex(search, RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
 
             this.Debug(search, data.Replace("\"", ""));
@@ -336,32 +336,35 @@ namespace WoWGuildOrganizer
                         }
 
                         // Now check for the item in the item cache
-                        if (!WoWGuildOrganizer.FormMain.Items.Contains(audit.Id))
+                        if (!WoWGuildOrganizer.FormMain.Items.Contains(audit.Id, audit.Context))
                         {
                             // First fetch the data
                             GetItemInfo get = new GetItemInfo();
+                            string context = string.Empty;
 
-                            if (result.Groups["Context"].Success && result.Groups["Context"].Value.ToString() != "" && result.Groups["Context"].Value.ToString() != "quest-reward")
+                            // Check to see if there is a context available
+                            if (result.Groups["Context"].Success && result.Groups["Context"].Value.ToString() != "")
                             {
-                                if (get.CollectDataWithContext(audit.Id, result.Groups["Context"].Value.ToString()))
-                                {
-                                    item = get.Item;
-
-                                    // Need to add in this item to the Item Cache
-                                    WoWGuildOrganizer.FormMain.Items.AddItem(item, result.Groups["Context"].Value.ToString());
-                                }
+                                context = result.Groups["Context"].Value.ToString();
                             }
-                            else if (get.CollectData(audit.Id))
+                            
+                            // Get the item data
+                            if (get.CollectData(audit.Id, context))
                             {
                                 item = get.Item;
 
                                 // Need to add in this item to the Item Cache
-                                WoWGuildOrganizer.FormMain.Items.AddItem(item);
+                                WoWGuildOrganizer.FormMain.Items.AddItem(item, context);
+                            }
+                            else
+                            {
+                                // todo: trap it here
+                                Logging.Error(string.Format("Data not collected from Item with ID = 0. [{0}]", audit.Id));
                             }
                         }
                         else
                         {
-                            item = (ItemInfo)WoWGuildOrganizer.FormMain.Items.GetItem(audit.Id);
+                            item = (ItemInfo)WoWGuildOrganizer.FormMain.Items.GetItem(audit.Id, audit.Context);
                         }
 
                         if (item.Id != 0)

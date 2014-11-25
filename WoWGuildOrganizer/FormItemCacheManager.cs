@@ -312,15 +312,7 @@ namespace WoWGuildOrganizer
             int itemId = Convert.ToInt32(textBoxItemId.Text);
             string itemContext = textBoxItemName.Text;
 
-            if (itemContext != "" && get.CollectDataWithContext(itemId, itemContext))
-            {
-                ItemInfo item = new ItemInfo();
-
-                item = get.Item;
-
-                MessageBox.Show(string.Format("{0} - {1}\n\n{2}", item.Id.ToString(), item.Name, item.Tooltip));
-            }
-            else if (itemContext != "" && get.CollectData(itemId))
+            if (get.CollectData(itemId, itemContext))
             {
                 ItemInfo item = new ItemInfo();
 

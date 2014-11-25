@@ -95,7 +95,7 @@ namespace WoWGuildOrganizer
         }
 
         private bool _canenchant;
-        public void CanEnchant(Boolean e)
+        public void CanEnchant(bool e)
         {
             _canenchant = e;
         }
@@ -105,7 +105,7 @@ namespace WoWGuildOrganizer
         }
 
         private bool _cansocket;
-        public void CanSocket(Boolean s)
+        public void CanSocket(bool s)
         {
             _cansocket = s;
         }
@@ -115,15 +115,16 @@ namespace WoWGuildOrganizer
         }
 
         private int _socketcount;
-        public void SocketCount(Int32 s)
+        public void SocketCount(int s)
         {
             _socketcount = s;
         }
 
         private string context;
-        public void Context(string context)
+        public string Context
         {
-            this.context = context;
+            get { return this.context; }
+            set { this.context = value; }
         }
 
         public bool IsEnchanted()

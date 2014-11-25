@@ -9,7 +9,11 @@ In no particular order...
 Global:
 1.  Add dual class functionality to the GuildMember class. 
 	a. Would be able to switch back and forth as needed. (Right click functionality)
-2.  
+2.  Trinkets - Add all of the proc detail to the tool tips
+3.  Tooltips - Make sure in an audit, that the correct stats are displayed, not just the base stats.
+4.  Items - pvp gear isn't using contexts correctly.  
+	a. Example: http://us.battle.net/api/wow/item/119831
+		i. Shows up in Character as vendor instead of {"id":119831,"availableContexts":["pvp-unranked"]}
 
 Raid Data tab:
 1.  	

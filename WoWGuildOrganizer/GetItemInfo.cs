@@ -50,16 +50,24 @@ namespace WoWGuildOrganizer
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public bool CollectData(int id)
+        public bool CollectData(int id, string context)
         {
-            // URL = Host + "/api/wow/item/" + ItemId => "hasSockets":false,
-            return CollectData(@"http://us.battle.net/api/wow/item/" + id.ToString());
-        }
+            bool success = false;
+                        
+            // First check with no context
+            //  Some items are giving a context, but do not have the context web site available
+            //  So, check first.  Disavantage of checking site twice is ok since once it's in the cache, 
+            //  a new check won't be needed again
+            success = CollectData(@"http://us.battle.net/api/wow/item/" + id.ToString());
 
-        public bool CollectDataWithContext(int id, string context)
-        {
-            // URL = Host + "/api/wow/item/" + ItemId + / + Context => "hasSockets":false,
-            return CollectData(@"http://us.battle.net/api/wow/item/" + id.ToString() + "/" + context);
+            // If failure and a context has been provided, then check the site with the context
+            if (!success && context != string.Empty)
+            {
+                // URL = Host + "/api/wow/item/" + ItemId + / + Context => "hasSockets":false,
+                success = CollectData(@"http://us.battle.net/api/wow/item/" + id.ToString() + "/" + context);
+            }
+
+            return success;
         }
 
         /// <summary>
@@ -75,11 +83,7 @@ namespace WoWGuildOrganizer
             {                
                 GetWebSiteData getSiteData = new GetWebSiteData();
 
-                if (!getSiteData.Parse(WebPage))
-                {
-                    // error
-                }
-                else
+                if (getSiteData.Parse(WebPage))
                 {
                     // now parse the data
                     ItemInfo[] results = ParseOutItems(getSiteData.Data);
@@ -234,30 +238,9 @@ namespace WoWGuildOrganizer
 
             #endregion
 
-            // First check for available contexts
             try
             {
-                string searchContext = @"id:(?<id>\d+),availableContexts:\[";
-                Regex testContext = new Regex(searchContext, RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
-                string newData = data.Replace("\"", "");
-
-                // See how many matches there are            
-                MatchCollection matchesContext = testContext.Matches(newData);
-
-                if (matchesContext.Count > 0)
-                {
-                    // We have a item id that needs more information
-                    Logging.Error(string.Format("This is an item that needs a context to gather more information about the item."));
-                }
-            }
-            catch (Exception ex)
-            {
-                Logging.Error(string.Format("{0}", ex.Message));
-            }
-
-            try
-            {
-                string search = @"id:(?<id>\d+),.*?name:(?<name>[A-Za-z ',:-]+),icon.*?bonusStats:\[(?<stats>.*?)\],itemSpells:\[(?<itemspells>.*?)\],.*itemClass:(?<itemClass>\d+?),itemSubClass:(?<itemSubClass>\d+?),.*?inventoryType:(?<inventoryType>\d+?),.*?itemLevel:(?<itemLevel>\d+?),.*?quality:(?<quality>\d+?),.*?hasSockets:(?<hasSockets>\w+?),.*?(socketInfo:{(?<socketInfo>.*?)},)?";
+                string search = @"id:(?<id>\d+),.*?name:(?<name>[A-Za-z '""\\.,:-]+),icon.*?bonusStats:\[(?<stats>.*?)\],itemSpells:\[(?<itemspells>.*?)\],.*itemClass:(?<itemClass>\d+?),itemSubClass:(?<itemSubClass>\d+?),.*?inventoryType:(?<inventoryType>\d+?),.*?itemLevel:(?<itemLevel>\d+?),.*?quality:(?<quality>\d+?),.*?hasSockets:(?<hasSockets>\w+?),.*?(socketInfo:{(?<socketInfo>.*?)},)?";
                 Regex test = new Regex(search, RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
                 string newData = data.Replace("\"", "");
 
@@ -279,7 +262,7 @@ namespace WoWGuildOrganizer
 
                     if (result.Groups["name"].Success)
                     {
-                        item.Name = result.Groups["name"].Value;
+                        item.Name = result.Groups["name"].Value.ToString().Replace("\\", "\"");
                     }
 
                     if (result.Groups["stats"].Success)
@@ -378,9 +361,9 @@ namespace WoWGuildOrganizer
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        Boolean DetermineIfCanEnchantItem(int type)
+        bool DetermineIfCanEnchantItem(int type)
         {
-            Boolean CanEnchant = false;
+            bool enchantable = false;
 
             /*
              * It has to be one of these...
@@ -394,114 +377,42 @@ namespace WoWGuildOrganizer
             {
                 // main hand
                 case 0:
-                    CanEnchant = true;
-                    break;
-                // head
-                case 1: 
-                    CanEnchant = false;
+                    enchantable = true;
                     break;
                 // neck
                 case 2:
-                    CanEnchant = true;
-                    break;
-                // shoulder
-                case 3:
-                    CanEnchant = false;
-                    break;
-                // shirt
-                case 4:
-                    CanEnchant = false;
-                    break; 
-                // chest
-                case 5:
-                    CanEnchant = false;
-                    break;
-                // waist
-                case 6:
-                    CanEnchant = false;
-                    break;
-                // legs
-                case 7:
-                    CanEnchant = false;
-                    break;
-                // feet
-                case 8:
-                    CanEnchant = false;
-                    break;
-                // wrist
-                case 9:
-                    CanEnchant = false;
-                    break;
-                // hands
-                case 10:
-                    CanEnchant = false;
+                    enchantable = true;
                     break;
                 // finger
                 case 11:
-                    CanEnchant = true;
-                    break;
-                // trinket
-                case 12:
-                    CanEnchant = false;
+                    enchantable = true;
                     break;
                 // one-hand weapon
                 case 13:
-                    CanEnchant = true;
-                    break;
-                // shield
-                case 14:
-                    CanEnchant = false;
-                    break;
-                // ranged
-                case 15:
-                    CanEnchant = false;
+                    enchantable = true;
                     break;
                 // back
                 case 16:
-                    CanEnchant = true;
+                    enchantable = true;
                     break;
                 // two handed weapon
                 case 17:                    
-                    CanEnchant = true;
-                    break;
-                // tabard
-                case 19:
-                    CanEnchant = false;
-                    break;
-                // chest - robe
-                case 20:
-                    CanEnchant = false;
+                    enchantable = true;
                     break;
                 // main hand weapon
                 case 21:
-                    CanEnchant = true;
+                    enchantable = true;
                     break;
                 // off hand weapon
                 case 22:
-                    CanEnchant = true;
-                    break;
-                // off hand frill
-                case 23:
-                    CanEnchant = false;
-                    break;
-                // thrown
-                case 25:
-                    CanEnchant = false;
-                    break;
-                // ranged
-                case 26:
-                    CanEnchant = false;
-                    break;
-                // relic
-                case 28:
-                    CanEnchant = false;
+                    enchantable = true;
                     break;
                 default:
-                    CanEnchant = false;
+                    enchantable = false;
                     break;
             }
 
-            return CanEnchant;
+            return enchantable;
         }
     }
 }
