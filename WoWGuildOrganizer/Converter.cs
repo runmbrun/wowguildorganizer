@@ -738,11 +738,17 @@ namespace WoWGuildOrganizer
                 case 49:
                     stat = "Mastery";
                     break;
+                case 50:
+                    stat = "Bonus Armor";
+                    break;
                 case 57:
                     stat = "Unk57";
                     break;
                 case 59:
                     stat = "Multistrike";
+                    break;
+                case 72:
+                    stat = "Strength";
                     break;
                 case 73:
                     stat = "Versatility";

@@ -378,6 +378,8 @@ namespace WoWGuildOrganizer
                         else
                         {
                             audit.MissingItem = "1";
+
+                            // Ususally this error is from the GetItem() function got finding the proper data
                             Logging.Error(string.Format("Found a Item with ID = 0. [{0}]", audit.Id));
                         }
 

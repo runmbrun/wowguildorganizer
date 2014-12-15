@@ -89,7 +89,7 @@ namespace WoWGuildOrganizer
                 else
                 {
                     // context has been provided
-                    rows = items.Select(string.Format("id = {0} and context = {1}", i, context));
+                    rows = items.Select(string.Format("id = {0} and context = '{1}'", i, context));
                 }
 
                 item = (ItemInfo)rows[0]["iteminfo"];
@@ -106,6 +106,8 @@ namespace WoWGuildOrganizer
 
                     // Now add the new item to the Dictionary
                     this.AddItem(newItem, context);
+
+                    item = newItem;
                 }
                 else
                 {
