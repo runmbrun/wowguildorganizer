@@ -36,6 +36,10 @@ namespace WoWGuildOrganizer
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        private string availableContexts;
 
         /// <summary>
         /// 
@@ -63,6 +67,27 @@ namespace WoWGuildOrganizer
             // If failure and a context has been provided, then check the site with the context
             if (!success && context != string.Empty)
             {
+                if (context == "vendor")
+                {
+                    // vendor doesn't work for anything know... 
+                    // instead check the parsed web site and see if there is only 1 context available
+                    if (this.availableContexts.Contains("availableContexts"))
+                    {
+                        string search = @"{id:(?<id>\d+),availableContexts:\[(?<context>[a-zA-Z-]+)\]}";
+                        Regex test = new Regex(search, RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
+                        string newData = this.availableContexts.Replace("\"", "");
+                        
+                        // See how many matches there are
+                        MatchCollection matches = test.Matches(newData);
+
+                        // Get the item info
+                        if (matches.Count == 1 && matches[0].Groups["context"].Success)
+                        {
+                            context = matches[0].Groups["context"].Value.ToString();
+                        }
+                    }
+                }
+
                 // URL = Host + "/api/wow/item/" + ItemId + / + Context => "hasSockets":false,
                 success = CollectData(@"http://us.battle.net/api/wow/item/" + id.ToString() + "/" + context);
             }
@@ -77,7 +102,7 @@ namespace WoWGuildOrganizer
         /// <returns></returns>
         public bool CollectData(string WebPage)
         {
-            bool Success = false;
+            bool success = false;
 
             try
             {                
@@ -88,10 +113,19 @@ namespace WoWGuildOrganizer
                     // now parse the data
                     ItemInfo[] results = ParseOutItems(getSiteData.Data);
 
-                    // Put the first result in the usual place
-                    Item = results[0];
+                    if (results.Length > 0)
+                    {
+                        // Put the first result in the usual place
+                        Item = results[0];
 
-                    Success = true;
+                        this.availableContexts = string.Empty;
+
+                        success = true;
+                    }
+                    else
+                    {
+                        this.availableContexts = getSiteData.Data;
+                    }
                 }
             }
             catch (Exception ex)
@@ -99,7 +133,7 @@ namespace WoWGuildOrganizer
                 Logging.Debug(String.Format("ERROR: {0} in CollectData() in GetItemInfo.cs", ex.Message));
             }
 
-            return Success;
+            return success;
         }
 
         /// <summary>

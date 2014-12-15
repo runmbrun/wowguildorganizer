@@ -168,21 +168,19 @@ namespace WoWGuildOrganizer
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public bool HasIntellect()
         {
+            // 5 = int
+            // 74 = int or str
             if (_stats.ContainsKey(5) || _stats.ContainsKey(74))
             {
                 return true;
             }
-            else
-            {
-                return false;
-            }
-        }
-
-        public bool HasStrength()
-        {
-            if (_stats.ContainsKey(4) || _stats.ContainsKey(74))
+            else if (_stats.Count == 0 && _tooltip.Contains("Intellect"))
             {
                 return true;
             }
@@ -192,9 +190,40 @@ namespace WoWGuildOrganizer
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public bool HasStrength()
+        {
+            // 4 = str
+            // 72 = str
+            // 74 = int or str
+            if (_stats.ContainsKey(4) || _stats.ContainsKey(72) || _stats.ContainsKey(74))
+            {
+                return true;
+            }
+            else if (_stats.Count == 0 && _tooltip.Contains("Strength"))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public bool HasAgility()
         {
             if (_stats.ContainsKey(3))
+            {
+                return true;
+            }
+            else if (_stats.Count == 0 && _tooltip.Contains("Agility"))
             {
                 return true;
             }
@@ -210,16 +239,7 @@ namespace WoWGuildOrganizer
             {
                 return true;
             }
-            else
-            {
-                return false;
-            }
-        }
-
-        public bool HasHit()
-        {
-            // todo: remove this
-            if (_stats.ContainsKey(31))
+            else if (_stats.Count == 0 && _tooltip.Contains("Spirit"))
             {
                 return true;
             }
@@ -231,9 +251,12 @@ namespace WoWGuildOrganizer
 
         public bool HasTankStats()
         {
-            // todo: remove this
-            // Does it contain dodge or parry?
-            if (_stats.ContainsKey(13) || _stats.ContainsKey(14))
+            // Does it contain bonus armor?
+            if (_stats.ContainsKey(50))
+            {
+                return true;
+            }
+            else if (_stats.Count == 0 && _tooltip.Contains("Bonus Armor"))
             {
                 return true;
             }
@@ -265,6 +288,10 @@ namespace WoWGuildOrganizer
                 {
                     sta = _stats[4].ToString();
                 }
+                else if (_stats.ContainsKey(72))
+                {
+                    sta = _stats[72].ToString();
+                }
                 else if (_stats.ContainsKey(74))
                 {
                     sta = _stats[74].ToString();
@@ -276,7 +303,7 @@ namespace WoWGuildOrganizer
 
         private string GetAgility()
         {
-            string sta = "";
+            string sta = string.Empty;
 
             if (HasAgility())
             {
@@ -288,11 +315,18 @@ namespace WoWGuildOrganizer
 
         private string GetIntellect()
         {
-            string sta = "";
+            string sta = string.Empty;
 
             if (HasIntellect())
             {
-                sta = _stats[5].ToString();
+                if (_stats.ContainsKey(5))
+                {
+                    sta = _stats[5].ToString();
+                }
+                else if (_stats.ContainsKey(74))
+                {
+                    sta = _stats[74].ToString();
+                }
             }
 
             return sta;

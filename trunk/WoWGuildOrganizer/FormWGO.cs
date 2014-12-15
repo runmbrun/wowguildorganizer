@@ -1463,8 +1463,12 @@ namespace WoWGuildOrganizer
                     // Now get the data
                     RaidInfo raidInfo = new RaidInfo();
                     DataTable loot = null;
+                    string context = string.Empty;
 
-                    loot = raidInfo.GetLootResults(itemIds, this.raidGroup.RaidGroup);
+                    // Attempt to get the context
+                    context = raidInfo.GetContext(toolStripComboBoxPickRaid.SelectedItem.ToString());
+
+                    loot = raidInfo.GetLootResults(itemIds, context, this.raidGroup.RaidGroup);
 
                     // Check to see any loot was found for this boss
                     if (loot.Rows.Count > 0)
@@ -1477,7 +1481,6 @@ namespace WoWGuildOrganizer
                             {
                                 if (loot.Select("upgrade > 0 and ItemId = " + itemId, "upgrade desc").Length == 0)
                                 {
-                                    string context = string.Empty; // todo: does raid gear have a context value?
                                     ItemInfo item = Items.GetItem(itemId, context);
 
                                     DataRow dr = loot.NewRow();
@@ -1489,6 +1492,7 @@ namespace WoWGuildOrganizer
                                     dr["ItemILevel"] = item.ItemLevel;
                                     dr["OldItemILevel"] = 0;
                                     dr["OldItemId"] = 0;
+                                    dr["OldItemContext"] = string.Empty;
                                     loot.Rows.Add(dr);
                                 }
                             }
@@ -1499,15 +1503,15 @@ namespace WoWGuildOrganizer
                             dataGridViewRaidLootDrop.DataSource = loot.Select("upgrade >= 0", "upgrade desc").CopyToDataTable();
                             dataGridViewRaidLootDrop.Columns["ItemId"].Visible = false;
                             dataGridViewRaidLootDrop.Columns["OldItemId"].Visible = false;
+                            dataGridViewRaidLootDrop.Columns["OldItemContext"].Visible = false;
                             dataGridViewRaidLootDrop.AutoResizeColumns();
 
                             foreach (DataGridViewRow row in dataGridViewRaidLootDrop.Rows)
                             {
                                 int id1 = Convert.ToInt32(row.Cells["ItemId"].Value);
                                 int id2 = Convert.ToInt32(row.Cells["OldItemId"].Value);
-                                string context = string.Empty; // todo: does raid gear have a context value?
                                 ItemInfo item1 = Items.GetItem(id1, context);
-                                ItemInfo item2 = Items.GetItem(id2, context);
+                                ItemInfo item2 = Items.GetItem(id2, (row.Cells["OldItemContext"].Value.ToString()));
                                 string updatedTooltip = item2.Tooltip;
 
                                 // Search and replace the iLvl with the current one
