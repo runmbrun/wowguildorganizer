@@ -741,8 +741,8 @@ namespace WoWGuildOrganizer
                 case 50:
                     stat = "Bonus Armor";
                     break;
-                case 57:
-                    stat = "Unk57";
+                case 51:
+                    stat = "Fire Resistance";
                     break;
                 case 59:
                     stat = "Multistrike";
