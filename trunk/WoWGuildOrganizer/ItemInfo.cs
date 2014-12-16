@@ -101,6 +101,7 @@ namespace WoWGuildOrganizer
         }
 
         private int _itemspells;
+        private string[] _spells;
         public string Spells
         {
             set
@@ -108,22 +109,65 @@ namespace WoWGuildOrganizer
                 // Example:
                 //itemSpells":[{"spellId":146195,"spell":{"id":146195,"name":"Flurry of Xuen","icon":"monk_stance_whitetiger","description":"Your damaging attacks have a chance to trigger a Flurry of Xuen, causing you to deal 1,204 damage to your current target and up to 4 enemies around them, every 0.30 sec for 3 sec. (Approximately 1.82 procs per minute)","castTime":"Passive"},"nCharges":0,"consumable":false,"categoryId":0,"trigger":"ON_EQUIP"}]
 
-                string Search = @"description:(?<spell>.*),castTime:(?<cast>.*?)}";
+                string Search = @"description:(?<spell>.*),castTime.*?,trigger:(?<trigger>.*)}";
                 Regex test = new Regex(Search, RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
+                MatchCollection matches = test.Matches(value.Replace("\"", ""));
+                _itemspells = matches.Count;
+                int count = 0;
 
-                // Get the item info
-                foreach (Match result in test.Matches(value.Replace("\"", "")))
+                if (_itemspells > 0)
                 {
+                    _spells = new string[_itemspells];
+                }
+
+                // Get the item's spell info
+                foreach (Match result in matches)
+                {
+                    string line = string.Empty;
+
+                    if (result.Groups["trigger"].Success)
+                    {
+                        if (result.Groups["trigger"].Value.ToString() == "ON_EQUIP")
+                        {
+                            line += "Equip: ";
+                        }
+                    }
+
                     // First get the slot, if no slot then it's an missing item
                     if (result.Groups["spell"].Success)
                     {
-                        // todo:
+                        string spell = result.Groups["spell"].Value.ToString();
+                        int start = 0;
+                        int end = 0;
+                        int countLines = 1;
+
+                        // go through the entire spell, but making sure each line is no more than 50 characters
+                        // This is to prevent the tooltip from getting too long
+                        for (int i = 0; i < spell.Length; )
+                        {
+                            // Find the first space
+                            start = spell.IndexOf(" ", end + 1);
+
+                            if (start > (50 * countLines))
+                            {
+                                line += spell.Substring(i, end - i) + "\n";
+                                i = end;
+                                countLines++;
+                            }
+                            else if (start == -1)
+                            {
+                                // End of spell, no more spaces
+                                line += spell.Substring(i, spell.Length - i) + "\n";
+                                i = spell.Length;
+                            }
+                            else
+                            {
+                                end = start;
+                            }
+                        }
                     }
-                    
-                    if (result.Groups["cast"].Success)
-                    {
-                        // todo:
-                    }
+
+                    _spells[count++] = line;
                 }
             }
         }
@@ -180,7 +224,7 @@ namespace WoWGuildOrganizer
             {
                 return true;
             }
-            else if (_stats.Count == 0 && _tooltip.Contains("Intellect"))
+            else if (_stats.Count == 0 && _tooltip != null && _tooltip.Contains("Intellect"))
             {
                 return true;
             }
@@ -203,7 +247,7 @@ namespace WoWGuildOrganizer
             {
                 return true;
             }
-            else if (_stats.Count == 0 && _tooltip.Contains("Strength"))
+            else if (_stats.Count == 0 && _tooltip != null && _tooltip.Contains("Strength"))
             {
                 return true;
             }
@@ -223,7 +267,7 @@ namespace WoWGuildOrganizer
             {
                 return true;
             }
-            else if (_stats.Count == 0 && _tooltip.Contains("Agility"))
+            else if (_stats.Count == 0 && _tooltip != null && _tooltip.Contains("Agility"))
             {
                 return true;
             }
@@ -239,7 +283,7 @@ namespace WoWGuildOrganizer
             {
                 return true;
             }
-            else if (_stats.Count == 0 && _tooltip.Contains("Spirit"))
+            else if (_stats.Count == 0 && _tooltip != null && _tooltip.Contains("Spirit"))
             {
                 return true;
             }
@@ -256,7 +300,7 @@ namespace WoWGuildOrganizer
             {
                 return true;
             }
-            else if (_stats.Count == 0 && _tooltip.Contains("Bonus Armor"))
+            else if (_stats.Count == 0 && _tooltip != null && _tooltip.Contains("Bonus Armor"))
             {
                 return true;
             }
@@ -417,7 +461,15 @@ namespace WoWGuildOrganizer
                     }
                 }
                 
-                // TODO: finish this for procs
+                // check for procs
+                if (_itemspells > 0)
+                {
+                    // There is at least 1 proc
+                    for (int i=0; i<_itemspells; i++)
+                    {
+                        line += _spells[i];
+                    }
+                }
 
                 tooltip += line;
             }
@@ -462,7 +514,15 @@ namespace WoWGuildOrganizer
                     }
                 }
 
-                // TODO: finish this for procs
+                // check for procs
+                if (_itemspells > 0)
+                {
+                    // There is at least 1 proc
+                    for (int i=0; i<_itemspells; i++)
+                    {
+                        line += _spells[i];
+                    }
+                }
 
                 tooltip += line;
             }

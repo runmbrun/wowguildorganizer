@@ -323,7 +323,7 @@ namespace WoWGuildOrganizer
                     if (!items.ContainsKey(slot))
                     {
                         // bad - slot doesn't exist
-                        Logging.DisplayError(string.Format("ERROR: {0}", "GetCharacterInfo.ParseItems() - slot missing"));
+                        Logging.DisplayError(string.Format("GetCharacterInfo.ParseItems() - slot missing: {0}", slot));
                     }
                     else
                     {
