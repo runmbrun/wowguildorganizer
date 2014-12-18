@@ -951,15 +951,27 @@ namespace WoWGuildOrganizer
                                         {
                                             gm.Level = charInfo.Level;
                                         }
+                                        else
+                                        {
+                                            gm.ClearFlags();
+                                        }
 
                                         if (gm.MaxiLevel != charInfo.MaxiLevel)
                                         {
                                             gm.MaxiLevel = charInfo.MaxiLevel;
                                         }
+                                        else
+                                        {
+                                            gm.ClearMaxItemLevelFlag();
+                                        }
 
                                         if (gm.EquipediLevel != charInfo.EquipediLevel)
                                         {
                                             gm.EquipediLevel = charInfo.EquipediLevel;
+                                        }
+                                        else
+                                        {
+                                            gm.ClearEquipItemLevelFlag();
                                         }
                                         
                                         gm.Profession1 = charInfo.Profession1;
@@ -1009,6 +1021,9 @@ namespace WoWGuildOrganizer
 
                         // Stop the stopwatch
                         this.sw.Stop();
+
+                        // stop the wait cursor
+                        this.WaitCursor(false);
                     }
                     catch (Exception ex)
                     {
@@ -1056,7 +1071,7 @@ namespace WoWGuildOrganizer
                 // Show the progress bar
                 this.toolStripProgressBar1.Visible = false;
 
-                // start the wait cursor
+                // stop the wait cursor
                 this.WaitCursor(false);
 
                 this.UpdateLabelMT(string.Format("{0} total characters in {1} seconds", this.savedCharacters.SavedCharacters.Count, (this.sw.GetElapsedTime() / 1000).ToString("0")));
