@@ -405,7 +405,7 @@ namespace WoWGuildOrganizer
 
                         if (result.Groups["Context"].Success)
                         {
-                            audit.SetContext(result.Groups["Context"].Value.ToString());
+                            audit.Context = result.Groups["Context"].Value.ToString();
                         }
 
                         if (result.Groups["BonusLists"].Success)
