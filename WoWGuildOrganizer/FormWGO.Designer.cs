@@ -228,7 +228,6 @@ namespace WoWGuildOrganizer
             this.dataGridViewRaidLootDrop.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dataGridViewRaidLootDrop.Size = new System.Drawing.Size(689, 269);
             this.dataGridViewRaidLootDrop.TabIndex = 4;
-            this.dataGridViewRaidLootDrop.CellToolTipTextNeeded += new System.Windows.Forms.DataGridViewCellToolTipTextNeededEventHandler(this.DataGridViewRaidLootDrop_CellToolTipTextNeeded);
             this.dataGridViewRaidLootDrop.DataBindingComplete += new System.Windows.Forms.DataGridViewBindingCompleteEventHandler(this.DataGridViewRaidLootDrop_DataBindingComplete);
             this.dataGridViewRaidLootDrop.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.DataGridViewRaidLootDrop_MouseDoubleClick);
             // 

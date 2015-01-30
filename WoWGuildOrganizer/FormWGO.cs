@@ -210,7 +210,10 @@ namespace WoWGuildOrganizer
 
             // Create the Raid Loot Data
             RaidInfo raidInfo = new RaidInfo();
-            raidInfo.CreateRaidLootData(ref this.raidLoot);
+
+            // todo: replace create with load...
+            // todo: raidInfo.CreateRaidLootData(ref this.raidLoot);
+            raidInfo.LoadRaidLootData(ref this.raidLoot);
 
             // Add Raid Loot Drop Items
             foreach (string key in this.raidLoot.Keys)
@@ -1606,30 +1609,6 @@ namespace WoWGuildOrganizer
         }
 
         /// <summary>
-        /// Fires when a cell in the Raid Loot data grid view needs a tool tip
-        /// </summary>
-        /// <param name="sender">sender parameter</param>
-        /// <param name="e">e parameter</param>
-        private void DataGridViewRaidLootDrop_CellToolTipTextNeeded(object sender, DataGridViewCellToolTipTextNeededEventArgs e)
-        {
-            if (e.ColumnIndex == 3 && e.RowIndex >= 0 && dataGridViewRaidLootDrop.Rows.Count > 0)
-            {
-                int id = Convert.ToInt32(dataGridViewRaidLootDrop.Rows[e.RowIndex].Cells["ItemId"].Value);
-                string context = string.Empty;
-                RaidInfo info = new RaidInfo();
-
-                context = info.GetContext(toolStripComboBoxPickRaid.SelectedItem.ToString());
-
-                ItemInfo item = Items.GetItem(id, context);
-                dataGridViewRaidLootDrop.Rows[e.RowIndex].Cells["ItemName"].ToolTipText = item.Tooltip;
-            }
-            else if (e.ColumnIndex == 5 && e.RowIndex >= 0 && dataGridViewRaidLootDrop.Rows.Count > 0)
-            {
-                // TODO: Make this tooltip show the current item that would be replaced
-            }
-        }
-
-        /// <summary>
         /// Fires when the Raid Loot data grid view data binding has been completed
         /// </summary>
         /// <param name="sender">sender parameter</param>
@@ -1646,6 +1625,14 @@ namespace WoWGuildOrganizer
                 r.HeaderCell.Value = (r.Index + 1).ToString();
                 r.HeaderCell.Style = style;
                 r.Resizable = DataGridViewTriState.False;
+
+                // Add the tool tip
+                RaidInfo info = new RaidInfo();
+                int id = Convert.ToInt32(r.Cells["ItemId"].Value);                                
+                string context = info.GetContext(toolStripComboBoxPickRaid.SelectedItem.ToString());
+                ItemInfo item = Items.GetItem(id, context);
+
+                r.Cells["ItemName"].ToolTipText = item.Tooltip;
             }
 
             dataGridViewRaidLootDrop.AutoResizeRowHeadersWidth(DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders);
