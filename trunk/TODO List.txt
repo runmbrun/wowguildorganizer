@@ -15,9 +15,9 @@ Global:
 	a. Example: http://us.battle.net/api/wow/item/119831
 		i. Shows up in Character as vendor instead of {"id":119831,"availableContexts":["pvp-unranked"]}
 5.  ADD: Need functionality to parse wowhead.com to get boss loot table.
-	a. Store all the loot tables in an xml file for each access and modification.
 	b. Make sure old raids can be hidden (visible=true), or deleted.
 6.  ADD: Finish Tier 17 bosses and loot tables...
 7.  FIX: Make sure that the Refresh function removes guildies that have quit the guild.
 8.  ADD: All crafted items aren't displaying properly.  Need to calculate suffixes and upgrade level.
+9.  FIX: Slot #21 Error
 
