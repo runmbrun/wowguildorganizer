@@ -1615,7 +1615,10 @@ namespace WoWGuildOrganizer
             if (e.ColumnIndex == 3 && e.RowIndex >= 0 && dataGridViewRaidLootDrop.Rows.Count > 0)
             {
                 int id = Convert.ToInt32(dataGridViewRaidLootDrop.Rows[e.RowIndex].Cells["ItemId"].Value);
-                string context = string.Empty;  // todo: how to get this in the grid?  need to add a hidden column?
+                string context = string.Empty;
+                RaidInfo info = new RaidInfo();
+
+                context = info.GetContext(toolStripComboBoxPickRaid.SelectedItem.ToString());
 
                 ItemInfo item = Items.GetItem(id, context);
                 dataGridViewRaidLootDrop.Rows[e.RowIndex].Cells["ItemName"].ToolTipText = item.Tooltip;

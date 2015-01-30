@@ -558,6 +558,13 @@ namespace WoWGuildOrganizer
                                             charName = gm.Name;
                                         }
                                     }
+                                    else if (item.HasIntellect())
+                                    {
+                                        if ((gm.Class == "Paladin" && gm.Spec == "Holy") || (gm.Class == "Monk" && gm.Role == "HEALING") || gm.Class == "Priest" || gm.Class == "Mage" || gm.Class == "Warlock" || (gm.Class == "Druid" && (gm.Spec == "Restoration" || gm.Spec == "Balance")) || (gm.Class == "Shaman" && gm.Spec == "Restoration"))
+                                        {
+                                            charName = gm.Name;
+                                        }
+                                    }
                                 }
                                 else if (Converter.ConvertItemSubClass(item.ItemClass, item.ItemSubClass) == "Plate")
                                 {
@@ -570,7 +577,7 @@ namespace WoWGuildOrganizer
                                 else if (Converter.ConvertItemSubClass(item.ItemClass, item.ItemSubClass) == "Mail")
                                 {
                                     // Mail = Hunter, Shaman
-                                    if (gm.Class == "Shaman" || gm.Spec == "Hunter")
+                                    if (gm.Class == "Shaman" || gm.Class == "Hunter")
                                     {
                                         charName = gm.Name;
                                     }
@@ -1117,7 +1124,7 @@ namespace WoWGuildOrganizer
                                             // upgrade!
                                             ilvlOld = gm.ItemAudits[Converter.ConvertInventoryType(item.InventoryType)].ItemLevel;
                                             oldItemId = gm.ItemAudits[Converter.ConvertInventoryType(item.InventoryType)].Id;
-                                                oldItemContext = gm.ItemAudits[Converter.ConvertInventoryType(item.InventoryType)].Context;
+                                            oldItemContext = gm.ItemAudits[Converter.ConvertInventoryType(item.InventoryType)].Context;
                                         }
                                     }
                                     else
@@ -1199,6 +1206,15 @@ namespace WoWGuildOrganizer
                                             {
                                                 // upgrade!
                                                 ilvlOriginal = testRing1 > testRing2 ? testRing2 : testRing1;
+                                            }
+                                        }
+                                        else if (slot == "offHand")
+                                        {
+                                            int testOffHand = FormMain.Items.GetItem(gm.ItemAudits["offHand"].Id, gm.ItemAudits["offHand"].Context).ItemLevel;
+
+                                            if (testOffHand != 0)
+                                            {
+                                                ilvlOriginal = testOffHand;
                                             }
                                         }
                                         else

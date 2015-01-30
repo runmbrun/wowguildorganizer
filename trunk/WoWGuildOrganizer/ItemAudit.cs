@@ -194,12 +194,6 @@ namespace WoWGuildOrganizer
             }
         }
 
-        private string _context;
-        public void SetContext(string t)
-        {
-            _context = t;
-        }
-
         private string _bonuslists;
         public void SetBonusLists(string t)
         {

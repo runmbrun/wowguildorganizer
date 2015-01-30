@@ -67,51 +67,56 @@ namespace WoWGuildOrganizer
         /// then get it and add in the new item.
         /// There is no item number 0, so ignore it
         /// </summary>
-        /// <param name="i"></param>
+        /// <param name="itemId"></param>
         /// <returns></returns>
-        public ItemInfo GetItem(int i, string context)
+        public ItemInfo GetItem(int itemId, string context)
         {
             ItemInfo item = new ItemInfo();
 
-            // Does the current Dictionary have this item?
-            if (this.Contains(i, context))
+            // First check to make sure that it's a valid item id
+            // Then check to see if it's in the cache
+            // if it is, return the item,
+            // but if not, then add the new item to the cache
+            if (itemId != 0)
             {
-                // Yes, return the item requested
-                //item = Items[i];
-                DataRow[] rows = null;
-
-                // Check to see if a context has been provided
-                if (context == null || context == string.Empty)
+                if (this.Contains(itemId, context))
                 {
-                    // no context
-                    rows = items.Select(string.Format("id = {0}", i));
+                    // Yes, return the item requested
+                    DataRow[] rows = null;
+
+                    // Check to see if a context has been provided
+                    if (context == null || context == string.Empty)
+                    {
+                        // no context
+                        rows = items.Select(string.Format("id = {0}", itemId));
+                    }
+                    else
+                    {
+                        // context has been provided
+                        rows = items.Select(string.Format("id = {0} and context = '{1}'", itemId, context));
+                    }
+
+                    item = (ItemInfo)rows[0]["iteminfo"];
                 }
                 else
                 {
-                    // context has been provided
-                    rows = items.Select(string.Format("id = {0} and context = '{1}'", i, context));
-                }
+                    // Now, the item doesn't exist in the Dictionary                
+                    GetItemInfo getNewItem = new GetItemInfo();
 
-                item = (ItemInfo)rows[0]["iteminfo"];
-            }
-            else
-            {
-                // Now, the item doesn't exist in the Dictionary                
-                GetItemInfo getNewItem = new GetItemInfo();
-                
-                // Fetch the data
-                if (getNewItem.CollectData(i, context))
-                {
-                    ItemInfo newItem = getNewItem.Item;
+                    // Fetch the data
+                    if (getNewItem.CollectData(itemId, context))
+                    {
+                        ItemInfo newItem = getNewItem.Item;
 
-                    // Now add the new item to the Dictionary
-                    this.AddItem(newItem, context);
+                        // Now add the new item to the Dictionary
+                        this.AddItem(newItem, context);
 
-                    item = newItem;
-                }
-                else
-                {
-                    Logging.Error(string.Format("Can't retrieve information about item: {0} with context: {1}", i, context));
+                        item = newItem;
+                    }
+                    else
+                    {
+                        Logging.Error(string.Format("Can't retrieve information about item: {0} with context: {1}", itemId, context));
+                    }
                 }
             }
 
@@ -121,23 +126,31 @@ namespace WoWGuildOrganizer
         /// <summary>
         /// Add a new item to the dictionary
         /// </summary>
-        /// <param name="i"></param>
+        /// <param name="item"></param>
         /// <returns></returns>
-        public bool AddItem(ItemInfo i, string context)
+        public bool AddItem(ItemInfo item, string context)
         {
             bool success = false;
 
-            // Add the new item to the Dictionary
-            if (!this.Contains(i.Id, context))
+            // First check to make sure that it's a valid item id
+            // Then check to see if it's in the cache
+            // if it is, return the item,
+            // but if not, then add the new item to the cache
+            if (item.Id == 0)
+            {
+                // This is not a valid item id
+                success = false;
+            }
+            else if (!this.Contains(item.Id, context))
             {
                 try
                 {
                     DataRow row = items.NewRow();
 
-                    row["id"] = i.Id;
-                    row["name"] = i.Name;
+                    row["id"] = item.Id;
+                    row["name"] = item.Name;
                     row["context"] = context;
-                    row["iteminfo"] = i;
+                    row["iteminfo"] = item;
 
                     items.Rows.Add(row);
 
@@ -145,7 +158,7 @@ namespace WoWGuildOrganizer
                 }
                 catch (Exception ex)
                 {
-                    WoWGuildOrganizer.Logging.Error(string.Format("Can't add information to cache about item: {0} with context: {1}. {2}", i, context, ex.Message));
+                    WoWGuildOrganizer.Logging.Error(string.Format("Can't add information to cache about item: {0} with context: {1}. {2}", item, context, ex.Message));
                 }
             }
             else

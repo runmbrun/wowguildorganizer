@@ -7,21 +7,17 @@ In no particular order...
 =====================
 
 Global:
-1.  Add dual spec functionality to the GuildMember class. 
+1.  ADD: dual spec functionality to the GuildMember class. 
 	a. Would be able to switch back and forth as needed. (Right click functionality)
-2.  Trinkets - Add all of the proc detail to the tool tips
-3.  Tooltips - Make sure in an audit, that the correct stats are displayed, not just the base stats.
-4.  Items - pvp gear isn't using contexts correctly.  
+2.  FIX: Audit - Currently the check for empty gem slots is not working.
+3.  ADD: Tooltips - Make sure in an audit, that the correct stats are displayed, not just the base stats.
+4.  ADD: Items - pvp gear isn't using contexts correctly.  
 	a. Example: http://us.battle.net/api/wow/item/119831
 		i. Shows up in Character as vendor instead of {"id":119831,"availableContexts":["pvp-unranked"]}
-5.  Add functionality to parse wowhead.com to get boss loot table.
-	a. Store all the loot tables in an xml file for each access
-	b. Make sure old raids can be hidden, or deleted
-
-Raid Data tab:
-1.  	
-
-Raid Loot Drop tab:
-1.  Add Tier 17...
-
+5.  ADD: Need functionality to parse wowhead.com to get boss loot table.
+	a. Store all the loot tables in an xml file for each access and modification.
+	b. Make sure old raids can be hidden (visible=true), or deleted.
+6.  ADD: Finish Tier 17 bosses and loot tables...
+7.  FIX: Make sure that the Refresh function removes guildies that have quit the guild.
+8.  ADD: All crafted items aren't displaying properly.  Need to calculate suffixes and upgrade level.
 
