@@ -48,7 +48,7 @@ namespace WoWGuildOrganizer
             set { _missingItem = value; }
         }
 
-        private string _missingEnchant;
+        private string _missingEnchant;        
         public string MissingEnchant
         {
             get { return _missingEnchant; }
@@ -121,6 +121,8 @@ namespace WoWGuildOrganizer
         }
 
         private string context;
+        
+        [Browsable(false)]
         public string Context
         {
             get { return this.context; }

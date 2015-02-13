@@ -999,11 +999,6 @@ namespace WoWGuildOrganizer
                                         gm.SetArmoryCheckTime();
                                         gm.SetItemLevelCheckTime();
                                     }
-                                    else
-                                    {
-                                        // Failure!
-                                        Logging.Error(string.Format("Failed to parse gear score for {0}", gm.Name));
-                                    }
                                 }
 
                                 // Progress update for Progress Bar
@@ -2035,5 +2030,16 @@ namespace WoWGuildOrganizer
         }
 
         #endregion 
+
+        #region Raid Loot Dialog
+
+        private void ButtonOpenRaidLootDialog_Click(object sender, EventArgs e)
+        {
+            FormRaidLootData loot = new FormRaidLootData();
+
+            loot.ShowDialog();
+        }
+
+        #endregion
     }
 }
