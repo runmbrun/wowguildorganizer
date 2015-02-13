@@ -17,6 +17,7 @@
     </FileUpgradeFlags>
     <OldToolsVersion>3.5</OldToolsVersion>
     <UpgradeBackupLocation />
+    <TargetFrameworkProfile />
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -31,7 +32,6 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -91,6 +91,8 @@
     <PlatformTarget>x86</PlatformTarget>
     <OutputPath>bin\x86\Debug\</OutputPath>
     <Prefer32Bit>false</Prefer32Bit>
+    <DefineConstants>
+    </DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <PlatformTarget>x86</PlatformTarget>
@@ -143,6 +145,12 @@
     <Compile Include="GetCharacterInfo.cs" />
     <Compile Include="GetGuildInfo.cs" />
     <Compile Include="GetItemInfo.cs" />
+    <Compile Include="FormRaidLootData.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormRaidLootData.Designer.cs">
+      <DependentUpon>FormRaidLootData.cs</DependentUpon>
+    </Compile>
     <Compile Include="GetWebSiteData.cs" />
     <Compile Include="GuildMember.cs" />
     <Compile Include="GuildMemberGroup.cs" />
@@ -156,6 +164,9 @@
     <Compile Include="ObjectComparer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="FormRaidLootData.resx">
+      <DependentUpon>FormRaidLootData.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FormWGO.resx">
       <DependentUpon>FormWGO.cs</DependentUpon>
       <SubType>Designer</SubType>

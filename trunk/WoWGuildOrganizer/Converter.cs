@@ -508,7 +508,7 @@ namespace WoWGuildOrganizer
         /// <returns>string conversion of that passed in number</returns>
         public static string ConvertInventoryType(int i)
         {
-            string converted = "error";
+            string converted = "unknownInvType" + i.ToString();
 
             switch (i)
             {
@@ -578,7 +578,7 @@ namespace WoWGuildOrganizer
                     converted = "chest";
                     break;
                 case 21:
-                    converted = "main hand";
+                    converted = "mainHand";
                     break;
                 case 22:
                     converted = "off hand"; // misc items

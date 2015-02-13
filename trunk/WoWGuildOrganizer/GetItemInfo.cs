@@ -448,5 +448,40 @@ namespace WoWGuildOrganizer
 
             return enchantable;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public string[] CollectContexts(int id)
+        {
+            string[] results = null;
+
+            // Should always return a failure when a context has not been provided, so then check for all the available contexts
+            if (!this.CollectData(@"http://us.battle.net/api/wow/item/" + id.ToString()))
+            {
+                // instead check the parsed web site and see if there is only 1 context available
+                if (this.availableContexts.Contains("availableContexts"))
+                {
+                    string search = @"{id:(?<id>\d+),availableContexts:\[(?<context>[a-zA-Z-,]+)\]}";
+                    Regex test = new Regex(search, RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
+                    string newData = this.availableContexts.Replace("\"", "");
+
+                    // See how many matches there are
+                    MatchCollection matches = test.Matches(newData);
+
+                    // Get the item info
+                    if (matches.Count == 1 && matches[0].Groups["context"].Success)
+                    {
+                        string contexts = matches[0].Groups["context"].Value.ToString();
+                        
+                        results = contexts.Split(',');
+                    }
+                }
+            }
+
+            return results;
+        }
     }
 }

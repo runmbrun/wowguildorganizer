@@ -46,6 +46,8 @@ namespace WoWGuildOrganizer
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.dataGridViewRaidLootDrop = new System.Windows.Forms.DataGridView();
             this.tabPageSettings = new System.Windows.Forms.TabPage();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.buttonOpenRaidLootDialog = new System.Windows.Forms.Button();
             this.groupBoxErrors = new System.Windows.Forms.GroupBox();
             this.buttonShowErrors = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
@@ -78,6 +80,7 @@ namespace WoWGuildOrganizer
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewRaidLootDrop)).BeginInit();
             this.tabPageSettings.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.groupBoxErrors.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -233,6 +236,7 @@ namespace WoWGuildOrganizer
             // 
             // tabPageSettings
             // 
+            this.tabPageSettings.Controls.Add(this.groupBox1);
             this.tabPageSettings.Controls.Add(this.groupBoxErrors);
             this.tabPageSettings.Controls.Add(this.groupBox2);
             this.tabPageSettings.Controls.Add(this.groupBox3);
@@ -243,6 +247,26 @@ namespace WoWGuildOrganizer
             this.tabPageSettings.TabIndex = 1;
             this.tabPageSettings.Text = "Settings";
             this.tabPageSettings.UseVisualStyleBackColor = true;
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.buttonOpenRaidLootDialog);
+            this.groupBox1.Location = new System.Drawing.Point(235, 15);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(206, 59);
+            this.groupBox1.TabIndex = 16;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Get Raid Loot Data";
+            // 
+            // buttonOpenRaidLootDialog
+            // 
+            this.buttonOpenRaidLootDialog.Location = new System.Drawing.Point(54, 19);
+            this.buttonOpenRaidLootDialog.Name = "buttonOpenRaidLootDialog";
+            this.buttonOpenRaidLootDialog.Size = new System.Drawing.Size(75, 23);
+            this.buttonOpenRaidLootDialog.TabIndex = 0;
+            this.buttonOpenRaidLootDialog.Text = "Open";
+            this.buttonOpenRaidLootDialog.UseVisualStyleBackColor = true;
+            this.buttonOpenRaidLootDialog.Click += new System.EventHandler(this.ButtonOpenRaidLootDialog_Click);
             // 
             // groupBoxErrors
             // 
@@ -267,9 +291,9 @@ namespace WoWGuildOrganizer
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.buttonDeleteItemCacheData);
-            this.groupBox2.Location = new System.Drawing.Point(16, 154);
+            this.groupBox2.Location = new System.Drawing.Point(235, 83);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(200, 59);
+            this.groupBox2.Size = new System.Drawing.Size(200, 56);
             this.groupBox2.TabIndex = 10;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Item Cache Data Manager";
@@ -462,6 +486,7 @@ namespace WoWGuildOrganizer
             this.tabPage1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewRaidLootDrop)).EndInit();
             this.tabPageSettings.ResumeLayout(false);
+            this.groupBox1.ResumeLayout(false);
             this.groupBoxErrors.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
@@ -511,6 +536,8 @@ namespace WoWGuildOrganizer
         private System.Windows.Forms.ToolStripComboBox toolStripComboBoxPickBoss;
         private System.Windows.Forms.GroupBox groupBoxErrors;
         private System.Windows.Forms.ToolStripButton toolStripButtonSort;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Button buttonOpenRaidLootDialog;
     }
 }
 

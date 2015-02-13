@@ -173,7 +173,7 @@ namespace WoWGuildOrganizer
         /// Return the number of items currently stored in the dictionary
         /// </summary>
         /// <returns></returns>
-        public Int32 GetCount()
+        public int GetCount()
         {   
             return items.Rows.Count;
         }
@@ -185,6 +185,52 @@ namespace WoWGuildOrganizer
         public DataTable GetData()
         {
             return items;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="itemId"></param>
+        /// <returns></returns>
+        public string[] GetAvailableContexts(int itemId)
+        {
+            string[] results = null;
+
+            /*
+            DataRow[] rows = null;
+
+            try
+            {
+                // Check to see what contexts are currently cached
+                rows = items.Select(string.Format("id = {0}", itemId));
+
+                if (rows.Length > 0)
+                {
+                    int count = 0;
+                    results = string[rows.Length];
+
+                    for (int i=0; i<rows.Length; i++)
+                    {
+                        results[count] = rows[count]["context"].ToString();
+
+                    }
+                }
+            }
+            catch (Exception ex)
+            {             
+            }*/
+
+            GetItemInfo getNewItem = new GetItemInfo();
+
+            //
+            results = getNewItem.CollectContexts(itemId);
+
+            if (results == null)
+            {
+                Logging.Error(string.Format("Can't retrieve contexts for item [{0}]: ", itemId));
+            }
+
+            return results;
         }
     }
 }
