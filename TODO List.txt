@@ -20,4 +20,7 @@ Global:
 7.  FIX: Make sure that the Refresh function removes guildies that have quit the guild.
 8.  ADD: All crafted items aren't displaying properly.  Need to calculate suffixes and upgrade level.
 9.  FIX: Slot #21 Error
+10. FIX: Gems check
+11. ADD: Change up on the Item needed and pull the exact availables from the web
+12. FIX: only ask update question if role has changed, not spec
 

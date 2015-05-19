@@ -751,7 +751,7 @@ namespace WoWGuildOrganizer
                     stat = "Strength";
                     break;
                 case 73:
-                    stat = "Versatility";
+                    stat = "Agi/Int";
                     break;
                 case 74:
                     stat = "Str/Int";
@@ -762,6 +762,182 @@ namespace WoWGuildOrganizer
             }
 
             return stat;
+        }
+
+        public static int ConvertSpec(string charClass, string spec)
+        {
+            int result = -1;
+
+            /*
+             * Death Knight
+	250 - Blood
+	251 - Frost
+	252 - Unholy	
+Druid
+	102 - Balance
+	104 - Guardian
+	103 - Feral
+	105 - Restoration
+Hunter
+	253 - Beast Mastery
+	254 - Marksmanship
+	255 - Survival
+Mage
+	62 - Arcane
+	63 - Fire
+	64 - Frost
+Monk
+	268 - Brewmaster
+	270 - Mistweaver
+	269 - Windwalker
+Paladin
+	65 - Holy
+	66 - Protection
+	70 - Retribution
+Priest  
+	256 - Discipline
+	257 - Holy
+	258 - Shadow
+Rogue
+	259 - Assassination
+	260 - Combat
+	261 - Subtlety
+Shaman
+	262 - Elemental
+	263 - Enhancement
+	264 - Restoration
+Warlock
+	265 - Affliction
+	266 - Demonology
+	267 - Destruction
+Warrior 
+	71 - Arms
+	72 - Fury
+	73 - Protection
+              */
+            switch (spec)
+            {
+                case "Blood":
+                    result = 250;
+                    break;
+                case "Frost":
+                    if (charClass == "DeathKnight")
+                    {
+                        result = 251;
+                    }
+                    else if (charClass == "Mage")
+                    {
+                        result = 64;
+                    }
+                    break;
+                case "Unholy":
+                    result = 252;
+                    break;
+                case "Balance":
+                    result = 102;
+                    break;
+                case "Guardian":
+                    result = 104;
+                    break;
+                case "Feral":
+                    result = 103;
+                    break;
+                case "Restoration":
+                    if (charClass == "Druid")
+                    {
+                        result = 105;
+                    }
+                    else if (charClass == "Shaman")
+                    {
+                        result = 263;
+                    }
+                    break;
+                case "Beast Mastery":
+                    result = 253;
+                    break;
+                case "Marksmanship":
+                    result = 254;
+                    break;
+                case "Survival":
+                    result = 255;
+                    break;
+                case "Arcane":
+                    result = 62;
+                    break;
+                case "Fire":
+                    result = 63;
+                    break;
+                case "Brewmaster":
+                    result = 268;
+                    break;
+                case "Mistweaver":
+                    result = 270;
+                    break;
+                case "Windwalker":
+                    result = 269;
+                    break;
+                case "Holy":
+                    if (charClass == "Paladin")
+                    {
+                        result = 65;
+                    }
+                    else if (charClass == "Priest")
+                    {
+                        result = 257;
+                    }
+                    break;
+                case "Protection":
+                    if (charClass == "Paladin")
+                    {
+                        result = 66;
+                    }
+                    else if (charClass == "Warrior")
+                    {
+                        result = 73;
+                    }
+                    break;
+                case "Retribution":
+                    result = 70;
+                    break;
+                case "Discipline":
+                    result = 256;
+                    break;
+                case "Shadow":
+                    result = 258;
+                    break;
+                case "Assassination":
+                    result = 259;
+                    break;
+                case "Combat":
+                    result = 260;
+                    break;
+                case "Subtlety":
+                    result = 261;
+                    break;
+                case "Elemental":
+                    result = 259;
+                    break;
+                case "Enhancement":
+                    result = 262;
+                    break;
+                case "Affliction":
+                    result = 265;
+                    break;
+                case "Demonology":
+                    result = 266;
+                    break;
+                case "Destruction":
+                    result = 267;
+                    break;
+                case "Arms":
+                    result = 71;
+                    break;
+                case "Fury":
+                    result = 72;
+                    break;
+            }
+
+            return result;
         }
                 
         // ** OTHERS ***

@@ -64,7 +64,6 @@
             this.textBoxBossLoot.Name = "textBoxBossLoot";
             this.textBoxBossLoot.Size = new System.Drawing.Size(97, 20);
             this.textBoxBossLoot.TabIndex = 2;
-            this.textBoxBossLoot.Text = "78714";
             // 
             // linkLabel1
             // 
@@ -83,9 +82,7 @@
             this.richTextBox1.ReadOnly = true;
             this.richTextBox1.Size = new System.Drawing.Size(260, 74);
             this.richTextBox1.TabIndex = 4;
-            this.richTextBox1.Text = "Please enter either the Zone Id of a Raid or the ID of a specific boss.\n    Examp" +
-    "les include:\n        Blackrock Foundry - 6967\n        Highmaul - 6996\nOR\n       " +
-    " Kargath - ?\n";
+            this.richTextBox1.Text = "";
             // 
             // textBoxRaidLoot
             // 

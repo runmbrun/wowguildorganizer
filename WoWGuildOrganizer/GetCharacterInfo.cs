@@ -398,11 +398,6 @@ namespace WoWGuildOrganizer
                             audit.ItemLevel = Convert.ToInt32(result.Groups["ItemLevel"].Value);
                         }
 
-                        if (result.Groups["ToolTips"].Success)
-                        {
-                            audit.SetToolTips(result.Groups["ToolTips"].Value.ToString());
-                        }
-
                         if (result.Groups["Context"].Success)
                         {
                             audit.Context = result.Groups["Context"].Value.ToString();
@@ -410,7 +405,21 @@ namespace WoWGuildOrganizer
 
                         if (result.Groups["BonusLists"].Success)
                         {
-                            audit.SetBonusLists(result.Groups["BonusLists"].Value.ToString());
+                            string bonuses = result.Groups["BonusLists"].Value.ToString();
+
+                            audit.SetBonusLists(bonuses);
+
+                            if (bonuses.Contains("563") || bonuses.Contains("564") || bonuses.Contains("565"))
+                            {
+                                audit.CanSocket(true);
+                                audit.SocketCount(1);
+                            }
+                        }
+
+                        // Make sure ToolTips is always at the end, as it does other calculations
+                        if (result.Groups["ToolTips"].Success)
+                        {
+                            audit.SetToolTips(result.Groups["ToolTips"].Value.ToString());
                         }
                     }
                 }

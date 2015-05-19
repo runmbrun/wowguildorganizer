@@ -1,0 +1,4 @@
+*.suo
+WoWGuildOrganizer/bin/*
+WoWGuildOrganizer/obj/*
+WoWGuildOrganizer/StyleCop.Cache

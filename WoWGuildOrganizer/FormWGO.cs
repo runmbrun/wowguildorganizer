@@ -69,7 +69,7 @@ namespace WoWGuildOrganizer
         /// <summary>
         /// Dictionary containing all the Raid loot from a raid boss
         /// </summary>
-        private Dictionary<string, Dictionary<string, int[]>> raidLoot = new Dictionary<string, Dictionary<string, int[]>>();
+        private Dictionary<string, Dictionary<string, Dictionary<string, int[]>>> raidLoot = new Dictionary<string, Dictionary<string, Dictionary<string, int[]>>>();
 
         #endregion
 
@@ -211,8 +211,7 @@ namespace WoWGuildOrganizer
             // Create the Raid Loot Data
             RaidInfo raidInfo = new RaidInfo();
 
-            // todo: replace create with load...
-            // todo: raidInfo.CreateRaidLootData(ref this.raidLoot);
+            // Collect all the information from the raidloot.xml file
             raidInfo.LoadRaidLootData(ref this.raidLoot);
 
             // Add Raid Loot Drop Items
@@ -1460,7 +1459,8 @@ namespace WoWGuildOrganizer
         {
             this.WaitCursor(true);
 
-            int[] itemIds = null;
+            //int[] itemIds = null;
+            Dictionary<string, int[]> itemIds = null;
 
             // Fill out the results
             if (this.raidLoot[toolStripComboBoxPickRaid.SelectedItem.ToString()].ContainsKey(toolStripComboBoxPickBoss.SelectedItem.ToString()))
@@ -1484,17 +1484,17 @@ namespace WoWGuildOrganizer
                     loot = raidInfo.GetLootResults(itemIds, context, this.raidGroup.RaidGroup);
 
                     // Check to see any loot was found for this boss
-                    if (loot.Rows.Count > 0)
+                    if (loot.Rows.Count >= 0)
                     {
                         // find any items that weren't needed by anyone...
-                        if (itemIds != null && itemIds.Length > 0)
+                        if (itemIds != null && itemIds.Count > 0)
                         {
                             // Go through all item ids
-                            foreach (int itemId in itemIds)
+                            foreach (string itemId in itemIds.Keys)
                             {
                                 if (loot.Select("upgrade > 0 and ItemId = " + itemId, "upgrade desc").Length == 0)
                                 {
-                                    ItemInfo item = Items.GetItem(itemId, context);
+                                    ItemInfo item = Items.GetItem(Convert.ToInt32(itemId), context);
 
                                     DataRow dr = loot.NewRow();
                                     dr["Upgrade"] = 0;

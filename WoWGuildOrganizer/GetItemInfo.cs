@@ -462,7 +462,7 @@ namespace WoWGuildOrganizer
             if (!this.CollectData(@"http://us.battle.net/api/wow/item/" + id.ToString()))
             {
                 // instead check the parsed web site and see if there is only 1 context available
-                if (this.availableContexts.Contains("availableContexts"))
+                if (this.availableContexts != null && this.availableContexts.Contains("availableContexts"))
                 {
                     string search = @"{id:(?<id>\d+),availableContexts:\[(?<context>[a-zA-Z-,]+)\]}";
                     Regex test = new Regex(search, RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);

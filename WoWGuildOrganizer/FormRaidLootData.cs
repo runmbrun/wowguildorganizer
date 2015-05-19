@@ -16,9 +16,40 @@ namespace WoWGuildOrganizer
 {
     public partial class FormRaidLootData : Form
     {
+        // This is a class used to hold all the loot information
+        class LootInformation
+        {
+            public int Id { set; get; }
+            public List<string> Contexts { set; get; }
+            public List<string> Specs { set; get; }
+        }
+
+        // This is a class used to hold all the boss loot from a raid
+        class BossLootFromRaid
+        {
+            public string Zone { set; get; }
+            public string Name { set; get; }
+            public List<LootInformation> Loot { set; get; }
+        }
+
         public FormRaidLootData()
         {
             InitializeComponent();
+
+            // Initialize the text boxes...
+            richTextBox1.Text = 
+                "Please enter either the Zone Id of a Raid or the ID of a specific boss or IDs or multiple bosses separated by comma.\n" + 
+                "\tExamples include:\n" + 
+                "\t\tBlackrock Foundry - 6967\n" +
+                "\t\tHighmaul - 6996\n" + 
+                "OR\n" +
+                "\tKargath - 778714\n" + 
+                "OR\n" +
+                "\tBRF Bosses - 76877,77182,76806,76973,76814,77692,76865,76906,77557,77325\n";
+
+            textBoxRaidLoot.Text = "Doesn't not work...";
+            textBoxBossLoot.Text = "78714";
+
         }
 
         private void buttonTEST_Click(object sender, EventArgs e)
@@ -311,97 +342,186 @@ namespace WoWGuildOrganizer
 
             try
             {
-                // Make sure the input is all digits
-                if (Regex.IsMatch(textBoxBossLoot.Text, @"^\d+$"))
+                // Make sure the input is all digits, or commas and digits
+                if (Regex.IsMatch(textBoxBossLoot.Text, @"^[,0-9]+$"))
                 {
-#if DEBUG
-                    // DEBUG section - pulling from file instead of web site
-                    string fileData = string.Empty;
-                    fileData = File.ReadAllText("78714.txt");
+                    // Check to see if this is a comma separated list of npc ids                    
+                    List<BossLootFromRaid> bossLoots = new List<BossLootFromRaid>();
+                    string[] stringSeparatorsComma = new string[] { "," };
+                    string[] npcIds;
 
-                    if (!string.IsNullOrWhiteSpace(fileData))
-#else
+                    npcIds = textBoxBossLoot.Text.Split(stringSeparatorsComma, StringSplitOptions.RemoveEmptyEntries);
+
                     // now get the data from the web site
                     GetWebSiteData data = new GetWebSiteData();
-                    string webSite = string.Format("http://www.wowhead.com/npc={0}", Convert.ToInt32(textBoxBossLoot.Text));                    
 
-                    if (data.Parse(webSite)) // if statement
-#endif
+                    foreach (string npcId in npcIds)
                     {
-                        // now we have the data, get all the loot 
-                        //  but only the loot that has a source                        
-#if DEBUG
-                        // DEBUG section - pulling from file instead of web site
-                        string dataString = fileData;
-#else
-                        string dataString = data.Data;
-#endif
-                        // First get the boss name
-                        string boss = string.Empty;
+                        string webSite = string.Format("http://www.wowhead.com/npc={0}", Convert.ToInt32(npcId));
 
-                        int start = dataString.IndexOf("<title>") + 7;
-                        int end = dataString.IndexOf("-", start);
-
-                        boss = dataString.Substring(start, end - start).Trim();
-
-                        start = dataString.LastIndexOf("</div></li></ul></div><");
-
-                        if (start == -1)
+                        if (data.Parse(webSite))
                         {
-                            MessageBox.Show("Can't find: </div></li></ul></div><");
-                        }
-                        end = dataString.IndexOf("$.extend(true, g_items, _);", start);
+                            // now we have the data, get all the loot 
+                            //  but only the loot that has a source                        
+                            string dataString = data.Data;
+                            BossLootFromRaid bossLoot = new BossLootFromRaid();
+                            string boss = string.Empty;
+                            string zone = string.Empty;
+                            string searchString = string.Empty;
+                            int start = -1;
+                            int end = -1;
+                            string tempData = string.Empty;
 
-                        dataString = dataString.Substring(start, end - start);
+                            // First, get the boss's name
+                            searchString = "<title>";
+                            start = dataString.IndexOf(searchString) + searchString.Length;
+                            end = dataString.IndexOf("-", start);
+                            boss = dataString.Substring(start, end - start).Trim();
+                            bossLoot.Name = boss;
 
-                        string[] stringSeparators = new string[] { "_[" };
-                        string[] results;
+                            // Second, get the boss's Zone
+                            searchString = @"<noscript><br /><h2 class=""heading-size-2""><a href=";
+                            start = dataString.IndexOf(searchString) + searchString.Length;
+                            start = dataString.IndexOf(">", start) + ">".Length;
+                            end = dataString.IndexOf("<", start);
+                            zone = dataString.Substring(start, end - start).Trim();
+                            bossLoot.Zone = zone;
 
-                        results = dataString.Split(stringSeparators, StringSplitOptions.RemoveEmptyEntries);
+                            // Now get the Loot table's spec allowance information
+                            searchString = "new Listview({template: 'item'";
+                            start = dataString.LastIndexOf(searchString);
 
-                        Dictionary<string, List<int>> bossloot = new Dictionary<string, List<int>>();
+                            if (start == -1)
+                            {
+                                MessageBox.Show("Can't find: " + searchString);
+                            }
+                            end = dataString.IndexOf("});\n", start);
 
-                        // loop through all the loot
-                        foreach (string item in results)
-                        {
-                            // now get the loot item id 
-                            string searchString = @"(?<id>\d+)].*?quality"":(?<quality>\d+),.*?";
-                            Regex test = new Regex(searchString, RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
+                            tempData = dataString.Substring(start, end - start);
+
+                            // We have the temp data, but now we need to delete all the items from it that are of "slot":0,
+                            //  I switched it from slot:0 to classs:0 and classs: 12 so I could get the tier pieces
+
+                            // We have the temp data, but now we need to delete all the items from it that are of "classs":0,
+                            //  which seem to be rune drops
+                            while (tempData.IndexOf("\"classs\":0,") != -1)
+                            {
+                                end = tempData.IndexOf("\"classs\":0,");
+                                start = tempData.LastIndexOf("\"id\":", end);
+                                tempData = tempData.Substring(0, start - 1) + tempData.Substring(end + "\"classs\":0,".Length + 1);
+                            }
+
+                            // We have the temp data, but now we need to delete all the items from it that are of "classs":12,
+                            //  which seem to be legendary drops
+                            while (tempData.IndexOf("\"classs\":12,") != -1)
+                            {
+                                end = tempData.IndexOf("\"classs\":12,");
+                                start = tempData.LastIndexOf("\"id\":", end);
+                                tempData = tempData.Substring(0, start - 1) + tempData.Substring(end + "\"classs\":12,".Length + 1);
+                            }
+
+                            // Save the Loot Spec info for later use
+                            Dictionary<int, List<string>> specInfo = new Dictionary<int, List<string>>();
+
+                            searchString = @"""id"":(?<id>\d*),.*?""specs"":\[(?<specs>[,0-9]*?)\],.*?";
+                            Regex testSpecs = new Regex(searchString, RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
 
                             // Get the Average iLevel of character's Gear
-                            foreach (Match result in test.Matches(item))
+                            foreach (Match result in testSpecs.Matches(tempData))
                             {
                                 int id = 0;
-                                string[] contexts = null;
+                                string[] specs = null;
 
                                 if (result.Groups["id"].Success)
                                 {
                                     id = Convert.ToInt32(result.Groups["id"].Value);
+                                }
 
-                                    // now find the item id for the loot to be dropped...
-                                    contexts = FormMain.Items.GetAvailableContexts(id);
+                                if (result.Groups["specs"].Success)
+                                {
+                                    specs = result.Groups["specs"].Value.ToString().Split(stringSeparatorsComma, StringSplitOptions.RemoveEmptyEntries);
 
-                                    if (contexts != null)
+                                    if (!specInfo.ContainsKey(id))
                                     {
-                                        foreach (string context in contexts)
+                                        specInfo.Add(id, specs.ToList<string>());
+                                    }
+                                }
+                                else
+                                {
+                                    // why doens't this work?
+                                    MessageBox.Show("No specs found for id=" + id);
+                                }
+                            }
+
+                            // Now get the Loot table
+                            searchString = "</div></li></ul></div><";
+                            start = dataString.LastIndexOf(searchString);
+
+                            if (start == -1)
+                            {
+                                MessageBox.Show("Can't find: " + searchString);
+                            }
+                            end = dataString.IndexOf("$.extend(true, g_items, _);", start);
+
+                            tempData = dataString.Substring(start, end - start);
+
+                            string[] stringSeparators = new string[] { "_[" };
+                            string[] results;
+
+                            results = tempData.Split(stringSeparators, StringSplitOptions.RemoveEmptyEntries);
+
+                            // Now create the loot information for this boss
+                            bossLoot.Loot = new List<LootInformation>();
+
+                            // loop through all the loot
+                            foreach (string item in results)
+                            {
+                                // now get the loot item id 
+                                searchString = @"(?<id>\d+)].*?quality"":(?<quality>\d+),.*?";
+                                Regex test = new Regex(searchString, RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
+
+                                // Get the Average iLevel of character's Gear
+                                foreach (Match result in test.Matches(item))
+                                {
+                                    int id = 0;
+                                    string[] contexts = null;
+                                    LootInformation newLoot = new LootInformation();
+
+                                    if (result.Groups["id"].Success)
+                                    {
+                                        id = Convert.ToInt32(result.Groups["id"].Value);
+
+                                        newLoot.Id = id;
+
+                                        // now find the item id for the loot to be dropped...
+                                        contexts = FormMain.Items.GetAvailableContexts(id);
+
+                                        if (contexts != null)
                                         {
-                                            if (bossloot.ContainsKey(context))
+                                            newLoot.Contexts = contexts.ToList<string>();
+
+                                            if (specInfo.ContainsKey(id))
                                             {
-                                                bossloot[context].Add(id);
+                                                // Add the spec info now
+                                                newLoot.Specs = specInfo[id];
                                             }
-                                            else
-                                            {
-                                                bossloot.Add(context, new List<int>() { id });
-                                            }
+
+                                            bossLoot.Loot.Add(newLoot);
                                         }
                                     }
                                 }
                             }
-                        }
 
-                        // todo:
-                        createRaidNode("raid1", boss, bossloot);
+                            // Add this current boss to the List of boss loots
+                            bossLoots.Add(bossLoot);
+                        }
                     }
+
+                    // Now that we have all the data, create the xml file
+                    createRaidNode(bossLoots);
+
+                    // Now ask if you want to refresh the data
+                    // todo:
                 }
             }
             catch (Exception ex)
@@ -415,84 +535,165 @@ namespace WoWGuildOrganizer
         /// <summary>
         /// Saving this information for future use
         /// </summary>
-        private void createRaidNode(string raid, string boss, Dictionary<string, List<int>> bossloot)
+        private void createRaidNode(List<BossLootFromRaid> bossLoots /* Dictionary<string, List<int>> bossloot*/)
         {
-            //  Direct writing to file
-            // Now we start the xml file
-            XmlTextWriter writer = new XmlTextWriter(boss + ".xml", System.Text.Encoding.UTF8);
-            writer.WriteStartDocument(true);
-            writer.Formatting = Formatting.Indented;
-            writer.Indentation = 5;
+            bool deleteFile = false;
 
-            // The root
-            writer.WriteStartElement("raidloot");
-
-            foreach (string difficulty in bossloot.Keys)
+            if (File.Exists("raidloot.xml"))
             {
-                // Raids Section
-                writer.WriteStartElement("raid");
-
-                // Raid Name
-                writer.WriteStartAttribute("name");
-                writer.WriteString(raid);
-                writer.WriteEndAttribute();
-
-                // Raid Difficulty
-                writer.WriteStartAttribute("difficulty");
-                switch (difficulty)
+                if (MessageBox.Show("There is already a raidloot.xml file that exists, are you sure you want to overwrite it?", "Overwrite?", MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
                 {
-                    case "raid-normal":
-                        writer.WriteString("Normal");
-                        break;
-                    case "raid-heroic":
-                        writer.WriteString("Heroic");
-                        break;
-                    case "raid-mythic":
-                        writer.WriteString("Mythic");
-                        break;
-                    case "raid-finder":
-                        writer.WriteString("Raid Finder");
-                        break;
-                    default:
-                        writer.WriteString(difficulty);
-                        break;
+                    deleteFile = true;
                 }
-
-                writer.WriteEndAttribute();
-
-                // Bosses Section
-                writer.WriteStartElement("boss");
-
-                // Boss Name
-                writer.WriteStartElement("name");
-                writer.WriteString(boss);
-                writer.WriteEndElement();
-
-                // Loot Section                
-                foreach (int id in bossloot[difficulty])
-                {
-                    writer.WriteStartElement("loot");
-                    writer.WriteString(id.ToString());
-                    writer.WriteEndElement();
-                }
-
-                // Close the Bosses Section
-                writer.WriteEndElement();
-
-                // Close the Raids Section
-                writer.WriteEndElement();
+            }
+            else
+            {
+                deleteFile = true;
             }
 
-            // Close the Root
-            writer.WriteEndElement();
+            if (deleteFile)
+            {
+                // First create the new xml file
+                XmlTextWriter writer = new XmlTextWriter("raidloot.xml", System.Text.Encoding.UTF8);
 
-            // Close the document
-            writer.WriteEndDocument();
+                try
+                {
+                    //  Direct writing to file
+                    // Now we start the xml file                
+                    writer.WriteStartDocument(true);
+                    writer.Formatting = Formatting.Indented;
+                    writer.Indentation = 5;
 
-            // now close the xml file
-            writer.Close();
+                    // The root
+                    writer.WriteStartElement("raidloot");
+                                        
+                    // Need to order this by Difficulty, NOT by Boss as in the data structure
+                    for (int i = 0; i < 4; i++)
+                    {
+                        string raidDifficulty = string.Empty;
 
-            MessageBox.Show("File created!");
+                        // First get the Difficulty Order
+                        switch (i)
+                        {
+                            case 0:
+                                raidDifficulty = "raid-finder";
+                                break;
+                            case 1:
+                                raidDifficulty = "raid-normal";
+                                break;
+                            case 2:
+                                raidDifficulty = "raid-heroic";
+                                break;
+                            case 3:
+                                raidDifficulty = "raid-mythic";
+                                break;
+                        }
+
+                        // Raids Section
+                        writer.WriteStartElement("raid");
+
+                        // Raid Name
+                        writer.WriteStartAttribute("name");
+                        writer.WriteString(bossLoots[0].Zone);
+                        writer.WriteEndAttribute();
+                                                
+                        // Raid Difficulty
+                        writer.WriteStartAttribute("difficulty");
+                        switch (raidDifficulty)
+                        {
+                            case "raid-normal":
+                                writer.WriteString("Normal");
+                                break;
+                            case "raid-heroic":
+                                writer.WriteString("Heroic");
+                                break;
+                            case "raid-mythic":
+                                writer.WriteString("Mythic");
+                                break;
+                            case "raid-finder":
+                                writer.WriteString("Raid Finder");
+                                break;
+                            default:
+                                writer.WriteString(raidDifficulty);
+                                break;
+                        }
+                        writer.WriteEndAttribute();
+
+                        foreach (BossLootFromRaid bossLoot in bossLoots)
+                        {
+                            // Bosses Section
+                            writer.WriteStartElement("boss");
+
+                            // Boss Name
+                            writer.WriteStartElement("name");
+                            writer.WriteString(bossLoot.Name);
+                            writer.WriteEndElement();
+
+                            foreach (LootInformation loot in bossLoot.Loot)
+                            {
+                                foreach (string difficulty in loot.Contexts)
+                                {
+                                    if (raidDifficulty == difficulty)
+                                    {
+                                        // Loot Section                
+                                        writer.WriteStartElement("loot");
+
+                                        writer.WriteStartElement("id");
+                                        writer.WriteString(loot.Id.ToString());
+                                        writer.WriteEndElement();
+
+                                        if (loot.Specs != null)
+                                        {
+                                            foreach (string spec in loot.Specs)
+                                            {
+                                                writer.WriteStartElement("spec");
+                                                writer.WriteString(spec);
+                                                writer.WriteEndElement();
+                                            }
+                                        }
+
+                                        // Close the loot section
+                                        writer.WriteEndElement();
+
+                                        // todo: debug
+                                        writer.Flush();
+                                    }
+                                }
+                            }
+
+                            // Close the Bosses Section
+                            writer.WriteEndElement();
+
+                            // todo: debug
+                            writer.Flush();
+                        }
+
+                        // Close the Raids Section
+                        writer.WriteEndElement();
+
+                        // todo: debug
+                        writer.Flush();
+                    }
+
+                    // Close the Root
+                    writer.WriteEndElement();
+
+                    // Close the document
+                    writer.WriteEndDocument();
+
+                    // now close the xml file
+                    writer.Close();
+
+                    MessageBox.Show("File created!");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error: " + ex.Message);
+
+                    writer.Flush();
+                    writer.Close();
+                }
+            }
         }
     }
 }
