@@ -16,6 +16,8 @@ namespace WoWGuildOrganizer
     /// </summary>
     public partial class FormItemCacheManager : Form
     {
+        string ItemCacheFile = "ItemCache.dat";
+
         /// <summary>
         /// 
         /// </summary>
@@ -27,20 +29,30 @@ namespace WoWGuildOrganizer
             //bindingNavigator1.BindingSource = bindingSource1;
         }
 
+        public FormItemCacheManager(string itemCacheFile)
+        {
+            this.InitializeComponent();
+
+            //bindingSource1.DataSource = WoWGuildOrganizer.FormMain.Items;
+            //bindingNavigator1.BindingSource = bindingSource1;
+
+            ItemCacheFile = itemCacheFile;
+        }
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void buttonDeleteCache_Click(object sender, EventArgs e)
+        private void ButtonDeleteCache_Click(object sender, EventArgs e)
         {
             try
             {
-                if (File.Exists("ItemCache.dat") && 
+                if (File.Exists(ItemCacheFile) && 
                     MessageBox.Show("Are you sure you want to permanently delete the item cache?", "Deleting Item Cache", MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
                 {
                     // delete it
-                    File.Delete("ItemCache.dat");
+                    File.Delete(ItemCacheFile);
 
                     // clear the current cache
                     WoWGuildOrganizer.FormMain.Items = new ItemCache();
@@ -57,7 +69,7 @@ namespace WoWGuildOrganizer
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void textBoxItemId_TextChanged(object sender, EventArgs e)
+        private void TextBoxItemId_TextChanged(object sender, EventArgs e)
         {
             // todo: remove this!
             TextBox t = null; // sender as TextBox;
@@ -303,7 +315,7 @@ namespace WoWGuildOrganizer
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void buttonRegetItem_Click(object sender, EventArgs e)
+        private void ButtonRegetItem_Click(object sender, EventArgs e)
         {
             // reget the item
             

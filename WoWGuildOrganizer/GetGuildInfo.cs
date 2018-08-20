@@ -5,14 +5,14 @@
 
 namespace WoWGuildOrganizer
 {
+    using Newtonsoft.Json;
     using System;
     using System.Collections;
-    using System.Collections.Generic;
     using System.IO;
-    using System.Linq;    
     using System.Net;
     using System.Text;
-    using System.Text.RegularExpressions;    
+    using System.Text.RegularExpressions;
+
 
     /// <summary>
     /// Class to get all the guild information
@@ -54,10 +54,10 @@ namespace WoWGuildOrganizer
 
         #endregion
 
-        #region Collect Data
-
+        #region " Collect Data "
         /// <summary>
         /// Collects all the data from a web page
+        /// ***DEPRECIATED***
         /// </summary>
         /// <param name="webPage">url of the web page that contains the guild information</param>
         /// <returns>true if data is collected successfully</returns>
@@ -148,16 +148,68 @@ namespace WoWGuildOrganizer
 
             return success;
         }
-
         #endregion
-        
-        #region Debugging
-        
+
+        #region " Collect JSON Data "
         /// <summary>
-        /// Check if debug logging is needed
+        /// 
         /// </summary>
-        /// <param name="dataString">full data string of the web site</param>
-        /// <param name="search">regex of what will be searched on in the web site</param>
+        /// <param name="requestUrl"></param>
+        /// <returns></returns>
+        public virtual bool GetJSONData(string guild, string realm)
+        {
+            bool success = false;
+
+            try
+            {
+                GetWebJSONData getData = new GetWebJSONData();
+
+                JSONGuildData data = getData.GetGuildJSONData(guild, realm);
+
+                if (data != null)
+                {
+                    if (data.Members.Count > 0)
+                    {
+                        foreach (JSONGuildCharacterData guildie in data.Members)
+                        {
+                            // now save all the data into the format we are expecting
+                            // TODO: should it stay this way?  Or make a new format?
+                            GuildMember temp = new GuildMember();
+
+                            temp.Name = guildie.Character.Name;
+                            temp.Race = Converter.ConvertRace(guildie.Character.Race);
+                            temp.Class = Converter.ConvertClass(guildie.Character.Class);
+                            temp.Level = guildie.Character.Level;
+                            temp.AchievementPoints = guildie.Character.AchievementPoints;
+                            temp.EquipediLevel = 0;
+                            temp.MaxiLevel = 0;
+
+                            this.Characters.Add(temp);
+                        }
+
+                        // No errors up to this point?  Success!
+                        success = true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logging.Log($"ERROR: {ex.Message} in CollectJSONData() in GetGuildInfo.cs");
+                Logging.DisplayError($"ERROR: {ex.Message} in CollectJSONData() in GetGuildInfo.cs");
+                success = false;
+            }
+
+            return success;
+        }
+        #endregion
+
+            #region Debugging
+
+            /// <summary>
+            /// Check if debug logging is needed
+            /// </summary>
+            /// <param name="dataString">full data string of the web site</param>
+            /// <param name="search">regex of what will be searched on in the web site</param>
         private void Debug(string dataString, string search)
         {
             if (this.debug)

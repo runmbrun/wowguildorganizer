@@ -129,22 +129,10 @@ namespace WoWGuildOrganizer
             set { this.context = value; }
         }
 
-        public bool IsEnchanted()
-        {
-            if (_toolTips.Contains(@"enchant"))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        private string _toolTips;
+        //private string _toolTips;
         public void SetToolTips(string t)
         {
-            _toolTips = t;
+            //_toolTips = t;
             int GemCount = 0;
             bool ExtraSocket = false;
 
@@ -157,9 +145,9 @@ namespace WoWGuildOrganizer
             // Find the number of Gems in the item
             int start = -1;
 
-            if (_toolTips.Length > 0)
+            if (t.Length > 0)
             {
-                while ((start = _toolTips.IndexOf("gem", start + 1)) != -1)
+                while ((start = t.IndexOf("gem", start + 1)) != -1)
                 {
                     GemCount++;
                 }
@@ -169,7 +157,7 @@ namespace WoWGuildOrganizer
             //   Enchants Example:  "enchant":4209
             if (CanEnchant())
             {   
-                if (!_toolTips.Contains("enchant"))
+                if (!t.Contains("enchant"))
                 {
                     MissingEnchant = "1";
                 }
@@ -179,6 +167,61 @@ namespace WoWGuildOrganizer
             //   Gems - Example: "gem0":52209,
             if (CanSocket())
             {
+                if (ExtraSocket)
+                {
+                    if (GemCount < (_socketcount + 1))
+                    {
+                        MissingGem = ((_socketcount + 1) - GemCount).ToString();
+                    }
+                }
+                else
+                {
+                    if (GemCount < _socketcount)
+                    {
+                        MissingGem = (_socketcount - GemCount).ToString();
+                    }
+                }
+            }
+        }
+
+        public void SetToolTips(JSONCharacterItemToolTipParams t)
+        {
+            int GemCount = 0;
+            bool ExtraSocket = false;
+
+            // now parse this out and fix the unknown properties...
+            //  1. MissingItem
+            //  2. MissingEnchant
+            //  3. MissingGem
+            //  4. LastUpdated
+
+            // Find the number of Gems in the item            
+            if (t.Gem0 != 0)
+            {
+                GemCount++;
+            }
+
+            if (t.Gem1 != 0)
+            {
+                GemCount++;
+            }
+            
+            // 2. MissingEnchant
+            //   Enchants Example:  "enchant":4209
+            if (CanEnchant())
+            {
+                // TODO: need to change this for Legion
+                //if (!_toolTips.Contains("enchant"))
+                {
+                    MissingEnchant = "1";
+                }
+            }
+                        
+            // 3. MissingGem
+            //   Gems - Example: "gem0":52209,
+            if (CanSocket())
+            {
+                // TODO: need to change this for Legion
                 if (ExtraSocket)
                 {
                     if (GemCount < (_socketcount + 1))

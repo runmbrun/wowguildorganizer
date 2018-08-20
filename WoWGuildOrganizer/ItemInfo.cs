@@ -75,13 +75,14 @@ namespace WoWGuildOrganizer
         }
 
         private Dictionary<int, int> _stats = new Dictionary<int, int>();
-        public string Stats
+        public void SetStats(IList<JSONItemStats> values)
         {            
-            set 
+            //set 
             {
                 // Example:
                 //{"stat":4,"amount":485},{"stat":13,"amount":638},{"stat":7,"amount":958},{"stat":37,"amount":323}
 
+                /* Old Way...
                 string Search = @"stat:(?<stat>\d+?),amount:(?<amount>\d+?)}";
                 Regex test = new Regex(Search, RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
 
@@ -96,6 +97,14 @@ namespace WoWGuildOrganizer
 
                         _stats.Add(stat, amount);
                     }
+                }*/
+
+                foreach (JSONItemStats statItem in values)
+                {
+                    int stat = Convert.ToInt32(statItem.Stat);
+                    int amount = Convert.ToInt32(statItem.Amount);
+
+                    _stats.Add(stat, amount);
                 }
             }
         }

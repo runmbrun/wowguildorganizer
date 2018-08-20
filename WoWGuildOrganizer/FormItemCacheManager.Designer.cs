@@ -72,7 +72,7 @@ namespace WoWGuildOrganizer
             this.buttonDeleteCache.TabIndex = 0;
             this.buttonDeleteCache.Text = "Delete Cache";
             this.buttonDeleteCache.UseVisualStyleBackColor = true;
-            this.buttonDeleteCache.Click += new System.EventHandler(this.buttonDeleteCache_Click);
+            this.buttonDeleteCache.Click += new System.EventHandler(this.ButtonDeleteCache_Click);
             // 
             // tableLayoutPanel1
             // 
@@ -131,7 +131,7 @@ namespace WoWGuildOrganizer
             this.textBoxItemId.ReadOnly = true;
             this.textBoxItemId.Size = new System.Drawing.Size(77, 20);
             this.textBoxItemId.TabIndex = 1;
-            this.textBoxItemId.TextChanged += new System.EventHandler(this.textBoxItemId_TextChanged);
+            this.textBoxItemId.TextChanged += new System.EventHandler(this.TextBoxItemId_TextChanged);
             // 
             // bindingNavigator1
             // 
@@ -335,7 +335,7 @@ namespace WoWGuildOrganizer
             this.buttonRegetItem.TabIndex = 13;
             this.buttonRegetItem.Text = "Reget Item";
             this.buttonRegetItem.UseVisualStyleBackColor = true;
-            this.buttonRegetItem.Click += new System.EventHandler(this.buttonRegetItem_Click);
+            this.buttonRegetItem.Click += new System.EventHandler(this.ButtonRegetItem_Click);
             // 
             // FormItemCacheManager
             // 

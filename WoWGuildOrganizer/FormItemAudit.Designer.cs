@@ -325,6 +325,7 @@ namespace WoWGuildOrganizer
             this.Name = "FormItemAudit";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Character Audit";
             this.Load += new System.EventHandler(this.FormItemAudit_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewItemAudit)).EndInit();

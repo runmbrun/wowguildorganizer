@@ -286,7 +286,7 @@ namespace WoWGuildOrganizer
                             dualMainHands = true;
                         }
                     }
-
+                    
                     // Check for missing Items
                     if (item.MissingItem != "0")
                     {
@@ -319,7 +319,7 @@ namespace WoWGuildOrganizer
                         missingEnchants++;
                     }
 
-                    // Check for missing enchants
+                    // Check for missing gems
                     if (item.MissingGem != "0")
                     {
                         missingGems += Convert.ToInt32(item.MissingGem);

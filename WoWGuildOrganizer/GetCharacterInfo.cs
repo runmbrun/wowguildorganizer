@@ -57,106 +57,6 @@ namespace WoWGuildOrganizer
         }
 
         /// <summary>
-        /// Collects the character data from a passed in web page
-        /// and uses a regular expression to gather data
-        /// </summary>
-        /// <param name="webpage">the URL of the web page</param>
-        /// <returns>true if successful</returns>
-        public bool CollectData(string webpage)
-        {
-            bool success = false;
-
-            try
-            {
-                GetWebSiteData getSiteData = new GetWebSiteData();
-
-                if (!getSiteData.Parse(webpage))
-                {
-                    // error
-                }
-                else
-                {
-                    // now parse the data
-
-                    // piece in web site that is important
-                    // code to expresso => replace "" with "
-                    // expresso to code => replace " with ""
-
-                    /*
-                      character":{.*?name":"(?<Name>\w+).*?class":(?<Class>\d+).*?race":(?<Race>\d+).*?level":(?<Level>\d+).*?achievementPoints":(?<AchPts>\d+).*?}{
-                      "lastModified":1311454367000,
-                      "name":"Breaktooth",
-                      "realm":"Thrall",
-                      "class":11,
-                      "race":8,
-                      "gender":0,
-                      "level":75,
-                      "achievementPoints":390,
-                      "thumbnail":"thrall/19/74347795-avatar.jpg",
-                      "items":{
-                        "averageItemLevel":127,
-                        "averageItemLevelEquipped":116,
-                        "head":{
-                          "id":39034,
-                          "name":"Bearskin Helm",
-                          "icon":"inv_helmet_108",
-                          "quality":2,
-                          "tooltipParams":{}
-                        },    
-                    */
-
-                    string dataString = getSiteData.Data;
-                    string search = @"averageItemLevel"":(?<avg_iLevel>\d+).*?averageItemLevelEquipped"":(?<equip_iLevel>\d+),.*?primary"":.*?name"":""(?<Profession1>\w+).*?name"":""(?<Profession2>\w+).*?""selected"":true,.*?""spec"":{""name"":""(?<Spec>\w+)"".*?,""role"":""(?<Role>\w+)""";
-                    Regex test = new Regex(search, RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
-
-                    this.Debug(search, dataString);
-
-                    // Get the Average iLevel of character's Gear
-                    foreach (Match result in test.Matches(dataString))
-                    {
-                        if (result.Groups["avg_iLevel"].Success)
-                        {
-                            this.Guildie.MaxiLevel = Convert.ToInt32(result.Groups["avg_iLevel"].Value.ToString());
-                        }
-
-                        if (result.Groups["equip_iLevel"].Success)
-                        {
-                            this.Guildie.EquipediLevel = Convert.ToInt32(result.Groups["equip_iLevel"].Value.ToString());
-                        }
-
-                        if (result.Groups["Profession1"].Success)
-                        {
-                            this.Guildie.Profession1 = result.Groups["Profession1"].Value;
-                        }
-
-                        if (result.Groups["Profession2"].Success)
-                        {
-                            this.Guildie.Profession2 = result.Groups["Profession2"].Value;
-                        }
-
-                        if (result.Groups["Spec"].Success)
-                        {
-                            this.Guildie.Spec = result.Groups["Spec"].Value;
-                        }
-
-                        if (result.Groups["Role"].Success)
-                        {
-                            this.Guildie.Role = result.Groups["Role"].Value;
-                        }
-                    }
-
-                    success = true;
-                }
-            }
-            catch (Exception ex)
-            {
-                Logging.Debug(string.Format("ERROR: {0} in CollectData() in GetCharacterInfo.cs", ex.Message));
-            }
-
-            return success;
-        }
-
-        /// <summary>
         /// Pulls all character information from the Web Site passed in
         ///  This is just for the Raid Info tab
         /// </summary>
@@ -298,6 +198,291 @@ namespace WoWGuildOrganizer
         }
 
         /// <summary>
+        /// Pulls all character information from the Web Site passed in
+        ///  This is just for the Raid Info tab
+        /// </summary>
+        /// <param name="characterName">Name of the character whose data is being requested</param>
+        /// /// <param name="realm">Realm of the character whose data is being requested</param>
+        /// <returns>true if successful</returns>
+        public bool GetJSONData(string characterName, string realm)
+        {
+            bool success = false;
+
+            try
+            {
+                GetWebJSONData getData = new GetWebJSONData();
+                JSONCharacterData data = getData.GetCharacterJSONData(characterName, realm);
+
+                if (data != null)
+                {
+                    // Get the basic information here
+                    this.Guildie.Name = data.Name;
+                    this.Guildie.Class = Converter.ConvertClass(data.Class);
+                    this.Guildie.Race = Converter.ConvertRace(data.Race);
+                    this.Guildie.Level = data.Level;
+                    this.Guildie.AchievementPoints = data.AchievementPoints;
+                    this.Guildie.MaxiLevel = data.Items.AverageItemLevel;
+                    this.Guildie.EquipediLevel = data.Items.AverageItemLevelEquipped;
+                    this.Guildie.Profession1 = string.Empty;
+                    this.Guildie.Profession2 = string.Empty;
+
+                    // Get the Professions
+                    if (data.Professions.Primary != null && data.Professions.Primary.Count > 0)
+                    {
+                        this.Guildie.Profession1 = data.Professions.Primary[0].Name;
+                    }
+
+                    if (data.Professions.Primary != null && data.Professions.Primary.Count > 1)
+                    {
+                        this.Guildie.Profession2 = data.Professions.Primary[1].Name;
+                    }
+
+                    // Get the Specs
+                    if (data.Talents != null && data.Talents.Count > 0)
+                    {
+                        foreach (JSONCharacterTalentData talent in data.Talents)
+                        {
+                            if (talent.Selected != null && Convert.ToBoolean(talent.Selected) == true)
+                            {
+                                this.Guildie.Spec = talent.Spec.Name;
+                                this.Guildie.Role = talent.Spec.Role;
+                                break;
+                            }                            
+                        }                        
+                    }
+
+                    // Get the items
+                    this.Guildie.ItemAudits = this.GetItemData(data);
+
+                    success = true;
+                }                
+            }
+            catch (Exception ex)
+            {
+                Logging.Log($"ERROR: {ex.Message} in CollectFullJSONData() in GetCharacterInfo.cs");
+                Logging.DisplayError($"ERROR: {ex.Message} in CollectFullJSONData() in GetCharacterInfo.cs");
+                success = false;
+            }
+
+            return success;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        private Dictionary<string, ItemAudit> GetItemData(JSONCharacterData data)
+        {
+            Dictionary<string, ItemAudit> items = new Dictionary<string, ItemAudit>();
+            int i = 0;
+
+            // Go through all the slots and fill out this dictionary with the JSON data from the web site
+            try
+            {
+                // fill out a blank array with all the slots
+                for (i = 0; i < 18; i++)
+                {
+                    ItemAudit audit = new ItemAudit();
+                    JSONCharacterItem newItem = null;
+                    ItemInfo item = new ItemInfo();
+
+                    switch (i)
+                    {
+                        // Head
+                        case 0:
+                            audit.Slot = "head";
+                            audit.MissingItem = "1";
+                            newItem = data.Items.Head;                            
+                            break;
+                        case 1:
+                            audit.Slot = "neck";
+                            audit.MissingItem = "1";
+                            newItem = data.Items.Neck;
+                            break;
+                        case 2:
+                            audit.Slot = "shoulder";
+                            audit.MissingItem = "1";
+                            newItem = data.Items.Shoulder;
+                            break;
+                        case 3:
+                            audit.Slot = "back";
+                            audit.MissingItem = "1";
+                            newItem = data.Items.Back;
+                            break;
+                        case 4:
+                            audit.Slot = "chest";
+                            audit.MissingItem = "1";
+                            newItem = data.Items.Chest;
+                            break;
+                        case 5:
+                            audit.Slot = "tabard";
+                            audit.MissingItem = "1";
+                            newItem = data.Items.Tabard;
+                            break;
+                        case 6:
+                            audit.Slot = "shirt";
+                            audit.MissingItem = "1";
+                            newItem = data.Items.Shirt;
+                            break;
+                        case 7:
+                            audit.Slot = "wrist";
+                            audit.MissingItem = "1";
+                            newItem = data.Items.Wrist;
+                            break;
+                        case 8:
+                            audit.Slot = "hands";
+                            audit.MissingItem = "1";
+                            newItem = data.Items.Hands;
+                            break;
+                        case 9:
+                            audit.Slot = "waist";
+                            audit.MissingItem = "1";
+                            newItem = data.Items.Waist;
+                            break;
+                        case 10:
+                            audit.Slot = "legs";
+                            audit.MissingItem = "1";
+                            newItem = data.Items.Legs;
+                            break;
+                        case 11:
+                            audit.Slot = "feet";
+                            audit.MissingItem = "1";
+                            newItem = data.Items.Feet;
+                            break;
+                        case 12:
+                            audit.Slot = "finger1";
+                            audit.MissingItem = "1";
+                            newItem = data.Items.Finger1;
+                            break;
+                        case 13:
+                            audit.Slot = "finger2";
+                            audit.MissingItem = "1";
+                            newItem = data.Items.Finger2;
+                            break;
+                        case 14:
+                            audit.Slot = "trinket1";
+                            audit.MissingItem = "1";
+                            newItem = data.Items.Trinket1;
+                            break;
+                        case 15:
+                            audit.Slot = "trinket2";
+                            audit.MissingItem = "1";
+                            newItem = data.Items.Trinket2;
+                            break;
+                        case 16:
+                            audit.Slot = "mainHand";
+                            audit.MissingItem = "1";
+                            newItem = data.Items.MainHand;
+                            break;
+                        case 17:
+                            audit.Slot = "offHand";
+                            audit.MissingItem = "1";
+                            newItem = data.Items.OffHand;
+                            break;
+                    }
+
+                    // See if an item was found
+                    if (newItem != null)
+                    {
+                        // Get the Item Id
+                        audit.Id = newItem.Id;
+
+                        // Check to see if it has a Context
+                        if (newItem.Context != null)
+                        {
+                            audit.Context = newItem.Context;
+                        }
+
+                        // Now check for the item in the item cache
+                        if (!WoWGuildOrganizer.FormMain.Items.Contains(audit.Id, audit.Context))
+                        {
+                            // First fetch the data
+                            GetItemInfo get = new GetItemInfo();
+
+                            // Get the item data
+                            if (get.CollectData(audit.Id, audit.Context))
+                            {
+                                item = get.Item;
+
+                                // Need to add in this item to the Item Cache
+                                WoWGuildOrganizer.FormMain.Items.AddItem(item, audit.Context);
+                            }
+                            else
+                            {
+                                // todo: trap it here
+                                Logging.Error($"Data not collected from Item with ID = 0. [{audit.Id}]");
+                            }
+                        }
+                        else
+                        {
+                            item = (ItemInfo)WoWGuildOrganizer.FormMain.Items.GetItem(audit.Id, audit.Context);
+                        }
+                    }
+
+                    // Check if an item was found
+                    if (item.Id != 0)
+                    {
+                        // Set CanEnchant and CanSocket values
+                        audit.CanEnchant(item.CanEnchant);
+                        audit.CanSocket(item.CanSocket);
+                        audit.SocketCount(item.SocketCount);
+                        audit.MissingItem = "0";                    
+
+                        audit.Name = newItem.Name;
+                        audit.Quality = newItem.Quality;
+                        audit.ItemLevel = newItem.ItemLevel;
+                        audit.Context = newItem.Context;
+
+                        // TODO: This will need changes for Legion
+                        if (newItem.BonusLists != null)
+                        {
+                            string bonuses = string.Join<int>(",", newItem.BonusLists);
+                        
+                            audit.SetBonusLists(bonuses);
+
+                            if (bonuses.Contains("563") || bonuses.Contains("564") || bonuses.Contains("565"))
+                            {
+                                // Changes to Gem Sockets for WoD
+                                //  Now a prismatic gem socket will show up in the bonus lists
+                                audit.CanSocket(true);
+                                audit.SocketCount(1);
+                            }
+                        }
+
+                        // Make sure ToolTips is always at the end, as it does other calculations
+                        if (newItem.ToolTipParams != null)
+                        {
+                            audit.SetToolTips(newItem.ToolTipParams);
+                        }
+                    }
+                    else
+                    {
+                        audit.MissingItem = "1";
+
+                        // Ususally this error is from the GetItem() function got finding the proper data
+                        Logging.Error(string.Format("Found a Item with ID = 0. [{0}]", audit.Id));
+                    }
+
+                    items.Add(audit.Slot, audit);
+                }
+            }
+            catch (Exception ex)
+            {
+                if (data != null && !string.IsNullOrEmpty(data.Name))
+                {
+                    Logging.DisplayError($"GetCharacterInfo.GetItemData() - slot {i} missing for {data.Name}: {ex.Message}");
+                }
+                else
+                {
+                    Logging.DisplayError($"GetCharacterInfo.GetItemData() - slot missing: {ex.Message}");
+                }                
+            }
+
+            return items;
+        }
+
+        /// <summary>
         /// Parses the raw character data from the web page
         /// </summary>
         /// <param name="data">raw character data in form of a string</param>
@@ -411,6 +596,8 @@ namespace WoWGuildOrganizer
 
                             if (bonuses.Contains("563") || bonuses.Contains("564") || bonuses.Contains("565"))
                             {
+                                // Changes to Gem Sockets for WoD
+                                //  Now a prismatic gem socket will show up in the bonus lists
                                 audit.CanSocket(true);
                                 audit.SocketCount(1);
                             }

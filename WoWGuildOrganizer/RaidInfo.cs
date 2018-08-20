@@ -37,81 +37,102 @@ namespace WoWGuildOrganizer
             string raidBoss = string.Empty;
             string fileName = "raidloot.xml";
 
-            // Look for a local file
-            if (File.Exists(fileName))
+            try
             {
-                XDocument doc = XDocument.Load(fileName);                
-                
-                foreach (XElement raids in doc.Root.Elements())
+                // Look for a local file
+                if (File.Exists(fileName))
                 {
-                    foreach (XAttribute raid in raids.Attributes())
+                    XDocument doc = XDocument.Load(fileName);
+
+                    // Cycle through all the raids
+                    foreach (XElement raids in doc.Root.Elements())
                     {
-                        if (raid.Name.ToString().ToLower() == "name")
+                        // Go through each raid individually - Attributes first
+                        foreach (XAttribute raid in raids.Attributes())
                         {
-                            // Get this raid name
-                            raidName = raid.Value.ToString();
+                            if (raid.Name.ToString().ToLower() == "name")
+                            {
+                                // Get this raid name
+                                raidName = raid.Value.ToString();
+                            }
+                            else if (raid.Name.ToString().ToLower() == "difficulty")
+                            {
+                                // Get this raid difficulty
+                                raidDifficulty = raid.Value.ToString();
+                            }
                         }
-                        else if (raid.Name.ToString().ToLower() == "difficulty")
+
+                        // Now go through the raid's elements to get each boss
+                        foreach (XElement bosses in raids.Elements())
                         {
-                            // Get this raid difficulty
-                            raidDifficulty = raid.Value.ToString();
+                            // Get the Boss's Attributes - the name
+                            foreach (XAttribute bossName in bosses.Attributes())
+                            {
+                                if (bossName.Name.ToString().ToLower() == "name")
+                                {
+                                    // Get this raid name
+                                    raidBoss = bossName.Value.ToString();
+                                }
+                            }
 
                             // clear out temp loot 
+                            string tempLootId = string.Empty;
+                            string tempLootContext = string.Empty;
+                            List<int> lootSpecs = new List<int>();
+
                             tempLoot = new Dictionary<string, Dictionary<string, int[]>>();
                             Dictionary<string, int[]> tempLootSpecs = new Dictionary<string, int[]>();
 
-                            // now cycle through all the different bosses loot tables
-                            foreach (XElement el in raids.Elements())
+                            // Get the Boss's Elements - the Loot
+                            foreach (XElement lootItem in bosses.Elements())
                             {
-                                ArrayList lootIds = new ArrayList();
-                                List<int> lootSpecs = new List<int>();
-                                int count = 0;
-                                                                
-                                foreach (XElement element in el.Elements())
+                                // Get the loot item's attributes
+                                foreach (XAttribute lootDetails in lootItem.Attributes())
                                 {
-                                    if (element.Name == "name")
+                                    if (lootDetails.Name.ToString().ToLower() == "id")
                                     {
-                                        raidBoss = element.Value.ToString();
+                                        // Get this item's id
+                                        tempLootId = lootDetails.Value.ToString();
                                     }
-                                    else if (element.Name == "loot")
+                                    else if (lootDetails.Name.ToString().ToLower() == "context")
                                     {
-                                        string tempLootId = string.Empty;
-                                        lootSpecs = new List<int>();
-
-                                        // now cycle through all the loot elements
-                                        foreach (XElement lootItem in element.Elements())
-                                        {
-                                            if (lootItem.Name == "id")
-                                            {
-                                                tempLootId = lootItem.Value.ToString();
-                                                lootIds.Add(lootItem.Value.ToString());
-                                                count++;
-                                            }
-                                            else if (lootItem.Name == "spec")
-                                            {
-                                                lootSpecs.Add(Convert.ToInt32(lootItem.Value.ToString()));
-                                            }
-                                        }
-
-                                        tempLootSpecs.Add(tempLootId, lootSpecs.ToArray());
+                                        // Get this item's context
+                                        tempLootContext = lootDetails.Value.ToString();
                                     }
                                 }
 
-                                // Add this Raid boss and all his loot specs to the list
-                                tempLoot.Add(raidBoss, tempLootSpecs);
+                                lootSpecs = new List<int>();
 
-                                // Clear out this bosses loot specs
-                                tempLootSpecs = new Dictionary<string, int[]>();
+                                // Get the loot item's elements - the spec info
+                                foreach (XElement loot in lootItem.Elements())
+                                {
+                                    if (loot.Name.ToString().ToLower() == "spec")
+                                    {
+                                        lootSpecs.Add(Convert.ToInt32(loot.Value.ToString()));
+                                    }
+                                }
+
+                                tempLootSpecs.Add(tempLootId + "-" + tempLootContext, lootSpecs.ToArray());
                             }
 
-                            raidLoot.Add(raidName + " - " + raidDifficulty, tempLoot);
+                            // Add this Raid boss and all his loot specs to the list
+                            tempLoot.Add(raidBoss, tempLootSpecs);
+
+                            // Clear out this bosses loot specs
+                            tempLootSpecs = new Dictionary<string, int[]>();
                         }
+
+                        raidLoot.Add(raidName + " - " + raidDifficulty, tempLoot);
                     }
                 }
+                else
+                {
+                    Logging.Warning("You currently don't have a raid loot table to work with.\nPlease go to the settings table to pull down data.");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                MessageBox.Show("You currently don't have a raid loot table to work with.\nPlease go to the settings table to pull down data.");
+                Logging.DisplayError("Cannot load raidloot.xml file.  Exception: " + ex.Message);
             }
         }      
 
@@ -128,250 +149,187 @@ namespace WoWGuildOrganizer
             // Create data table for all the new data
             DataTable loot = new DataTable();
 
-            // Add Columns
-            loot.Columns.Add("Upgrade");
-            loot.Columns[0].DataType = typeof(int);
-            loot.Columns.Add("CharacterName");
-            loot.Columns.Add("ItemId");
-            loot.Columns.Add("ItemName");
-            loot.Columns.Add("ItemSlot");
-            loot.Columns.Add("ItemILevel");
-            loot.Columns.Add("OldItemILevel");
-            loot.Columns.Add("OldItemId");
-            loot.Columns.Add("OldItemContext");
-
-            // Now check to make sure it is valid and contains at least 1 item
-            if (itemIds != null && itemIds.Count > 0)
+            try
             {
-                // Go through all item ids
-                foreach (string itemid in itemIds.Keys.ToList<string>())
+                // Add Columns
+                loot.Columns.Add("Upgrade");
+                loot.Columns[0].DataType = typeof(int);
+                loot.Columns.Add("CharacterName");
+                loot.Columns.Add("ItemId");
+                loot.Columns.Add("ItemName");
+                loot.Columns.Add("ItemSlot");
+                loot.Columns.Add("ItemILevel");
+                loot.Columns.Add("OldItemILevel");
+                loot.Columns.Add("OldItemId");
+                loot.Columns.Add("OldItemContext");
+
+                // Now check to make sure it is valid and contains at least 1 item
+                if (itemIds != null && itemIds.Count > 0)
                 {
-                    int itemId = Convert.ToInt32(itemid);
-                    ItemInfo item = null;
-
-                    item = FormMain.Items.GetItem(itemId, context);
-
-                    if (item != null)
+                    // Go through all item ids
+                    foreach (string itemid in itemIds.Keys.ToList<string>())
                     {
-                        // Now we have the item in the item cache
+                        string itemCheck = itemid.Substring(0, itemid.IndexOf('-'));
+                        int itemId = Convert.ToInt32(itemCheck);
+                        string itemContext = itemid.Substring(itemid.IndexOf('-') + 1);
+                        ItemInfo item = null;
 
-                        // Check against each member in the Raid Group
-                        foreach (GuildMember gm in raidGroup)
+                        item = FormMain.Items.GetItem(itemId, itemContext);
+
+                        if (item != null)
                         {
-                            /*   Here are the different Classes:
-                             * Death Knight
-                             * Druid
-                             * Hunter
-                             * Mage
-                             * Monk
-                             * Paladin
-                             * Priest                                
-                             * Rogue
-                             * Shaman
-                             * Warlock
-                             * Warrior 
-                             */
-                            string charName = string.Empty;
-                            int oldItemId = 0;
-                            string oldItemContext = string.Empty;
+                            // Now we have the item in the item cache
 
-                            /* TODO:
-                            // Change all references to a class to use the Converter.WoWClass.*
-                            //  Ex: Converter.WoWClass.Hunter.ToString()
-                            // Change all references to a role to use the Converter.WoWRole.*
-                            //  Ex: Converter.WoWRole.DPS.ToString()
-                            // Change all references to a Spec to use the Converter.WoWSpecs.*
-                            //  Ex: Converter.WoWSpecs.Survival.ToString()
-                            // **** OR ****
-                            // We can make a member function in the GuildMember class like:
-                            //  Ex: gm.IsClassHunter()
-                            //  Ex: gm.IsRoleHealer()
-                            //  Ex: gm.IsSpecSurvival()
-                            // **** OR ****
-                            //  EX: gm.Class == Converter.WoWClass.Hunter
-                             */
-
-                            // can this member use it?
-                            if (itemIds[itemid].Length > 0)
+                            // Check against each member in the Raid Group
+                            foreach (GuildMember gm in raidGroup)
                             {
-                                // new way to do it
-                                int specId = Converter.ConvertSpec(gm.Class, gm.Spec);
-                                
-                                if (itemIds[itemid].Contains(specId))
+                                /*   Here are the different Classes:
+                                 * Death Knight
+                                 * Druid
+                                 * Hunter
+                                 * Mage
+                                 * Monk
+                                 * Paladin
+                                 * Priest                                
+                                 * Rogue
+                                 * Shaman
+                                 * Warlock
+                                 * Warrior 
+                                 */
+                                string charName = string.Empty;
+                                int oldItemId = 0;
+                                string oldItemContext = string.Empty;
+
+                                /* TODO:
+                                // Change all references to a class to use the Converter.WoWClass.*
+                                //  Ex: Converter.WoWClass.Hunter.ToString()
+                                // Change all references to a role to use the Converter.WoWRole.*
+                                //  Ex: Converter.WoWRole.DPS.ToString()
+                                // Change all references to a Spec to use the Converter.WoWSpecs.*
+                                //  Ex: Converter.WoWSpecs.Survival.ToString()
+                                // **** OR ****
+                                // We can make a member function in the GuildMember class like:
+                                //  Ex: gm.IsClassHunter()
+                                //  Ex: gm.IsRoleHealer()
+                                //  Ex: gm.IsSpecSurvival()
+                                // **** OR ****
+                                //  EX: gm.Class == Converter.WoWClass.Hunter
+                                 */
+
+                                // can this member use it?
+                                if (itemIds[itemid].Length > 0)
                                 {
-                                    charName = gm.Name;
+                                    // new way to do it
+                                    int specId = Converter.ConvertSpec(gm.Class, gm.Spec);
+
+                                    if (itemIds[itemid].Contains(specId))
+                                    {
+                                        charName = gm.Name;
+                                    }
                                 }
-                            }
-                            else
-                            {
-                                // fall back to the old way... not nearly as accurate
-                                if (Converter.ConvertItemClass(item.ItemClass) == "Armor")
+                                else
                                 {
-                                    // Armor
-                                    if (Converter.ConvertItemSubClass(item.ItemClass, item.ItemSubClass) == "Micellaneous")
+                                    // fall back to the old way... not nearly as accurate
+                                    if (Converter.ConvertItemClass(item.ItemClass) == "Armor")
                                     {
-                                        // Trinkets
-                                        if (Converter.ConvertInventoryType(item.InventoryType) == "trinket")
+                                        // Armor
+                                        if (Converter.ConvertItemSubClass(item.ItemClass, item.ItemSubClass) == "Micellaneous")
                                         {
-                                            // It's a trinket and not sure who it should go to...
-                                            //  So for now, we're going to hard code this by name
+                                            // Trinkets
+                                            if (Converter.ConvertInventoryType(item.InventoryType) == "trinket")
+                                            {
+                                                // It's a trinket and not sure who it should go to...
+                                                //  So for now, we're going to hard code this by name
 
-                                            /*
-                                            // Tier 16
-                                            if (item.Name == "Purified Bindings of Immerseus" && gm.Role == Converter.WoWRole.DPS.ToString() && gm.UsesIntellect)
-                                            {
-                                                charName = gm.Name;
-                                            }
-                                            else if (item.Name == "Rook's Unlucky Talisman" && gm.Role == "TANK")
-                                            {
-                                                charName = gm.Name;
-                                            }
-                                            else if (item.Name == "Fusion-Fire Core" && gm.Role == Converter.WoWRole.DPS.ToString() && gm.UsesStrength)
-                                            {
-                                                charName = gm.Name;
-                                            }
-                                            else if (item.Name == "Assurance of Consequence" && gm.Role == Converter.WoWRole.DPS.ToString() && gm.UsesAgility)
-                                            {
-                                                charName = gm.Name;
-                                            }
-                                            else if (item.Name == "Prismatic Prison of Pride" && gm.Role == "HEALING")
-                                            {
-                                                charName = gm.Name;
-                                            }
-                                            else if (item.Name == "Evil Eye of Galakras" && gm.Role == Converter.WoWRole.DPS.ToString() && gm.UsesStrength)
-                                            {
-                                                charName = gm.Name;
-                                            }
-                                            else if (item.Name == "Juggernaut's Focusing Crystal" && gm.Role == "TANK")
-                                            {
-                                                charName = gm.Name;
-                                            }
-                                            else if (item.Name == "Haromm's Talisman" && gm.Role == Converter.WoWRole.DPS.ToString() && gm.UsesAgility)
-                                            {
-                                                charName = gm.Name;
-                                            }
-                                            else if (item.Name == "Kardris' Toxic Totem" && gm.Role == Converter.WoWRole.DPS.ToString() && gm.UsesIntellect)
-                                            {
-                                                charName = gm.Name;
-                                            }
-                                            else if (item.Name == "Nazgrim's Burnished Insignia" && gm.Role == "HEALING")
-                                            {
-                                                charName = gm.Name;
-                                            }
-                                            else if (item.Name == "Frenzied Crystal of Rage" && gm.Role == Converter.WoWRole.DPS.ToString() && gm.UsesIntellect)
-                                            {
-                                                charName = gm.Name;
-                                            }
-                                            else if (item.Name == "Vial of Living Corruption" && gm.Role == "TANK")
-                                            {
-                                                charName = gm.Name;
-                                            }
-                                            else if (item.Name == "Sigil of Rampage" && gm.Role == Converter.WoWRole.DPS.ToString() && gm.UsesIntellect)
-                                            {
-                                                charName = gm.Name;
-                                            }
-                                            else if (item.Name == "Thok's Tail Tip" && gm.Role == Converter.WoWRole.DPS.ToString() && gm.UsesStrength)
-                                            {
-                                                charName = gm.Name;
-                                            }
-                                            else if (item.Name == "Thok's Acid-Grooved Tooth" && gm.Role == "HEALING")
-                                            {
-                                                charName = gm.Name;
-                                            }
-                                            else if (item.Name == "Dysmorphic Samophlange of Discontinuity" && gm.Role == "HEALING")
-                                            {
-                                                charName = gm.Name;
-                                            }
-                                            else if (item.Name == "Ticking Ebon Detonator" && gm.Role == Converter.WoWRole.DPS.ToString() && gm.UsesAgility)
-                                            {
-                                                charName = gm.Name;
-                                            }
-                                            else if (item.Name == "Skeer's Bloodsoaked Talisman" && gm.Role == Converter.WoWRole.DPS.ToString() && gm.UsesStrength)
-                                            {
-                                                charName = gm.Name;
-                                            }
-                                            else if (item.Name == "Black Blood of Y'Shaarj" && gm.Role == Converter.WoWRole.DPS.ToString() && gm.UsesIntellect)
-                                            {
-                                                charName = gm.Name;
-                                            }
-                                            else if (item.Name == "Curse of Hubris" && gm.Role == "TANK")
-                                            {
-                                                charName = gm.Name;
-                                            }*/
+                                                /*
+                                                // Tier 16
+                                                if (item.Name == "Purified Bindings of Immerseus" && gm.Role == Converter.WoWRole.DPS.ToString() && gm.UsesIntellect)
+                                                {
+                                                    charName = gm.Name;
+                                                }
+                                                else if (item.Name == "Rook's Unlucky Talisman" && gm.Role == "TANK")
+                                                {
+                                                    charName = gm.Name;
+                                                }
+                                                else if (item.Name == "Fusion-Fire Core" && gm.Role == Converter.WoWRole.DPS.ToString() && gm.UsesStrength)
+                                                {
+                                                    charName = gm.Name;
+                                                }
+                                                else if (item.Name == "Assurance of Consequence" && gm.Role == Converter.WoWRole.DPS.ToString() && gm.UsesAgility)
+                                                {
+                                                    charName = gm.Name;
+                                                }
+                                                else if (item.Name == "Prismatic Prison of Pride" && gm.Role == "HEALING")
+                                                {
+                                                    charName = gm.Name;
+                                                }
+                                                else if (item.Name == "Evil Eye of Galakras" && gm.Role == Converter.WoWRole.DPS.ToString() && gm.UsesStrength)
+                                                {
+                                                    charName = gm.Name;
+                                                }
+                                                else if (item.Name == "Juggernaut's Focusing Crystal" && gm.Role == "TANK")
+                                                {
+                                                    charName = gm.Name;
+                                                }
+                                                else if (item.Name == "Haromm's Talisman" && gm.Role == Converter.WoWRole.DPS.ToString() && gm.UsesAgility)
+                                                {
+                                                    charName = gm.Name;
+                                                }
+                                                else if (item.Name == "Kardris' Toxic Totem" && gm.Role == Converter.WoWRole.DPS.ToString() && gm.UsesIntellect)
+                                                {
+                                                    charName = gm.Name;
+                                                }
+                                                else if (item.Name == "Nazgrim's Burnished Insignia" && gm.Role == "HEALING")
+                                                {
+                                                    charName = gm.Name;
+                                                }
+                                                else if (item.Name == "Frenzied Crystal of Rage" && gm.Role == Converter.WoWRole.DPS.ToString() && gm.UsesIntellect)
+                                                {
+                                                    charName = gm.Name;
+                                                }
+                                                else if (item.Name == "Vial of Living Corruption" && gm.Role == "TANK")
+                                                {
+                                                    charName = gm.Name;
+                                                }
+                                                else if (item.Name == "Sigil of Rampage" && gm.Role == Converter.WoWRole.DPS.ToString() && gm.UsesIntellect)
+                                                {
+                                                    charName = gm.Name;
+                                                }
+                                                else if (item.Name == "Thok's Tail Tip" && gm.Role == Converter.WoWRole.DPS.ToString() && gm.UsesStrength)
+                                                {
+                                                    charName = gm.Name;
+                                                }
+                                                else if (item.Name == "Thok's Acid-Grooved Tooth" && gm.Role == "HEALING")
+                                                {
+                                                    charName = gm.Name;
+                                                }
+                                                else if (item.Name == "Dysmorphic Samophlange of Discontinuity" && gm.Role == "HEALING")
+                                                {
+                                                    charName = gm.Name;
+                                                }
+                                                else if (item.Name == "Ticking Ebon Detonator" && gm.Role == Converter.WoWRole.DPS.ToString() && gm.UsesAgility)
+                                                {
+                                                    charName = gm.Name;
+                                                }
+                                                else if (item.Name == "Skeer's Bloodsoaked Talisman" && gm.Role == Converter.WoWRole.DPS.ToString() && gm.UsesStrength)
+                                                {
+                                                    charName = gm.Name;
+                                                }
+                                                else if (item.Name == "Black Blood of Y'Shaarj" && gm.Role == Converter.WoWRole.DPS.ToString() && gm.UsesIntellect)
+                                                {
+                                                    charName = gm.Name;
+                                                }
+                                                else if (item.Name == "Curse of Hubris" && gm.Role == "TANK")
+                                                {
+                                                    charName = gm.Name;
+                                                }*/
 
-                                            // Tier 17
-                                            // TODO:
-                                        }
-                                        else if (item.HasSpirit())
-                                        {
-                                            // Healer Classes
-                                            if (gm.Role == "HEALING")
-                                            {
-                                                charName = gm.Name;
+                                                // Tier 17
+                                                // TODO:
                                             }
-                                        }
-                                        else if (item.HasTankStats())
-                                        {
-                                            if (gm.Role == "TANK")
+                                            else if (item.HasSpirit())
                                             {
-                                                charName = gm.Name;
-                                            }
-                                        }
-                                        else if (item.HasStrength())
-                                        {
-                                            if ((gm.Class == "Paladin" && gm.Spec != "Holy") || gm.Class == "Warrior" || gm.Class == "Death Knight")
-                                            {
-                                                charName = gm.Name;
-                                            }
-                                        }
-                                        else if (item.HasAgility())
-                                        {
-                                            if ((gm.Class == "Monk" && gm.Role != "HEALING") || gm.Class == "Rogue" || gm.Class == "Hunter" || (gm.Class == "Druid" && (gm.Spec == "Feral" || gm.Spec == "Guardian")) || (gm.Class == "Shaman" && gm.Spec == "Enhancement"))
-                                            {
-                                                charName = gm.Name;
-                                            }
-                                        }
-                                        else if (item.HasIntellect())
-                                        {
-                                            if ((gm.Class == "Paladin" && gm.Spec == "Holy") || (gm.Class == "Monk" && gm.Role == "HEALING") || gm.Class == "Priest" || gm.Class == "Mage" || gm.Class == "Warlock" || (gm.Class == "Druid" && (gm.Spec == "Restoration" || gm.Spec == "Balance")) || (gm.Class == "Shaman" && gm.Spec == "Restoration"))
-                                            {
-                                                charName = gm.Name;
-                                            }
-                                        }
-                                    }
-                                    else if (Converter.ConvertItemSubClass(item.ItemClass, item.ItemSubClass) == "Plate")
-                                    {
-                                        // Plate = Death Knight, Paladin, Warrior
-                                        if (gm.Class == "Paladin" || gm.Class == "Warrior" || gm.Class == "Death Knight")
-                                        {
-                                            charName = gm.Name;
-                                        }
-                                    }
-                                    else if (Converter.ConvertItemSubClass(item.ItemClass, item.ItemSubClass) == "Mail")
-                                    {
-                                        // Mail = Hunter, Shaman
-                                        if (gm.Class == "Shaman" || gm.Class == "Hunter")
-                                        {
-                                            charName = gm.Name;
-                                        }
-                                    }
-                                    else if (Converter.ConvertItemSubClass(item.ItemClass, item.ItemSubClass) == "Leather")
-                                    {
-                                        // Leather = Druid, Monk, Rogue
-                                        if (gm.Class == "Druid" || gm.Class == "Monk" || gm.Class == "Rogue")
-                                        {
-                                            charName = gm.Name;
-                                        }
-                                    }
-                                    else if (Converter.ConvertItemSubClass(item.ItemClass, item.ItemSubClass) == "Cloth")
-                                    {
-                                        // check to see if it's a back slot first...
-                                        if (Converter.ConvertInventoryType(item.InventoryType) == "back")
-                                        {
-                                            // check for all backs...
-                                            if (item.HasSpirit())
-                                            {
-                                                // This is for Healers only
+                                                // Healer Classes
                                                 if (gm.Role == "HEALING")
                                                 {
                                                     charName = gm.Name;
@@ -379,7 +337,6 @@ namespace WoWGuildOrganizer
                                             }
                                             else if (item.HasTankStats())
                                             {
-                                                // This is for Tanks only
                                                 if (gm.Role == "TANK")
                                                 {
                                                     charName = gm.Name;
@@ -387,168 +344,309 @@ namespace WoWGuildOrganizer
                                             }
                                             else if (item.HasStrength())
                                             {
-                                                // Strength Classes
-                                                if ((gm.Class == "Paladin" && gm.Spec != "Holy") ||
-                                                    gm.Class == "Warrior" ||
-                                                    gm.Class == "Death Knight")
+                                                if ((gm.Class == "Paladin" && gm.Spec != "Holy") || gm.Class == "Warrior" || gm.Class == "Death Knight")
                                                 {
                                                     charName = gm.Name;
                                                 }
                                             }
                                             else if (item.HasAgility())
                                             {
-                                                // Agility Classes
-                                                if ((gm.Class == "Monk" && gm.Role != "HEALING") ||
-                                                    gm.Class == "Rogue" ||
-                                                    gm.Class == "Hunter" ||
-                                                    (gm.Class == "Druid" && (gm.Spec == "Feral" || gm.Spec == "Guardian")) ||
-                                                    (gm.Class == "Shaman" && gm.Spec == "Enhancement"))
+                                                if ((gm.Class == "Monk" && gm.Role != "HEALING") || gm.Class == "Rogue" || gm.Class == "Hunter" || (gm.Class == "Druid" && (gm.Spec == "Feral" || gm.Spec == "Guardian")) || (gm.Class == "Shaman" && gm.Spec == "Enhancement"))
                                                 {
                                                     charName = gm.Name;
                                                 }
                                             }
                                             else if (item.HasIntellect())
                                             {
-                                                // Intellect Classes
-                                                if ((gm.Class == "Monk" && gm.Role == "HEALING") ||
-                                                    gm.Class == "Mage" ||
-                                                    gm.Class == "Priest" ||
-                                                    gm.Class == "Warlock" ||
-                                                    (gm.Class == "Druid" && (gm.Spec == "Balance" || gm.Spec == "Restoration")) ||
-                                                    (gm.Class == "Shaman" && gm.Spec == "Restoration") ||
-                                                    (gm.Class == "Paladin" && gm.Spec == "Holy"))
+                                                if ((gm.Class == "Paladin" && gm.Spec == "Holy") || (gm.Class == "Monk" && gm.Role == "HEALING") || gm.Class == "Priest" || gm.Class == "Mage" || gm.Class == "Warlock" || (gm.Class == "Druid" && (gm.Spec == "Restoration" || gm.Spec == "Balance")) || (gm.Class == "Shaman" && gm.Spec == "Restoration"))
                                                 {
                                                     charName = gm.Name;
                                                 }
                                             }
                                         }
-                                        else if (gm.Class == "Mage" || gm.Class == "Warlock" || gm.Class == "Priest")
+                                        else if (Converter.ConvertItemSubClass(item.ItemClass, item.ItemSubClass) == "Plate")
                                         {
-                                            // it's a regular non-back, cloth piece
-                                            charName = gm.Name;
-                                        }
-                                    }
-                                    else if (Converter.ConvertItemSubClass(item.ItemClass, item.ItemSubClass) == "Shield")
-                                    {
-                                        if (item.HasIntellect())
-                                        {
-                                            if ((gm.Class == "Paladin" && gm.Spec == "Holy") || (gm.Class == "Shaman" && (gm.Spec == "Elemental" || gm.Spec == "Restoration")))
+                                            // Plate = Death Knight, Paladin, Warrior
+                                            if (gm.Class == "Paladin" || gm.Class == "Warrior" || gm.Class == "Death Knight")
                                             {
-                                                // Holy Paladin or Elemental Shaman or Restoration Shaman
                                                 charName = gm.Name;
+                                            }
+                                        }
+                                        else if (Converter.ConvertItemSubClass(item.ItemClass, item.ItemSubClass) == "Mail")
+                                        {
+                                            // Mail = Hunter, Shaman
+                                            if (gm.Class == "Shaman" || gm.Class == "Hunter")
+                                            {
+                                                charName = gm.Name;
+                                            }
+                                        }
+                                        else if (Converter.ConvertItemSubClass(item.ItemClass, item.ItemSubClass) == "Leather")
+                                        {
+                                            // Leather = Druid, Monk, Rogue
+                                            if (gm.Class == "Druid" || gm.Class == "Monk" || gm.Class == "Rogue")
+                                            {
+                                                charName = gm.Name;
+                                            }
+                                        }
+                                        else if (Converter.ConvertItemSubClass(item.ItemClass, item.ItemSubClass) == "Cloth")
+                                        {
+                                            // check to see if it's a back slot first...
+                                            if (Converter.ConvertInventoryType(item.InventoryType) == "back")
+                                            {
+                                                // check for all backs...
+                                                if (item.HasSpirit())
+                                                {
+                                                    // This is for Healers only
+                                                    if (gm.Role == "HEALING")
+                                                    {
+                                                        charName = gm.Name;
+                                                    }
+                                                }
+                                                else if (item.HasTankStats())
+                                                {
+                                                    // This is for Tanks only
+                                                    if (gm.Role == "TANK")
+                                                    {
+                                                        charName = gm.Name;
+                                                    }
+                                                }
+                                                else if (item.HasStrength())
+                                                {
+                                                    // Strength Classes
+                                                    if ((gm.Class == "Paladin" && gm.Spec != "Holy") ||
+                                                        gm.Class == "Warrior" ||
+                                                        gm.Class == "Death Knight")
+                                                    {
+                                                        charName = gm.Name;
+                                                    }
+                                                }
+                                                else if (item.HasAgility())
+                                                {
+                                                    // Agility Classes
+                                                    if ((gm.Class == "Monk" && gm.Role != "HEALING") ||
+                                                        gm.Class == "Rogue" ||
+                                                        gm.Class == "Hunter" ||
+                                                        (gm.Class == "Druid" && (gm.Spec == "Feral" || gm.Spec == "Guardian")) ||
+                                                        (gm.Class == "Shaman" && gm.Spec == "Enhancement"))
+                                                    {
+                                                        charName = gm.Name;
+                                                    }
+                                                }
+                                                else if (item.HasIntellect())
+                                                {
+                                                    // Intellect Classes
+                                                    if ((gm.Class == "Monk" && gm.Role == "HEALING") ||
+                                                        gm.Class == "Mage" ||
+                                                        gm.Class == "Priest" ||
+                                                        gm.Class == "Warlock" ||
+                                                        (gm.Class == "Druid" && (gm.Spec == "Balance" || gm.Spec == "Restoration")) ||
+                                                        (gm.Class == "Shaman" && gm.Spec == "Restoration") ||
+                                                        (gm.Class == "Paladin" && gm.Spec == "Holy"))
+                                                    {
+                                                        charName = gm.Name;
+                                                    }
+                                                }
+                                            }
+                                            else if (gm.Class == "Mage" || gm.Class == "Warlock" || gm.Class == "Priest")
+                                            {
+                                                // it's a regular non-back, cloth piece
+                                                charName = gm.Name;
+                                            }
+                                        }
+                                        else if (Converter.ConvertItemSubClass(item.ItemClass, item.ItemSubClass) == "Shield")
+                                        {
+                                            if (item.HasIntellect())
+                                            {
+                                                if ((gm.Class == "Paladin" && gm.Spec == "Holy") || (gm.Class == "Shaman" && (gm.Spec == "Elemental" || gm.Spec == "Restoration")))
+                                                {
+                                                    // Holy Paladin or Elemental Shaman or Restoration Shaman
+                                                    charName = gm.Name;
+                                                }
+                                            }
+                                            else
+                                            {
+                                                if (gm.Role == "TANK" && (gm.Class == "Paladin" || gm.Class == "Warrior"))
+                                                {
+                                                    charName = gm.Name;
+                                                }
                                             }
                                         }
                                         else
                                         {
-                                            if (gm.Role == "TANK" && (gm.Class == "Paladin" || gm.Class == "Warrior"))
-                                            {
-                                                charName = gm.Name;
-                                            }
+                                            Logging.DisplayError("Armor [" + item.ItemSubClass + "] not found!");
                                         }
                                     }
-                                    else
+                                    else if (Converter.ConvertItemClass(item.ItemClass) == "Weapon")
                                     {
-                                        Logging.DisplayError("Armor [" + item.ItemSubClass + "] not found!");
-                                    }
-                                }
-                                else if (Converter.ConvertItemClass(item.ItemClass) == "Weapon")
-                                {
-                                    // Weapon
-                                    string weapon = Converter.ConvertItemSubClass(item.ItemClass, item.ItemSubClass);
+                                        // Weapon
+                                        string weapon = Converter.ConvertItemSubClass(item.ItemClass, item.ItemSubClass);
 
-                                    if (weapon == "1 Axe")
-                                    {
-                                        // (gm.Class == "Death Knight" || gm.Class == "Monk" || gm.Class == "Paladin" || gm.Class == "Rogue" || gm.Class == "Shaman" || gm.Class == "Warrior")
-                                        if (item.HasTankStats())
+                                        if (weapon == "1 Axe")
                                         {
-                                            // STR vs AGI
-                                            if (gm.Role == "TANK")
+                                            // (gm.Class == "Death Knight" || gm.Class == "Monk" || gm.Class == "Paladin" || gm.Class == "Rogue" || gm.Class == "Shaman" || gm.Class == "Warrior")
+                                            if (item.HasTankStats())
                                             {
-                                                if (item.HasStrength() && (gm.Class == "Paladin" || gm.Class == "Death Knight" || gm.Class == "Warrior"))
+                                                // STR vs AGI
+                                                if (gm.Role == "TANK")
+                                                {
+                                                    if (item.HasStrength() && (gm.Class == "Paladin" || gm.Class == "Death Knight" || gm.Class == "Warrior"))
+                                                    {
+                                                        charName = gm.Name;
+                                                    }
+                                                    else if (item.HasAgility() && gm.Class == "Monk")
+                                                    {
+                                                        charName = gm.Name;
+                                                    }
+                                                }
+                                            }
+                                            else if (item.HasStrength())
+                                            {
+                                                if (gm.Class == "Death Knight" || (gm.Class == "Paladin" && gm.Role != "HEALING") || gm.Class == "Warrior")
                                                 {
                                                     charName = gm.Name;
                                                 }
-                                                else if (item.HasAgility() && gm.Class == "Monk")
+                                            }
+                                            else if (item.HasAgility())
+                                            {
+                                                if ((gm.Class == "Monk" && gm.Role != "HEALING") || gm.Class == "Rogue" || (gm.Class == "Shaman" && gm.Spec == "Enhancement"))
                                                 {
                                                     charName = gm.Name;
                                                 }
                                             }
-                                        }
-                                        else if (item.HasStrength())
-                                        {
-                                            if (gm.Class == "Death Knight" || (gm.Class == "Paladin" && gm.Role != "HEALING") || gm.Class == "Warrior")
+                                            else if (item.HasIntellect())
                                             {
-                                                charName = gm.Name;
-                                            }
-                                        }
-                                        else if (item.HasAgility())
-                                        {
-                                            if ((gm.Class == "Monk" && gm.Role != "HEALING") || gm.Class == "Rogue" || (gm.Class == "Shaman" && gm.Spec == "Enhancement"))
-                                            {
-                                                charName = gm.Name;
-                                            }
-                                        }
-                                        else if (item.HasIntellect())
-                                        {
-                                            if ((gm.Class == "Monk" && gm.Role == "HEALING") || (gm.Class == "Paladin" && gm.Role == "HEALING") || (gm.Class == "Shaman" && (gm.Spec == "Elemental" || gm.Spec == "Restoration")))
-                                            {
-                                                charName = gm.Name;
-                                            }
-                                        }
-                                    }
-                                    else if (weapon == "2 Axe")
-                                    {
-                                        if (item.HasStrength() && (gm.Class == "Death Knight" || (gm.Class == "Paladin" && gm.Role == Converter.WoWRole.DPS.ToString()) || (gm.Class == "Warrior" && gm.Role == Converter.WoWRole.DPS.ToString())))
-                                        {
-                                            charName = gm.Name;
-                                        }
-                                    }
-                                    else if (weapon == "1 Mace")
-                                    {
-                                        if (item.HasTankStats())
-                                        {
-                                            // STR vs AGI
-                                            if (gm.Role == "TANK")
-                                            {
-                                                if (item.HasStrength() && (gm.Class == "Paladin" || gm.Class == "Death Knight" || gm.Class == "Warrior"))
-                                                {
-                                                    charName = gm.Name;
-                                                }
-                                                else if (item.HasAgility() && (gm.Class == "Monk" || gm.Class == "Druid"))
+                                                if ((gm.Class == "Monk" && gm.Role == "HEALING") || (gm.Class == "Paladin" && gm.Role == "HEALING") || (gm.Class == "Shaman" && (gm.Spec == "Elemental" || gm.Spec == "Restoration")))
                                                 {
                                                     charName = gm.Name;
                                                 }
                                             }
                                         }
-                                        else if (item.HasStrength())
+                                        else if (weapon == "2 Axe")
                                         {
-                                            if (gm.Class == "Death Knight" || (gm.Class == "Paladin" && gm.Role == "TANK") || (gm.Class == "Warrior" && gm.Spec == "Arms"))
+                                            if (item.HasStrength() && (gm.Class == "Death Knight" || (gm.Class == "Paladin" && gm.Role == Converter.WoWRole.DPS.ToString()) || (gm.Class == "Warrior" && gm.Role == Converter.WoWRole.DPS.ToString())))
                                             {
                                                 charName = gm.Name;
                                             }
                                         }
-                                        else if (item.HasAgility())
+                                        else if (weapon == "1 Mace")
                                         {
-                                            if ((gm.Class == "Monk" && gm.Role != "HEALING") || gm.Class == "Rogue" || (gm.Class == "Shaman" && gm.Spec == "Enhancement") || (gm.Class == "Druid" && (gm.Spec == "Feral" || gm.Spec == "Guardian")))
+                                            if (item.HasTankStats())
+                                            {
+                                                // STR vs AGI
+                                                if (gm.Role == "TANK")
+                                                {
+                                                    if (item.HasStrength() && (gm.Class == "Paladin" || gm.Class == "Death Knight" || gm.Class == "Warrior"))
+                                                    {
+                                                        charName = gm.Name;
+                                                    }
+                                                    else if (item.HasAgility() && (gm.Class == "Monk" || gm.Class == "Druid"))
+                                                    {
+                                                        charName = gm.Name;
+                                                    }
+                                                }
+                                            }
+                                            else if (item.HasStrength())
+                                            {
+                                                if (gm.Class == "Death Knight" || (gm.Class == "Paladin" && gm.Role == "TANK") || (gm.Class == "Warrior" && gm.Spec == "Arms"))
+                                                {
+                                                    charName = gm.Name;
+                                                }
+                                            }
+                                            else if (item.HasAgility())
+                                            {
+                                                if ((gm.Class == "Monk" && gm.Role != "HEALING") || gm.Class == "Rogue" || (gm.Class == "Shaman" && gm.Spec == "Enhancement") || (gm.Class == "Druid" && (gm.Spec == "Feral" || gm.Spec == "Guardian")))
+                                                {
+                                                    charName = gm.Name;
+                                                }
+                                            }
+                                            else if (item.HasIntellect())
+                                            {
+                                                if ((gm.Class == "Monk" && gm.Role == "HEALING") ||
+                                                    (gm.Class == "Paladin" && gm.Role == "HEALING") ||
+                                                    (gm.Class == "Shaman" && (gm.Spec == "Elemental" || gm.Spec == "Restoration")) ||
+                                                    gm.Class == "Priest" ||
+                                                    (gm.Class == "Druid" && (gm.Spec == "Balance" || gm.Spec == "Restoration")))
+                                                {
+                                                    charName = gm.Name;
+                                                }
+                                            }
+                                        }
+                                        else if (weapon == "2 Mace")
+                                        {
+                                            if (item.HasStrength())
+                                            {
+                                                if (item.HasTankStats())
+                                                {
+                                                    if (gm.Role == "TANK" && gm.Class == "Death Knight")
+                                                    {
+                                                        charName = gm.Name;
+                                                    }
+                                                }
+                                                else if (gm.Role == Converter.WoWRole.DPS.ToString() && (gm.Class == "Death Knight" || gm.Class == "Paladin" || gm.Class == "Warrior"))
+                                                {
+                                                    charName = gm.Name;
+                                                }
+                                            }
+                                            else if (item.HasAgility() && gm.Class == "Druid" && gm.Role != "HEALING")
                                             {
                                                 charName = gm.Name;
                                             }
                                         }
-                                        else if (item.HasIntellect())
+                                        else if (weapon == "Polearm")
                                         {
-                                            if ((gm.Class == "Monk" && gm.Role == "HEALING") ||
-                                                (gm.Class == "Paladin" && gm.Role == "HEALING") ||
-                                                (gm.Class == "Shaman" && (gm.Spec == "Elemental" || gm.Spec == "Restoration")) ||
-                                                gm.Class == "Priest" ||
-                                                (gm.Class == "Druid" && (gm.Spec == "Balance" || gm.Spec == "Restoration")))
+                                            if (item.HasStrength() && (gm.Class == "Death Knight" || gm.Class == "Paladin" || gm.Class == "Warrior"))
+                                            {
+                                                charName = gm.Name;
+                                            }
+                                            else if (item.HasAgility() && (gm.Class == "Druid" || gm.Class == "Monk") && gm.Role != "HEALING")
                                             {
                                                 charName = gm.Name;
                                             }
                                         }
-                                    }
-                                    else if (weapon == "2 Mace")
-                                    {
-                                        if (item.HasStrength())
+                                        else if (weapon == "1 Sword")
+                                        {
+                                            if (item.HasTankStats())
+                                            {
+                                                // STR vs AGI
+                                                if (gm.Role == "TANK")
+                                                {
+                                                    if (item.HasStrength() && (gm.Class == "Paladin" || gm.Class == "Death Knight" || gm.Class == "Warrior"))
+                                                    {
+                                                        charName = gm.Name;
+                                                    }
+                                                    else if (item.HasAgility() && gm.Class == "Monk")
+                                                    {
+                                                        charName = gm.Name;
+                                                    }
+                                                }
+                                            }
+                                            else if (item.HasStrength())
+                                            {
+                                                if ((gm.Class == "Death Knight" && gm.Spec == "Frost") || (gm.Class == "Paladin" && gm.Role == "TANK") || (gm.Class == "Warrior" && gm.Spec != "Arms"))
+                                                {
+                                                    charName = gm.Name;
+                                                }
+                                            }
+                                            else if (item.HasAgility())
+                                            {
+                                                if ((gm.Class == "Monk" && gm.Role != "HEALING") || gm.Class == "Rogue")
+                                                {
+                                                    charName = gm.Name;
+                                                }
+                                            }
+                                            else if (item.HasIntellect())
+                                            {
+                                                if ((gm.Class == "Monk" && gm.Role == "HEALING") ||
+                                                    (gm.Class == "Shaman" && (gm.Class == "Elemental" || gm.Class == "Restoration")) ||
+                                                    (gm.Class == "Paladin" && gm.Role == "HEALING") ||
+                                                    gm.Class == "Mage" ||
+                                                    gm.Class == "Warlock")
+                                                {
+                                                    charName = gm.Name;
+                                                }
+                                            }
+                                        }
+                                        else if (weapon == "2 Sword")
                                         {
                                             if (item.HasTankStats())
                                             {
@@ -557,241 +655,173 @@ namespace WoWGuildOrganizer
                                                     charName = gm.Name;
                                                 }
                                             }
-                                            else if (gm.Role == Converter.WoWRole.DPS.ToString() && (gm.Class == "Death Knight" || gm.Class == "Paladin" || gm.Class == "Warrior"))
+                                            else if (gm.Role == Converter.WoWRole.DPS.ToString() && ((gm.Class == "Death Knight" && gm.Spec != "Frost") || gm.Class == "Paladin" || gm.Class == "Warrior"))
                                             {
                                                 charName = gm.Name;
                                             }
                                         }
-                                        else if (item.HasAgility() && gm.Class == "Druid" && gm.Role != "HEALING")
+                                        else if (weapon == "Staff")
                                         {
-                                            charName = gm.Name;
-                                        }
-                                    }
-                                    else if (weapon == "Polearm")
-                                    {
-                                        if (item.HasStrength() && (gm.Class == "Death Knight" || gm.Class == "Paladin" || gm.Class == "Warrior"))
-                                        {
-                                            charName = gm.Name;
-                                        }
-                                        else if (item.HasAgility() && (gm.Class == "Druid" || gm.Class == "Monk") && gm.Role != "HEALING")
-                                        {
-                                            charName = gm.Name;
-                                        }
-                                    }
-                                    else if (weapon == "1 Sword")
-                                    {
-                                        if (item.HasTankStats())
-                                        {
-                                            // STR vs AGI
-                                            if (gm.Role == "TANK")
+                                            if (item.HasIntellect())
                                             {
-                                                if (item.HasStrength() && (gm.Class == "Paladin" || gm.Class == "Death Knight" || gm.Class == "Warrior"))
-                                                {
-                                                    charName = gm.Name;
-                                                }
-                                                else if (item.HasAgility() && gm.Class == "Monk")
+                                                if ((gm.Class == "Druid" && (gm.Spec == "Restoration" || gm.Spec == "Balance")) ||
+                                                    (gm.Class == "Monk" && gm.Spec == "Mistweaver") ||
+                                                    gm.Class == "Mage" ||
+                                                    gm.Class == "Priest" ||
+                                                    gm.Class == "Warlock" ||
+                                                    (gm.Class == "Shaman" && (gm.Spec == "Restoration" || gm.Spec == "Elemental")))
                                                 {
                                                     charName = gm.Name;
                                                 }
                                             }
-                                        }
-                                        else if (item.HasStrength())
-                                        {
-                                            if ((gm.Class == "Death Knight" && gm.Spec == "Frost") || (gm.Class == "Paladin" && gm.Role == "TANK") || (gm.Class == "Warrior" && gm.Spec != "Arms"))
+                                            else if (item.HasAgility() && ((gm.Class == "Druid" && (gm.Spec == "Guardian" || gm.Spec == "Feral")) || (gm.Class == "Monk" && (gm.Spec == "Brewmaster" || gm.Spec == "Windwalker"))))
                                             {
                                                 charName = gm.Name;
                                             }
                                         }
-                                        else if (item.HasAgility())
+                                        else if (weapon == "Fist Weapon")
                                         {
-                                            if ((gm.Class == "Monk" && gm.Role != "HEALING") || gm.Class == "Rogue")
+                                            if (item.HasAgility() && ((gm.Class == "Druid" && (gm.Spec == "Feral" || gm.Spec == "Guardian")) || (gm.Class == "Monk" && gm.Role != "HEALING") || gm.Class == "Rogue" || (gm.Class == "Shaman" && gm.Spec == "Enhancement")))
+                                            {
+                                                charName = gm.Name;
+                                            }
+                                            else if (item.HasStrength() && gm.Class == "Warrior")
                                             {
                                                 charName = gm.Name;
                                             }
                                         }
-                                        else if (item.HasIntellect())
+                                        else if (weapon == "Dagger")
                                         {
-                                            if ((gm.Class == "Monk" && gm.Role == "HEALING") ||
-                                                (gm.Class == "Shaman" && (gm.Class == "Elemental" || gm.Class == "Restoration")) ||
-                                                (gm.Class == "Paladin" && gm.Role == "HEALING") ||
-                                                gm.Class == "Mage" ||
-                                                gm.Class == "Warlock")
+                                            if (item.HasIntellect())
+                                            {
+                                                if ((gm.Class == "Druid" && (gm.Spec == "Balance" || gm.Spec == "Restoration")) ||
+                                                    gm.Class == "Mage" ||
+                                                    gm.Class == "Priest" ||
+                                                    gm.Class == "Warlock" ||
+                                                    (gm.Class == "Shaman" && (gm.Spec == "Restoration" || gm.Spec == "Elemental")))
+                                                {
+                                                    charName = gm.Name;
+                                                }
+                                            }
+                                            else if (item.HasAgility() && ((gm.Class == "Druid" && (gm.Spec == "Guardian" || gm.Spec == "Feral")) || gm.Class == "Rogue" || (gm.Class == "Shaman" && gm.Spec == "Enhancement")))
+                                            {
+                                                charName = gm.Name;
+                                            }
+                                            else if (item.HasStrength() && gm.Class == "Warrior")
                                             {
                                                 charName = gm.Name;
                                             }
                                         }
-                                    }
-                                    else if (weapon == "2 Sword")
-                                    {
-                                        if (item.HasTankStats())
+                                        else if (weapon == "Wand")
                                         {
-                                            if (gm.Role == "TANK" && gm.Class == "Death Knight")
+                                            if (item.HasIntellect())
+                                            {
+                                                if (gm.Class == "Mage" || gm.Class == "Warlock" || gm.Class == "Priest")
+                                                {
+                                                    charName = gm.Name;
+                                                }
+                                            }
+                                        }
+                                        else if (weapon == "Bow" || weapon == "Rifle" || weapon == "Thrown" || weapon == "Crossbow")
+                                        {
+                                            if (gm.Class == Converter.WoWClass.Hunter.ToString())
                                             {
                                                 charName = gm.Name;
                                             }
                                         }
-                                        else if (gm.Role == Converter.WoWRole.DPS.ToString() && ((gm.Class == "Death Knight" && gm.Spec != "Frost") || gm.Class == "Paladin" || gm.Class == "Warrior"))
+                                        else
                                         {
-                                            charName = gm.Name;
+                                            Logging.DisplayError("Weapon [" + weapon + "] not found!");
                                         }
                                     }
-                                    else if (weapon == "Staff")
+                                    else if (Converter.ConvertItemClass(item.ItemClass) == "Miscellaneous")
                                     {
-                                        if (item.HasIntellect())
+                                        // Check if this is an armor token
+                                        if (item.Name.StartsWith("Helm"))
                                         {
-                                            if ((gm.Class == "Druid" && (gm.Spec == "Restoration" || gm.Spec == "Balance")) ||
-                                                (gm.Class == "Monk" && gm.Spec == "Mistweaver") ||
-                                                gm.Class == "Mage" ||
-                                                gm.Class == "Priest" ||
-                                                gm.Class == "Warlock" ||
-                                                (gm.Class == "Shaman" && (gm.Spec == "Restoration" || gm.Spec == "Elemental")))
-                                            {
-                                                charName = gm.Name;
-                                            }
+                                            item.InventoryType = 1;
                                         }
-                                        else if (item.HasAgility() && ((gm.Class == "Druid" && (gm.Spec == "Guardian" || gm.Spec == "Feral")) || (gm.Class == "Monk" && (gm.Spec == "Brewmaster" || gm.Spec == "Windwalker"))))
+                                        else if (item.Name.StartsWith("Shoulders"))
                                         {
-                                            charName = gm.Name;
+                                            item.InventoryType = 3;
                                         }
-                                    }
-                                    else if (weapon == "Fist Weapon")
-                                    {
-                                        if (item.HasAgility() && ((gm.Class == "Druid" && (gm.Spec == "Feral" || gm.Spec == "Guardian")) || (gm.Class == "Monk" && gm.Role != "HEALING") || gm.Class == "Rogue" || (gm.Class == "Shaman" && gm.Spec == "Enhancement")))
+                                        else if (item.Name.StartsWith("Chest"))
                                         {
-                                            charName = gm.Name;
+                                            item.InventoryType = 5;
                                         }
-                                        else if (item.HasStrength() && gm.Class == "Warrior")
+                                        else if (item.Name.StartsWith("Gauntlets"))
                                         {
-                                            charName = gm.Name;
+                                            item.InventoryType = 10;
                                         }
-                                    }
-                                    else if (weapon == "Dagger")
-                                    {
-                                        if (item.HasIntellect())
+                                        else if (item.Name.StartsWith("Leggings"))
                                         {
-                                            if ((gm.Class == "Druid" && (gm.Spec == "Balance" || gm.Spec == "Restoration")) ||
-                                                gm.Class == "Mage" ||
-                                                gm.Class == "Priest" ||
-                                                gm.Class == "Warlock" ||
-                                                (gm.Class == "Shaman" && (gm.Spec == "Restoration" || gm.Spec == "Elemental")))
-                                            {
-                                                charName = gm.Name;
-                                            }
+                                            item.InventoryType = 7;
                                         }
-                                        else if (item.HasAgility() && ((gm.Class == "Druid" && (gm.Spec == "Guardian" || gm.Spec == "Feral")) || gm.Class == "Rogue" || (gm.Class == "Shaman" && gm.Spec == "Enhancement")))
+                                        else if (item.Name.StartsWith("Essence"))
                                         {
-                                            charName = gm.Name;
+                                            // item.InventoryType = 7;
+                                            // todo: need to be able check an item that could be any of the following: head/shoulder/chest/hands/legs tier piece
                                         }
-                                        else if (item.HasStrength() && gm.Class == "Warrior")
-                                        {
-                                            charName = gm.Name;
-                                        }
-                                    }
-                                    else if (weapon == "Wand")
-                                    {
-                                        if (item.HasIntellect())
-                                        {
-                                            if (gm.Class == "Mage" || gm.Class == "Warlock" || gm.Class == "Priest")
-                                            {
-                                                charName = gm.Name;
-                                            }
-                                        }
-                                    }
-                                    else if (weapon == "Bow" || weapon == "Rifle" || weapon == "Thrown" || weapon == "Crossbow")
-                                    {
-                                        if (gm.Class == Converter.WoWClass.Hunter.ToString())
-                                        {
-                                            charName = gm.Name;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        Logging.DisplayError("Weapon [" + weapon + "] not found!");
-                                    }
-                                }
-                                else if (Converter.ConvertItemClass(item.ItemClass) == "Miscellaneous")
-                                {
-                                    // Check if this is an armor token
-                                    if (item.Name.StartsWith("Helm"))
-                                    {
-                                        item.InventoryType = 1;
-                                    }
-                                    else if (item.Name.StartsWith("Shoulders"))
-                                    {
-                                        item.InventoryType = 3;
-                                    }
-                                    else if (item.Name.StartsWith("Chest"))
-                                    {
-                                        item.InventoryType = 5;
-                                    }
-                                    else if (item.Name.StartsWith("Gauntlets"))
-                                    {
-                                        item.InventoryType = 10;
-                                    }
-                                    else if (item.Name.StartsWith("Leggings"))
-                                    {
-                                        item.InventoryType = 7;
-                                    }
-                                    else if (item.Name.StartsWith("Essence"))
-                                    {
-                                        // item.InventoryType = 7;
-                                        // todo: need to be able check an item that could be any of the following: head/shoulder/chest/hands/legs tier piece
-                                    }
 
-                                    if (Converter.ConvertInventoryType(item.InventoryType) != "error")
-                                    {
-                                        if (item.Name.EndsWith(" of the Cursed Conqueror") && (gm.Class == "Paladin" || gm.Class == "Priest" || gm.Class == "Warlock"))
+                                        if (Converter.ConvertInventoryType(item.InventoryType) != "error")
                                         {
-                                            charName = gm.Name;
-                                        }
-                                        else if (item.Name.EndsWith(" of the Cursed Protector") && (gm.Class == "Warrior" || gm.Class == "Hunter" || gm.Class == "Shaman" || gm.Class == "Monk"))
-                                        {
-                                            charName = gm.Name;
-                                        }
-                                        else if (item.Name.EndsWith(" of the Cursed Vanquisher") && (gm.Class == "Rogue" || gm.Class == "Death Knight" || gm.Class == "Mage" || gm.Class == "Druid"))
-                                        {
-                                            charName = gm.Name;
+                                            if (item.Name.EndsWith(" of the Cursed Conqueror") && (gm.Class == "Paladin" || gm.Class == "Priest" || gm.Class == "Warlock"))
+                                            {
+                                                charName = gm.Name;
+                                            }
+                                            else if (item.Name.EndsWith(" of the Cursed Protector") && (gm.Class == "Warrior" || gm.Class == "Hunter" || gm.Class == "Shaman" || gm.Class == "Monk"))
+                                            {
+                                                charName = gm.Name;
+                                            }
+                                            else if (item.Name.EndsWith(" of the Cursed Vanquisher") && (gm.Class == "Rogue" || gm.Class == "Death Knight" || gm.Class == "Mage" || gm.Class == "Druid"))
+                                            {
+                                                charName = gm.Name;
+                                            }
                                         }
                                     }
                                 }
-                            }
 
-                            // Can the row be added to data table?
-                            if (!string.IsNullOrEmpty(charName))
-                            {
-                                string slot = Converter.ConvertInventoryType(item.InventoryType);
-                                bool pass = false;
-                                int ilvlOld = 0;
-                                int ilvlNew = 0;
+                                // Can the row be added to data table?
+                                if (!string.IsNullOrEmpty(charName))
+                                {
+                                    string slot = Converter.ConvertInventoryType(item.InventoryType);
+                                    bool pass = false;
+                                    int ilvlOld = 0;
+                                    int ilvlNew = 0;
 
-                                if (slot == "finger")
-                                {
-                                    pass |= gm.ItemAudits.ContainsKey("finger1");
-                                    pass |= gm.ItemAudits.ContainsKey("finger2");
-                                }
-                                else if (slot == "trinket")
-                                {
-                                    pass |= gm.ItemAudits.ContainsKey("trinket1");
-                                    pass |= gm.ItemAudits.ContainsKey("trinket2");
-                                }
-                                else if (slot == "mainHand")
-                                {
-                                    // Need to check that either a 2 hander is being used
-                                    //   or 2 one handers, or 1 hand and off hand is equiped
-                                    string weapon = Converter.ConvertItemSubClass(item.ItemClass, item.ItemSubClass);
-
-                                    if (weapon == "1 Axe" || weapon == "1 Mace" || weapon == "1 Sword" || weapon == "Fist Weapon" || weapon == "Dagger" || weapon == "Wand")
+                                    if (slot == "finger")
                                     {
-                                        // this is NOT a 2 handed weapon, check to make sure both hands are equiped
+                                        pass |= gm.ItemAudits.ContainsKey("finger1");
+                                        pass |= gm.ItemAudits.ContainsKey("finger2");
+                                    }
+                                    else if (slot == "trinket")
+                                    {
+                                        pass |= gm.ItemAudits.ContainsKey("trinket1");
+                                        pass |= gm.ItemAudits.ContainsKey("trinket2");
+                                    }
+                                    else if (slot == "mainHand")
+                                    {
+                                        // Need to check that either a 2 hander is being used
+                                        //   or 2 one handers, or 1 hand and off hand is equiped
+                                        string weapon = Converter.ConvertItemSubClass(item.ItemClass, item.ItemSubClass);
 
-                                        // Look for 2 x 1 handed weapons
-                                        int mainHands = gm.ItemAudits.Keys.Where(kv => kv == "mainHand").Count();
-
-                                        if (mainHands == 2)
+                                        if (weapon == "1 Axe" || weapon == "1 Mace" || weapon == "1 Sword" || weapon == "Fist Weapon" || weapon == "Dagger" || weapon == "Wand")
                                         {
-                                            pass = gm.ItemAudits.ContainsKey(slot);
+                                            // this is NOT a 2 handed weapon, check to make sure both hands are equiped
+
+                                            // Look for 2 x 1 handed weapons
+                                            int mainHands = gm.ItemAudits.Keys.Where(kv => kv == "mainHand").Count();
+
+                                            if (mainHands == 2)
+                                            {
+                                                pass = gm.ItemAudits.ContainsKey(slot);
+                                            }
+                                            else if (gm.ItemAudits.ContainsKey("Shield") || gm.ItemAudits.ContainsKey("offHand"))
+                                            {
+                                                pass = gm.ItemAudits.ContainsKey(slot);
+                                            }
                                         }
-                                        else if (gm.ItemAudits.ContainsKey("Shield") || gm.ItemAudits.ContainsKey("offHand"))
+                                        else
                                         {
                                             pass = gm.ItemAudits.ContainsKey(slot);
                                         }
@@ -800,97 +830,100 @@ namespace WoWGuildOrganizer
                                     {
                                         pass = gm.ItemAudits.ContainsKey(slot);
                                     }
-                                }
-                                else
-                                {
-                                    pass = gm.ItemAudits.ContainsKey(slot);
-                                }
 
-                                // Did it pass?  Is it an upgrade?
-                                if (pass)
-                                {
-                                    ilvlNew = item.ItemLevel;
-
-                                    if (slot == "finger")
+                                    // Did it pass?  Is it an upgrade?
+                                    if (pass)
                                     {
-                                        // Need to account for any ring duplications
-                                        if (item.Name == gm.ItemAudits["finger1"].Name)
-                                        {
-                                            ilvlOld = gm.ItemAudits["finger1"].ItemLevel;
-                                            oldItemId = gm.ItemAudits["finger1"].Id;
-                                        }
-                                        else if (item.Name == gm.ItemAudits["finger2"].Name)
-                                        {
-                                            ilvlOld = gm.ItemAudits["finger2"].ItemLevel;
-                                            oldItemId = gm.ItemAudits["finger2"].Id;
-                                        }
-                                        else
-                                        {
-                                            // upgrade!
-                                            ilvlOld = gm.ItemAudits["finger1"].ItemLevel > gm.ItemAudits["finger2"].ItemLevel ? gm.ItemAudits["finger2"].ItemLevel : gm.ItemAudits["finger1"].ItemLevel;
-                                            oldItemId = gm.ItemAudits["finger1"].Id > gm.ItemAudits["finger2"].Id ? gm.ItemAudits["finger2"].Id : gm.ItemAudits["finger1"].Id;
-                                        }
-                                    }
-                                    else if (slot == "trinket")
-                                    {
-                                        // Need to account for any ring duplications
-                                        if (item.Name == gm.ItemAudits["trinket1"].Name)
-                                        {
-                                            ilvlOld = gm.ItemAudits["trinket1"].ItemLevel;
-                                            oldItemId = gm.ItemAudits["trinket1"].ItemLevel;
-                                        }
-                                        else if (item.Name == gm.ItemAudits["trinket2"].Name)
-                                        {
-                                            ilvlOld = gm.ItemAudits["trinket2"].ItemLevel;
-                                            oldItemId = gm.ItemAudits["trinket2"].ItemLevel;
-                                        }
-                                        else
-                                        {
-                                            // upgrade!
-                                            ilvlOld = gm.ItemAudits["trinket1"].ItemLevel > gm.ItemAudits["trinket2"].ItemLevel ? gm.ItemAudits["trinket2"].ItemLevel : gm.ItemAudits["trinket1"].ItemLevel;
-                                            oldItemId = gm.ItemAudits["trinket1"].Id > gm.ItemAudits["trinket2"].Id ? gm.ItemAudits["trinket2"].Id : gm.ItemAudits["trinket1"].Id;
-                                        }
-                                    }
-                                    else if (slot == "mainHand" || slot == "offHand")
-                                    {
-                                        string weapon = Converter.ConvertItemSubClass(item.ItemClass, item.ItemSubClass);
+                                        ilvlNew = item.ItemLevel;
 
-                                        // Need to check for dual hands vs 2 handers vs one hand + off hand...
-                                        if ((gm.Class == "Rogue" || (gm.Class == "Shaman" && gm.Spec == "Enhancement") || (gm.Class == "Warrior" && gm.Spec == "Fury") ||
-                                            (gm.Class == "Druid" && (gm.Spec == "Guardian" || gm.Spec == "Feral")) || (gm.Class == "Monk" && (gm.Spec == "Brewmaster" ||
-                                            gm.Spec == "Windwalker")) || (gm.Class == "Death Knight" && (gm.Spec == "Unholy" || gm.Spec == "Frost"))) &&
-                                            (gm.ItemAudits["offHand"].ItemLevel > 0))
+                                        if (slot == "finger")
                                         {
-                                            ilvlOld = gm.ItemAudits["mainHand"].ItemLevel > gm.ItemAudits["offHand"].ItemLevel ? gm.ItemAudits["offHand"].ItemLevel : gm.ItemAudits["mainHand"].ItemLevel;
-                                            oldItemId = gm.ItemAudits["mainHand"].Id > gm.ItemAudits["offHand"].Id ? gm.ItemAudits["offHand"].Id : gm.ItemAudits["mainHand"].Id;
-                                        }
-                                        else if (slot == "offHand" && gm.ItemAudits["offHand"].ItemLevel == 0)
-                                        {
-                                            int itemIdMainHand = gm.ItemAudits["mainHand"].Id;
-                                            int slotType = 0;
-                                            ItemInfo itemMainHand = null;
-                                            string itemContextMainHand = gm.ItemAudits["mainHand"].Context;
-
-                                            itemMainHand = FormMain.Items.GetItem(itemIdMainHand, itemContextMainHand);
-
-                                            if (itemMainHand != null)
+                                            // Need to account for any ring duplications
+                                            if (item.Name == gm.ItemAudits["finger1"].Name)
                                             {
-                                                slotType = itemMainHand.InventoryType;
+                                                ilvlOld = gm.ItemAudits["finger1"].ItemLevel;
+                                                oldItemId = gm.ItemAudits["finger1"].Id;
+                                            }
+                                            else if (item.Name == gm.ItemAudits["finger2"].Name)
+                                            {
+                                                ilvlOld = gm.ItemAudits["finger2"].ItemLevel;
+                                                oldItemId = gm.ItemAudits["finger2"].Id;
+                                            }
+                                            else
+                                            {
+                                                // upgrade!
+                                                ilvlOld = gm.ItemAudits["finger1"].ItemLevel > gm.ItemAudits["finger2"].ItemLevel ? gm.ItemAudits["finger2"].ItemLevel : gm.ItemAudits["finger1"].ItemLevel;
+                                                oldItemId = gm.ItemAudits["finger1"].Id > gm.ItemAudits["finger2"].Id ? gm.ItemAudits["finger2"].Id : gm.ItemAudits["finger1"].Id;
+                                            }
+                                        }
+                                        else if (slot == "trinket")
+                                        {
+                                            // Need to account for any ring duplications
+                                            if (item.Name == gm.ItemAudits["trinket1"].Name)
+                                            {
+                                                ilvlOld = gm.ItemAudits["trinket1"].ItemLevel;
+                                                oldItemId = gm.ItemAudits["trinket1"].ItemLevel;
+                                            }
+                                            else if (item.Name == gm.ItemAudits["trinket2"].Name)
+                                            {
+                                                ilvlOld = gm.ItemAudits["trinket2"].ItemLevel;
+                                                oldItemId = gm.ItemAudits["trinket2"].ItemLevel;
+                                            }
+                                            else
+                                            {
+                                                // upgrade!
+                                                ilvlOld = gm.ItemAudits["trinket1"].ItemLevel > gm.ItemAudits["trinket2"].ItemLevel ? gm.ItemAudits["trinket2"].ItemLevel : gm.ItemAudits["trinket1"].ItemLevel;
+                                                oldItemId = gm.ItemAudits["trinket1"].Id > gm.ItemAudits["trinket2"].Id ? gm.ItemAudits["trinket2"].Id : gm.ItemAudits["trinket1"].Id;
+                                            }
+                                        }
+                                        else if (slot == "mainHand" || slot == "offHand")
+                                        {
+                                            string weapon = Converter.ConvertItemSubClass(item.ItemClass, item.ItemSubClass);
 
-                                                // if slot if offHand and currently doesn't have an offHand equipped
-                                                //  and mainhand is a 2 hander... compare iLevel with mainHand
-                                                if (slotType == 17 || slotType == 15 || slotType == 26)
+                                            // Need to check for dual hands vs 2 handers vs one hand + off hand...
+                                            if ((gm.Class == "Rogue" || (gm.Class == "Shaman" && gm.Spec == "Enhancement") || (gm.Class == "Warrior" && gm.Spec == "Fury") ||
+                                                (gm.Class == "Druid" && (gm.Spec == "Guardian" || gm.Spec == "Feral")) || (gm.Class == "Monk" && (gm.Spec == "Brewmaster" ||
+                                                gm.Spec == "Windwalker")) || (gm.Class == "Death Knight" && (gm.Spec == "Unholy" || gm.Spec == "Frost"))) &&
+                                                (gm.ItemAudits["offHand"].ItemLevel > 0))
+                                            {
+                                                ilvlOld = gm.ItemAudits["mainHand"].ItemLevel > gm.ItemAudits["offHand"].ItemLevel ? gm.ItemAudits["offHand"].ItemLevel : gm.ItemAudits["mainHand"].ItemLevel;
+                                                oldItemId = gm.ItemAudits["mainHand"].Id > gm.ItemAudits["offHand"].Id ? gm.ItemAudits["offHand"].Id : gm.ItemAudits["mainHand"].Id;
+                                            }
+                                            else if (slot == "offHand" && gm.ItemAudits["offHand"].ItemLevel == 0)
+                                            {
+                                                int itemIdMainHand = gm.ItemAudits["mainHand"].Id;
+                                                int slotType = 0;
+                                                ItemInfo itemMainHand = null;
+                                                string itemContextMainHand = gm.ItemAudits["mainHand"].Context;
+
+                                                itemMainHand = FormMain.Items.GetItem(itemIdMainHand, itemContextMainHand);
+
+                                                if (itemMainHand != null)
                                                 {
-                                                    ilvlOld = gm.ItemAudits["mainHand"].ItemLevel;
-                                                    oldItemId = gm.ItemAudits["mainHand"].Id;
-                                                    oldItemContext = gm.ItemAudits["mainHand"].Context;
+                                                    slotType = itemMainHand.InventoryType;
+
+                                                    // if slot if offHand and currently doesn't have an offHand equipped
+                                                    //  and mainhand is a 2 hander... compare iLevel with mainHand
+                                                    if (slotType == 17 || slotType == 15 || slotType == 26)
+                                                    {
+                                                        ilvlOld = gm.ItemAudits["mainHand"].ItemLevel;
+                                                        oldItemId = gm.ItemAudits["mainHand"].Id;
+                                                        oldItemContext = gm.ItemAudits["mainHand"].Context;
+                                                    }
+                                                    else
+                                                    {
+                                                        ilvlOld = gm.ItemAudits[Converter.ConvertInventoryType(item.InventoryType)].ItemLevel;
+                                                        oldItemId = gm.ItemAudits[Converter.ConvertInventoryType(item.InventoryType)].Id;
+                                                        oldItemContext = gm.ItemAudits[Converter.ConvertInventoryType(item.InventoryType)].Context;
+                                                    }
                                                 }
-                                                else
-                                                {
-                                                    ilvlOld = gm.ItemAudits[Converter.ConvertInventoryType(item.InventoryType)].ItemLevel;
-                                                    oldItemId = gm.ItemAudits[Converter.ConvertInventoryType(item.InventoryType)].Id;
-                                                    oldItemContext = gm.ItemAudits[Converter.ConvertInventoryType(item.InventoryType)].Context;
-                                                }
+                                            }
+                                            else
+                                            {
+                                                // upgrade!
+                                                ilvlOld = gm.ItemAudits[Converter.ConvertInventoryType(item.InventoryType)].ItemLevel;
+                                                oldItemId = gm.ItemAudits[Converter.ConvertInventoryType(item.InventoryType)].Id;
+                                                oldItemContext = gm.ItemAudits[Converter.ConvertInventoryType(item.InventoryType)].Context;
                                             }
                                         }
                                         else
@@ -900,39 +933,36 @@ namespace WoWGuildOrganizer
                                             oldItemId = gm.ItemAudits[Converter.ConvertInventoryType(item.InventoryType)].Id;
                                             oldItemContext = gm.ItemAudits[Converter.ConvertInventoryType(item.InventoryType)].Context;
                                         }
+
+                                        if (ilvlNew > ilvlOld)
+                                        {
+                                            // This is a definite upgrade
+                                            DataRow dr = loot.NewRow();
+                                            dr["Upgrade"] = ilvlNew - ilvlOld;
+                                            dr["ItemId"] = item.Id;
+                                            dr["ItemName"] = item.Name;
+                                            dr["ItemSlot"] = slot;
+                                            dr["CharacterName"] = charName;
+                                            dr["ItemILevel"] = ilvlNew;
+                                            dr["OldItemILevel"] = ilvlOld;
+                                            dr["OldItemId"] = oldItemId;
+                                            dr["OldItemContext"] = oldItemContext;
+                                            loot.Rows.Add(dr);
+                                        }
                                     }
                                     else
                                     {
-                                        // upgrade!
-                                        ilvlOld = gm.ItemAudits[Converter.ConvertInventoryType(item.InventoryType)].ItemLevel;
-                                        oldItemId = gm.ItemAudits[Converter.ConvertInventoryType(item.InventoryType)].Id;
-                                        oldItemContext = gm.ItemAudits[Converter.ConvertInventoryType(item.InventoryType)].Context;
+                                        Logging.DisplayError("Slot #" + item.InventoryType + "[" + slot + "] not found!");
                                     }
-
-                                    if (ilvlNew > ilvlOld)
-                                    {
-                                        // This is a definite upgrade
-                                        DataRow dr = loot.NewRow();
-                                        dr["Upgrade"] = ilvlNew - ilvlOld;
-                                        dr["ItemId"] = item.Id;
-                                        dr["ItemName"] = item.Name;
-                                        dr["ItemSlot"] = slot;
-                                        dr["CharacterName"] = charName;
-                                        dr["ItemILevel"] = ilvlNew;
-                                        dr["OldItemILevel"] = ilvlOld;
-                                        dr["OldItemId"] = oldItemId;
-                                        dr["OldItemContext"] = oldItemContext;
-                                        loot.Rows.Add(dr);
-                                    }                                    
-                                }
-                                else
-                                {
-                                    Logging.DisplayError("Slot #" + item.InventoryType + "[" + slot + "] not found!");
                                 }
                             }
                         }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                Logging.DisplayError(ex.Message);
             }
 
             return loot;

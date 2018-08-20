@@ -6,19 +6,16 @@
 namespace WoWGuildOrganizer
 {
     using System;
-    using System.Collections.Generic;
     using System.IO;
-    using System.Linq;
     using System.Net;
     using System.Text;
-    
+
     /// <summary>
     /// Super class to make parsing web sites more consistent
     /// </summary>
     public class GetWebSiteData
     {        
-        #region Class Variables
-                
+        #region Class Variables                
         /// <summary>
         /// Flag to determine if debug logging should be turned on or off
         /// </summary>
@@ -38,7 +35,6 @@ namespace WoWGuildOrganizer
         /// Gets or sets string of the actual data from the website
         /// </summary>
         public string Data { get; set; }
-
         #endregion
 
         #region Parsing

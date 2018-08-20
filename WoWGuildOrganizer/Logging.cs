@@ -46,14 +46,14 @@ namespace WoWGuildOrganizer
         /// <param name="message">string of the message to be logged</param>
         public static void Warning(string message)
         {
-            logging.Add(string.Format("WARN: {0}", message));
+            logging.Add(string.Format("WARNING: {0}", message));
         }
 
         /// <summary>
         /// Log a message with an Error string.  Add it to the array list
         /// </summary>
         /// <param name="message">string of the message to be logged</param>
-        public static void Error(string message)
+        public static void Error(string message/*, bool display = true*/)
         {
             logging.Add(string.Format("ERROR: {0}", message));
             logging.Add(string.Format("\tStackTrace: {0}", Environment.StackTrace));
@@ -65,9 +65,9 @@ namespace WoWGuildOrganizer
         /// <param name="message">string of the error to be logged and displayed</param>
         public static void DisplayError(string message)
         {
-            string newMessage = string.Format("Error: {0}", message);
+            string newMessage = string.Format("ERROR: {0}", message);
 
-            Log(newMessage);
+            Error(newMessage);
             MessageBox.Show(newMessage);            
         }
 

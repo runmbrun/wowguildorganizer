@@ -336,7 +336,12 @@ namespace WoWGuildOrganizer
             */
         }
 
-        private void buttonBossLoot_Click(object sender, EventArgs e)
+        /// <summary>
+        /// TODO: Need to update for Legion
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ButtonBossLoot_Click(object sender, EventArgs e)
         {
             this.Cursor = Cursors.WaitCursor;
 
@@ -493,8 +498,9 @@ namespace WoWGuildOrganizer
 
                                         newLoot.Id = id;
 
+                                        // todo: fix this!
                                         // now find the item id for the loot to be dropped...
-                                        contexts = FormMain.Items.GetAvailableContexts(id);
+                                        //contexts = FormMain.Items.GetAvailableContexts(id);
 
                                         if (contexts != null)
                                         {

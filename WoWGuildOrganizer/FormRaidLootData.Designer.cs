@@ -47,7 +47,7 @@
             this.buttonBossLoot.TabIndex = 0;
             this.buttonBossLoot.Text = "Get Boss";
             this.buttonBossLoot.UseVisualStyleBackColor = true;
-            this.buttonBossLoot.Click += new System.EventHandler(this.buttonBossLoot_Click);
+            this.buttonBossLoot.Click += new System.EventHandler(this.ButtonBossLoot_Click);
             // 
             // label1
             // 

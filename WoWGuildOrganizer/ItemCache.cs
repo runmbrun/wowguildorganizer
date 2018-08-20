@@ -88,12 +88,12 @@ namespace WoWGuildOrganizer
                     if (context == null || context == string.Empty)
                     {
                         // no context
-                        rows = items.Select(string.Format("id = {0}", itemId));
+                        rows = items.Select($"id = {itemId}");
                     }
                     else
                     {
                         // context has been provided
-                        rows = items.Select(string.Format("id = {0} and context = '{1}'", itemId, context));
+                        rows = items.Select($"id = {itemId} and context = '{context}'");
                     }
 
                     item = (ItemInfo)rows[0]["iteminfo"];
@@ -115,7 +115,7 @@ namespace WoWGuildOrganizer
                     }
                     else
                     {
-                        Logging.Error(string.Format("Can't retrieve information about item: {0} with context: {1}", itemId, context));
+                        Logging.Error($"Can't retrieve information about item: {itemId} with context: {context}");
                     }
                 }
             }
@@ -187,8 +187,9 @@ namespace WoWGuildOrganizer
             return items;
         }
 
+        /*
         /// <summary>
-        /// 
+        /// ***DEPRECIATED***
         /// </summary>
         /// <param name="itemId"></param>
         /// <returns></returns>
@@ -196,33 +197,9 @@ namespace WoWGuildOrganizer
         {
             string[] results = null;
 
-            /*
-            DataRow[] rows = null;
+             GetItemInfo getNewItem = new GetItemInfo();
 
-            try
-            {
-                // Check to see what contexts are currently cached
-                rows = items.Select(string.Format("id = {0}", itemId));
-
-                if (rows.Length > 0)
-                {
-                    int count = 0;
-                    results = string[rows.Length];
-
-                    for (int i=0; i<rows.Length; i++)
-                    {
-                        results[count] = rows[count]["context"].ToString();
-
-                    }
-                }
-            }
-            catch (Exception ex)
-            {             
-            }*/
-
-            GetItemInfo getNewItem = new GetItemInfo();
-
-            //
+            // 
             results = getNewItem.CollectContexts(itemId);
 
             if (results == null)
@@ -231,6 +208,6 @@ namespace WoWGuildOrganizer
             }
 
             return results;
-        }
+        }*/
     }
 }

@@ -13,7 +13,7 @@ namespace WoWGuildOrganizer
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
-        {
+            {
             if (disposing && (components != null))
             {
                 components.Dispose();
@@ -165,10 +165,19 @@ namespace WoWGuildOrganizer
             this.dataGridViewRaidGroup.Name = "dataGridViewRaidGroup";
             this.dataGridViewRaidGroup.Size = new System.Drawing.Size(689, 269);
             this.dataGridViewRaidGroup.TabIndex = 0;
+            this.dataGridViewRaidGroup.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewRaidGroup_CellClick);
+            this.dataGridViewRaidGroup.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewRaidGroup_CellContentClick);
+            this.dataGridViewRaidGroup.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridViewRaidGroup_CellMouseClick);
             this.dataGridViewRaidGroup.CellMouseDoubleClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.DataGridViewRaidGroup_CellMouseDoubleClick);
+            this.dataGridViewRaidGroup.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridViewRaidGroup_CellMouseDown);
+            this.dataGridViewRaidGroup.CellMouseUp += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridViewRaidGroup_CellMouseUp);
             this.dataGridViewRaidGroup.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.DataGridViewRaidGroup_ColumnHeaderMouseClick);
+            this.dataGridViewRaidGroup.RowEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewRaidGroup_RowEnter);
+            this.dataGridViewRaidGroup.RowLeave += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewRaidGroup_RowLeave);
             this.dataGridViewRaidGroup.RowPostPaint += new System.Windows.Forms.DataGridViewRowPostPaintEventHandler(this.DataGridViewRaidGroup_RowPostPaint);
             this.dataGridViewRaidGroup.SortCompare += new System.Windows.Forms.DataGridViewSortCompareEventHandler(this.DataGridViewRaidGroup_SortCompare);
+            this.dataGridViewRaidGroup.MouseClick += new System.Windows.Forms.MouseEventHandler(this.dataGridViewRaidGroup_MouseClick);
+            this.dataGridViewRaidGroup.MouseDown += new System.Windows.Forms.MouseEventHandler(this.dataGridViewRaidGroup_MouseDown);
             // 
             // contextMenuStripRaidMembers
             // 
@@ -372,6 +381,7 @@ namespace WoWGuildOrganizer
             // 
             this.toolStripTextBoxGuild.Name = "toolStripTextBoxGuild";
             this.toolStripTextBoxGuild.Size = new System.Drawing.Size(100, 25);
+            this.toolStripTextBoxGuild.KeyUp += new System.Windows.Forms.KeyEventHandler(this.ToolStripTextBoxGuild_KeyUp);
             // 
             // toolStripLabelRealm
             // 

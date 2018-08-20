@@ -128,6 +128,11 @@ namespace WoWGuildOrganizer
             /// <summary>
             /// Druid Class
             /// </summary>
+            DemonHunter,
+
+            /// <summary>
+            /// Druid Class
+            /// </summary>
             Druid,
 
             /// <summary>
@@ -209,7 +214,17 @@ namespace WoWGuildOrganizer
             /// <summary>
             /// Protection Specialization
             /// </summary>
-            Protection
+            Protection,
+
+            /// <summary>
+            /// Havoc Specialization for Demon Hunter
+            /// </summary>
+            Havoc,
+
+            /// <summary>
+            /// Vengence Specialization for Demon Hunter
+            /// </summary>
+            Vengence
         }
 
         /// <summary>
@@ -240,7 +255,7 @@ namespace WoWGuildOrganizer
         /// <returns>string value of the number passed in</returns>
         public static string ConvertClass(string i)
         {
-            string converted = i;
+            string converted = string.Empty;
 
             switch (i)
             {
@@ -276,13 +291,21 @@ namespace WoWGuildOrganizer
                     break;
                 case "11":
                     converted = "Druid";
-                    break;                
+                    break;
+                case "12":
+                    converted = "Demon Hunter";
+                    break;
                 default:
                     converted = "error: " + i;
                     break;
             }
 
             return converted;
+        }
+
+        public static string ConvertClass(int i)
+        {
+            return ConvertClass(i.ToString());
         }
 
         /// <summary>
@@ -292,7 +315,7 @@ namespace WoWGuildOrganizer
         /// <returns>string value of the number passed in</returns>
         public static string ConvertRace(string i)
         {
-            string converted = "error";
+            string converted = string.Empty;
 
             switch (i)
             {
@@ -341,6 +364,16 @@ namespace WoWGuildOrganizer
             }
 
             return converted;
+        }
+
+        /// <summary>
+        /// Converts a number from Blizzard's web site into a Race type
+        /// </summary>
+        /// <param name="i">The numeric value of a race passed in</param>
+        /// <returns>string value of the number passed in</returns>
+        public static string ConvertRace(int i)
+        {
+            return ConvertRace(i.ToString());
         }
 
         /// <summary>
@@ -778,6 +811,9 @@ Druid
 	104 - Guardian
 	103 - Feral
 	105 - Restoration
+Demon Hunter
+    577 - Havoc
+    581 - Vengenance
 Hunter
 	253 - Beast Mastery
 	254 - Marksmanship
@@ -849,7 +885,7 @@ Warrior
                     }
                     else if (charClass == "Shaman")
                     {
-                        result = 263;
+                        result = 264;
                     }
                     break;
                 case "Beast Mastery":
@@ -915,10 +951,10 @@ Warrior
                     result = 261;
                     break;
                 case "Elemental":
-                    result = 259;
+                    result = 262;
                     break;
                 case "Enhancement":
-                    result = 262;
+                    result = 263;
                     break;
                 case "Affliction":
                     result = 265;
@@ -934,6 +970,12 @@ Warrior
                     break;
                 case "Fury":
                     result = 72;
+                    break;
+                case "Havoc":
+                    result = 577;
+                    break;
+                case "Vengeance":
+                    result = 581;
                     break;
             }
 
