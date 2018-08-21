@@ -28,7 +28,7 @@ namespace WoWGuildOrganizer
         public readonly string APIKey = "jwhk8mw8kfpcng2y86as895gufku9kfa";
 
         /// <summary>
-        /// Example: https://us.api.battle.net/wow/guild/Thrall/Secondnorth?fields=members&locale=en_US&apikey=gnv4yu6dzc25ywu3g98pfkhg26p8typn
+        /// Example: https://us.api.battle.net/wow/guild/Thrall/Secondnorth?fields=members&locale=en_US&apikey=jwhk8mw8kfpcng2y86as895gufku9kfa
         /// </summary>
         /// <param name="guild"></param>
         /// /// <param name="realm"></param>
@@ -49,7 +49,7 @@ namespace WoWGuildOrganizer
         }
 
         /// <summary>
-        /// Example: https://us.api.battle.net/wow/character/Thrall/Purdee?fields=items%2Cprofessions%2Ctalents&locale=en_US&apikey=gnv4yu6dzc25ywu3g98pfkhg26p8typn                
+        /// Example: https://us.api.battle.net/wow/character/Thrall/Purdee?fields=items%2Cprofessions%2Ctalents&locale=en_US&apikey=jwhk8mw8kfpcng2y86as895gufku9kfa                
         /// </summary>
         /// <param name="requestUrl"></param>
         /// <returns></returns>
@@ -69,8 +69,8 @@ namespace WoWGuildOrganizer
         }
 
         /// <summary>
-        /// Example: https://us.api.battle.net/wow/item/139191?locale=en_US&apikey=gnv4yu6dzc25ywu3g98pfkhg26p8typn
-        /// Example with context: https://us.api.battle.net/wow/item/139191/raid-normal?locale=en_US&apikey=gnv4yu6dzc25ywu3g98pfkhg26p8typn
+        /// Example: https://us.api.battle.net/wow/item/139191?locale=en_US&apikey=jwhk8mw8kfpcng2y86as895gufku9kfa
+        /// Example with context: https://us.api.battle.net/wow/item/139191/raid-normal?locale=en_US&apikey=jwhk8mw8kfpcng2y86as895gufku9kfa
         /// </summary>
         /// <param name="id"></param>
         /// <param name="context"></param>
@@ -82,11 +82,13 @@ namespace WoWGuildOrganizer
 
             if (string.IsNullOrEmpty(context))
             {
-                requestUrl = $"{this.URLWowAPI}item/{id}?locale=en_US&apikey={this.APIKey}"; // this is NOT context driven
+                // this is NOT context driven
+                requestUrl = $"{this.URLWowAPI}item/{id}?locale=en_US&apikey={this.APIKey}";
             }
             else
             {
-                requestUrl = $"{this.URLWowAPI}item/{id}/{context}?locale=en_US&apikey={this.APIKey}"; // this is context driven
+                // this is context driven
+                requestUrl = $"{this.URLWowAPI}item/{id}/{context}?locale=en_US&apikey={this.APIKey}";
             }
             
             string responseData = GetJSONData(requestUrl);
@@ -95,6 +97,24 @@ namespace WoWGuildOrganizer
             if (!string.IsNullOrEmpty(responseData))
             {
                 result = JsonConvert.DeserializeObject<JSONItemData>(responseData);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Example: https://us.api.battle.net/wow/zone/?locale=en_US&apikey=jwhk8mw8kfpcng2y86as895gufku9kfa
+        /// </summary>
+        /// <returns></returns>
+        public JSONRaidData GetRaidJSONData()
+        {
+            JSONRaidData result = null;
+            string responseData = GetJSONData($"{this.URLWowAPI}zone/?locale=en_US&apikey={this.APIKey}");
+
+            // Convert the data to the proper object
+            if (!string.IsNullOrEmpty(responseData))
+            {
+                result = JsonConvert.DeserializeObject<JSONRaidData>(responseData);
             }
 
             return result;

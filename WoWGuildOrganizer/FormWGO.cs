@@ -243,6 +243,24 @@ namespace WoWGuildOrganizer
 
         #endregion
 
+        #region " Class Enums "
+        /// <summary>
+        /// The different tabs for the application.
+        /// </summary>
+        public enum WGOTabs
+        {
+            /// <summary>
+            /// The Guild Data
+            /// </summary>
+            GuildData,
+
+            /// <summary>
+            /// The Raid Data
+            /// </summary>
+            RaidData
+        }
+        #endregion
+
         #region Class Properties
 
         /// <summary>
@@ -347,7 +365,7 @@ namespace WoWGuildOrganizer
             dataGridViewRaidGroup.DataSource = this.raidGroup.RaidGroup;
             this.UpdateRaidGrid();
             
-            this.SortGrid(this.sortGuild);
+            this.SortGrid(WGOTabs.GuildData, this.sortGuild);
         }
 
         #endregion
@@ -552,7 +570,7 @@ namespace WoWGuildOrganizer
             dataGridViewGuildData.AutoResizeColumns();
             dataGridViewGuildData.AutoResizeRows();
 
-            if (this.savedCharacters.SavedCharacters != null)
+            if (this.savedCharacters.SavedCharacters != null && this.dataGridViewGuildData.Rows.Count > 0)
             {
                 // Now check to see if the Item Level has changed and if their level has changed
                 foreach (GuildMember gm in this.savedCharacters.SavedCharacters)
@@ -672,7 +690,7 @@ namespace WoWGuildOrganizer
         /// Sorts the Guild Grid according to the parameter passed in
         /// </summary>
         /// <param name="sorting">string of the sorting that should happen</param>
-        private void SortGrid(string sorting)
+        private void SortGrid(WGOTabs tab, string sorting)
         {
             bool multipleSort = false;
 
@@ -682,7 +700,7 @@ namespace WoWGuildOrganizer
                 multipleSort = true;
             }
 
-            if (this.tabControlWGO.SelectedTab.Text == "Guild Data")
+            if (tab == WGOTabs.GuildData)
             {
                 dataGridViewGuildData.DataSource = null;
 
@@ -694,7 +712,7 @@ namespace WoWGuildOrganizer
                 // Now update the grid
                 this.UpdateGrid();
             }
-            else if (this.tabControlWGO.SelectedTab.Text == "Raid Data")
+            else if (tab == WGOTabs.RaidData)
             {
                 this.raidGroup.RaidGroup.Sort(new ObjectComparer(sorting, multipleSort));
 
@@ -726,7 +744,7 @@ namespace WoWGuildOrganizer
                     direction = SortOrder.Ascending;
                 }
 
-                if (this.tabControlWGO.SelectedTab.Text == "Guild Data")
+                if (tab == WGOTabs.GuildData)
                 {
                     foreach (DataGridViewColumn col in dataGridViewGuildData.Columns)
                     {
@@ -736,7 +754,7 @@ namespace WoWGuildOrganizer
                         }
                     }
                 }
-                else if (this.tabControlWGO.SelectedTab.Text == "Raid Data")
+                else if (tab == WGOTabs.RaidData)
                 {
                     foreach (DataGridViewColumn col in dataGridViewRaidGroup.Columns)
                     {
@@ -748,7 +766,7 @@ namespace WoWGuildOrganizer
                 }
             }
 
-            if (this.tabControlWGO.SelectedTab.Text == "Guild Data")
+            if (tabControlWGO.SelectedTab.Text == "Guild Data")
             {
                 toolStripLabelRefreshStatus.Text = string.Format("Total Characters in guild: {0}", this.savedCharacters.SavedCharacters.Count);
             }
@@ -779,7 +797,7 @@ namespace WoWGuildOrganizer
             // now do the sorting
             try
             {
-                this.SortGrid(sortCriteria);
+                this.SortGrid(WGOTabs.GuildData, sortCriteria);
             }
             catch (Exception ex)
             {
@@ -1150,7 +1168,7 @@ namespace WoWGuildOrganizer
                         stream.Close();
 
                         // Sort the data
-                        this.SortGrid(this.sortGuild);
+                        this.SortGrid(WGOTabs.GuildData, this.sortGuild);
 
                         // update the text boxes                        
                         toolStripTextBoxRealm.Text = this.savedCharacters.Realm;
@@ -1270,7 +1288,7 @@ namespace WoWGuildOrganizer
 
                     dataGridViewRaidGroup.ClearSelection();
 
-                    this.SortGrid(this.sortRaid);
+                    this.SortGrid(WGOTabs.RaidData, this.sortRaid);
                 }
 
                 this.WaitCursor(false);
@@ -1760,7 +1778,7 @@ namespace WoWGuildOrganizer
         #region Tool Strip Menu - Functionality
 
         /// <summary>
-        /// Fires when the update character right click is pressed
+        /// Fires when the "Update Character" right click is pressed
         /// </summary>
         /// <param name="sender">sender parameter</param>
         /// <param name="e">e parameter</param>
@@ -1768,6 +1786,71 @@ namespace WoWGuildOrganizer
         {
             // Update just the selected rows of characters
             this.UpdateCharacters(this.dataGridViewGuildData.SelectedRows.Cast<DataGridViewRow>().ToList(), true);
+        }
+
+        /// <summary>
+        /// Fires when the "Add Character To Raid Data" right click is pressed.
+        /// </summary>
+        /// <param name="sender">The Tool Strip Menu Item.</param>
+        /// <param name="e">Event Parameters. Not used.</param>
+        private void AddCharacterToRaidDataToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (WoWGuildOrganizer.FormMain.WebSiteOnline)
+                {
+                    foreach (DataGridViewRow row in this.dataGridViewGuildData.SelectedRows.Cast<DataGridViewRow>().ToList())
+                    {
+                        this.WaitCursor(true);
+
+                        bool found = false;
+                        int currentRow = row.Index;
+                        GuildMember oldMember = null;
+                        oldMember = (GuildMember)this.savedCharacters.SavedCharacters[currentRow];
+                        
+                        foreach (GuildMember member in this.raidGroup.RaidGroup)
+                        {
+                            if (member.Name == oldMember.Name && member.Realm == oldMember.Realm)
+                            {
+                                // Found him!  don't do an update!
+                                found = true;
+                                break;
+                            }
+                        }
+
+                        // Only add the character if they aren't already there
+                        if (!found)
+                        {
+                            // Now get the character's newest info
+                            GuildMember gm = this.GetCharacterInformation(oldMember.Name, oldMember.Realm);
+
+                            if (gm != null)
+                            {
+                                // Clear out the Grid Data Source to get it ready for the new data
+                                this.dataGridViewRaidGroup.DataSource = null;
+
+                                // Add new character to Raid
+                                this.raidGroup.RaidGroup.Add(gm);
+
+                                // refresh grid data
+                                this.dataGridViewRaidGroup.Enabled = false;
+                                this.dataGridViewRaidGroup.DataSource = null;
+                                this.dataGridViewRaidGroup.DataSource = this.raidGroup.RaidGroup;
+                                this.UpdateRaidGrid();
+                                this.dataGridViewRaidGroup.ClearSelection();
+                                this.SortGrid(WGOTabs.RaidData, this.sortRaid);
+                                this.dataGridViewRaidGroup.Enabled = true;
+                            }
+                        }
+
+                        this.WaitCursor(false);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logging.DisplayError($"Error: {ex.Message}");
+            }
         }
 
         /// <summary>
@@ -1845,11 +1928,11 @@ namespace WoWGuildOrganizer
         {
             if (this.tabControlWGO.SelectedTab.Text == "Guild Data")
             {
-                this.SortGrid(this.sortGuild);
+                this.SortGrid(WGOTabs.GuildData, this.sortGuild);
             }
             else if (this.tabControlWGO.SelectedTab.Text == "Raid Data")
             {
-                this.SortGrid(this.sortRaid);
+                this.SortGrid(WGOTabs.RaidData, this.sortRaid);
             }
         }
         
@@ -2133,6 +2216,12 @@ namespace WoWGuildOrganizer
                 {
                     // Show the new form
                     charAudit.Show();
+                    if (charAudit.StartPosition == FormStartPosition.CenterParent)
+                    {
+                        var x = Location.X + (Width - charAudit.Width) / 2;
+                        var y = Location.Y + (Height - charAudit.Height) / 2;
+                        charAudit.Location = new Point(Math.Max(x, 0), Math.Max(y, 0));
+                    }
                 }
                 else
                 {
@@ -2150,19 +2239,21 @@ namespace WoWGuildOrganizer
         #endregion 
 
         #region Raid Loot Dialog
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ButtonOpenRaidLootDialog_Click(object sender, EventArgs e)
         {
             using (FormRaidLootData loot = new FormRaidLootData())
             {
-                loot.ShowDialog();
+                loot.ShowDialog(this);
             }
         }
 
         #endregion
-
-
-
+        
         #region " DEBUG FUNCTIONS "
 
         private void dataGridViewRaidGroup_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)

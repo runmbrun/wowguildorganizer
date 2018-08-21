@@ -357,170 +357,10 @@ namespace WoWGuildOrganizer
 
                     npcIds = textBoxBossLoot.Text.Split(stringSeparatorsComma, StringSplitOptions.RemoveEmptyEntries);
 
-                    // now get the data from the web site
-                    GetWebSiteData data = new GetWebSiteData();
-
                     foreach (string npcId in npcIds)
                     {
-                        string webSite = string.Format("http://www.wowhead.com/npc={0}", Convert.ToInt32(npcId));
-
-                        if (data.Parse(webSite))
-                        {
-                            // now we have the data, get all the loot 
-                            //  but only the loot that has a source                        
-                            string dataString = data.Data;
-                            BossLootFromRaid bossLoot = new BossLootFromRaid();
-                            string boss = string.Empty;
-                            string zone = string.Empty;
-                            string searchString = string.Empty;
-                            int start = -1;
-                            int end = -1;
-                            string tempData = string.Empty;
-
-                            // First, get the boss's name
-                            searchString = "<title>";
-                            start = dataString.IndexOf(searchString) + searchString.Length;
-                            end = dataString.IndexOf("-", start);
-                            boss = dataString.Substring(start, end - start).Trim();
-                            bossLoot.Name = boss;
-
-                            // Second, get the boss's Zone
-                            searchString = @"<noscript><br /><h2 class=""heading-size-2""><a href=";
-                            start = dataString.IndexOf(searchString) + searchString.Length;
-                            start = dataString.IndexOf(">", start) + ">".Length;
-                            end = dataString.IndexOf("<", start);
-                            zone = dataString.Substring(start, end - start).Trim();
-                            bossLoot.Zone = zone;
-
-                            // Now get the Loot table's spec allowance information
-                            searchString = "new Listview({template: 'item'";
-                            start = dataString.LastIndexOf(searchString);
-
-                            if (start == -1)
-                            {
-                                MessageBox.Show("Can't find: " + searchString);
-                            }
-                            end = dataString.IndexOf("});\n", start);
-
-                            tempData = dataString.Substring(start, end - start);
-
-                            // We have the temp data, but now we need to delete all the items from it that are of "slot":0,
-                            //  I switched it from slot:0 to classs:0 and classs: 12 so I could get the tier pieces
-
-                            // We have the temp data, but now we need to delete all the items from it that are of "classs":0,
-                            //  which seem to be rune drops
-                            while (tempData.IndexOf("\"classs\":0,") != -1)
-                            {
-                                end = tempData.IndexOf("\"classs\":0,");
-                                start = tempData.LastIndexOf("\"id\":", end);
-                                tempData = tempData.Substring(0, start - 1) + tempData.Substring(end + "\"classs\":0,".Length + 1);
-                            }
-
-                            // We have the temp data, but now we need to delete all the items from it that are of "classs":12,
-                            //  which seem to be legendary drops
-                            while (tempData.IndexOf("\"classs\":12,") != -1)
-                            {
-                                end = tempData.IndexOf("\"classs\":12,");
-                                start = tempData.LastIndexOf("\"id\":", end);
-                                tempData = tempData.Substring(0, start - 1) + tempData.Substring(end + "\"classs\":12,".Length + 1);
-                            }
-
-                            // Save the Loot Spec info for later use
-                            Dictionary<int, List<string>> specInfo = new Dictionary<int, List<string>>();
-
-                            searchString = @"""id"":(?<id>\d*),.*?""specs"":\[(?<specs>[,0-9]*?)\],.*?";
-                            Regex testSpecs = new Regex(searchString, RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
-
-                            // Get the Average iLevel of character's Gear
-                            foreach (Match result in testSpecs.Matches(tempData))
-                            {
-                                int id = 0;
-                                string[] specs = null;
-
-                                if (result.Groups["id"].Success)
-                                {
-                                    id = Convert.ToInt32(result.Groups["id"].Value);
-                                }
-
-                                if (result.Groups["specs"].Success)
-                                {
-                                    specs = result.Groups["specs"].Value.ToString().Split(stringSeparatorsComma, StringSplitOptions.RemoveEmptyEntries);
-
-                                    if (!specInfo.ContainsKey(id))
-                                    {
-                                        specInfo.Add(id, specs.ToList<string>());
-                                    }
-                                }
-                                else
-                                {
-                                    // why doens't this work?
-                                    MessageBox.Show("No specs found for id=" + id);
-                                }
-                            }
-
-                            // Now get the Loot table
-                            searchString = "</div></li></ul></div><";
-                            start = dataString.LastIndexOf(searchString);
-
-                            if (start == -1)
-                            {
-                                MessageBox.Show("Can't find: " + searchString);
-                            }
-                            end = dataString.IndexOf("$.extend(true, g_items, _);", start);
-
-                            tempData = dataString.Substring(start, end - start);
-
-                            string[] stringSeparators = new string[] { "_[" };
-                            string[] results;
-
-                            results = tempData.Split(stringSeparators, StringSplitOptions.RemoveEmptyEntries);
-
-                            // Now create the loot information for this boss
-                            bossLoot.Loot = new List<LootInformation>();
-
-                            // loop through all the loot
-                            foreach (string item in results)
-                            {
-                                // now get the loot item id 
-                                searchString = @"(?<id>\d+)].*?quality"":(?<quality>\d+),.*?";
-                                Regex test = new Regex(searchString, RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
-
-                                // Get the Average iLevel of character's Gear
-                                foreach (Match result in test.Matches(item))
-                                {
-                                    int id = 0;
-                                    string[] contexts = null;
-                                    LootInformation newLoot = new LootInformation();
-
-                                    if (result.Groups["id"].Success)
-                                    {
-                                        id = Convert.ToInt32(result.Groups["id"].Value);
-
-                                        newLoot.Id = id;
-
-                                        // todo: fix this!
-                                        // now find the item id for the loot to be dropped...
-                                        //contexts = FormMain.Items.GetAvailableContexts(id);
-
-                                        if (contexts != null)
-                                        {
-                                            newLoot.Contexts = contexts.ToList<string>();
-
-                                            if (specInfo.ContainsKey(id))
-                                            {
-                                                // Add the spec info now
-                                                newLoot.Specs = specInfo[id];
-                                            }
-
-                                            bossLoot.Loot.Add(newLoot);
-                                        }
-                                    }
-                                }
-                            }
-
-                            // Add this current boss to the List of boss loots
-                            bossLoots.Add(bossLoot);
-                        }
+                        // Add this current boss to the List of boss loots
+                        bossLoots.Add(GetWowHeadNPCData(npcId));
                     }
 
                     // Now that we have all the data, create the xml file
@@ -539,9 +379,179 @@ namespace WoWGuildOrganizer
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        private BossLootFromRaid GetWowHeadNPCData(string npcID)
+        {
+            // now get the data from the web site
+            BossLootFromRaid bossLoot = new BossLootFromRaid();
+            string[] stringSeparatorsComma = new string[] { "," };
+            GetWebSiteData data = new GetWebSiteData();
+            string webSite = string.Format("http://www.wowhead.com/npc={0}", Convert.ToInt32(npcID));
+
+            if (data.Parse(webSite))
+            {
+                // now we have the data, get all the loot 
+                //  but only the loot that has a source                        
+                string dataString = data.Data;
+                
+                string boss = string.Empty;
+                string zone = string.Empty;
+                string searchString = string.Empty;
+                int start = -1;
+                int end = -1;
+                string tempData = string.Empty;
+
+                // First, get the boss's name
+                searchString = "<title>";
+                start = dataString.IndexOf(searchString) + searchString.Length;
+                end = dataString.IndexOf("-", start);
+                boss = dataString.Substring(start, end - start).Trim();
+                bossLoot.Name = boss;
+
+                // Second, get the boss's Zone
+                searchString = @"<noscript><br /><h2 class=""heading-size-2""><a href=";
+                start = dataString.IndexOf(searchString) + searchString.Length;
+                start = dataString.IndexOf(">", start) + ">".Length;
+                end = dataString.IndexOf("<", start);
+                zone = dataString.Substring(start, end - start).Trim();
+                bossLoot.Zone = zone;
+
+                // Now get the Loot table's spec allowance information
+                searchString = "new Listview({template: 'item'";
+                start = dataString.LastIndexOf(searchString);
+
+                if (start == -1)
+                {
+                    MessageBox.Show("Can't find: " + searchString);
+                }
+                end = dataString.IndexOf("});\n", start);
+
+                tempData = dataString.Substring(start, end - start);
+
+                // We have the temp data, but now we need to delete all the items from it that are of "slot":0,
+                //  I switched it from slot:0 to classs:0 and classs: 12 so I could get the tier pieces
+
+                // We have the temp data, but now we need to delete all the items from it that are of "classs":0,
+                //  which seem to be rune drops
+                while (tempData.IndexOf("\"classs\":0,") != -1)
+                {
+                    end = tempData.IndexOf("\"classs\":0,");
+                    start = tempData.LastIndexOf("\"id\":", end);
+                    tempData = tempData.Substring(0, start - 1) + tempData.Substring(end + "\"classs\":0,".Length + 1);
+                }
+
+                // We have the temp data, but now we need to delete all the items from it that are of "classs":12,
+                //  which seem to be legendary drops
+                while (tempData.IndexOf("\"classs\":12,") != -1)
+                {
+                    end = tempData.IndexOf("\"classs\":12,");
+                    start = tempData.LastIndexOf("\"id\":", end);
+                    tempData = tempData.Substring(0, start - 1) + tempData.Substring(end + "\"classs\":12,".Length + 1);
+                }
+
+                // Save the Loot Spec info for later use
+                Dictionary<int, List<string>> specInfo = new Dictionary<int, List<string>>();
+
+                searchString = @"""id"":(?<id>\d*),.*?""specs"":\[(?<specs>[,0-9]*?)\],.*?";
+                Regex testSpecs = new Regex(searchString, RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
+
+                // Get the Average iLevel of character's Gear
+                foreach (Match result in testSpecs.Matches(tempData))
+                {
+                    int id = 0;
+                    string[] specs = null;
+
+                    if (result.Groups["id"].Success)
+                    {
+                        id = Convert.ToInt32(result.Groups["id"].Value);
+                    }
+
+                    if (result.Groups["specs"].Success)
+                    {
+                        specs = result.Groups["specs"].Value.ToString().Split(stringSeparatorsComma, StringSplitOptions.RemoveEmptyEntries);
+
+                        if (!specInfo.ContainsKey(id))
+                        {
+                            specInfo.Add(id, specs.ToList<string>());
+                        }
+                    }
+                    else
+                    {
+                        // why doens't this work?
+                        MessageBox.Show("No specs found for id=" + id);
+                    }
+                }
+
+                // Now get the Loot table
+                searchString = "</div></li></ul></div><";
+                start = dataString.LastIndexOf(searchString);
+
+                if (start == -1)
+                {
+                    MessageBox.Show("Can't find: " + searchString);
+                }
+                end = dataString.IndexOf("$.extend(true, g_items, _);", start);
+
+                tempData = dataString.Substring(start, end - start);
+
+                string[] stringSeparators = new string[] { "_[" };
+                string[] results;
+
+                results = tempData.Split(stringSeparators, StringSplitOptions.RemoveEmptyEntries);
+
+                // Now create the loot information for this boss
+                bossLoot.Loot = new List<LootInformation>();
+
+                // loop through all the loot
+                foreach (string item in results)
+                {
+                    // now get the loot item id 
+                    searchString = @"(?<id>\d+)].*?quality"":(?<quality>\d+),.*?";
+                    Regex test = new Regex(searchString, RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
+
+                    // Get the Average iLevel of character's Gear
+                    foreach (Match result in test.Matches(item))
+                    {
+                        int id = 0;
+                        string[] contexts = null;
+                        LootInformation newLoot = new LootInformation();
+
+                        if (result.Groups["id"].Success)
+                        {
+                            id = Convert.ToInt32(result.Groups["id"].Value);
+
+                            newLoot.Id = id;
+
+                            // todo: fix this!
+                            // now find the item id for the loot to be dropped...
+                            //contexts = FormMain.Items.GetAvailableContexts(id);
+
+                            if (contexts != null)
+                            {
+                                newLoot.Contexts = contexts.ToList<string>();
+
+                                if (specInfo.ContainsKey(id))
+                                {
+                                    // Add the spec info now
+                                    newLoot.Specs = specInfo[id];
+                                }
+
+                                bossLoot.Loot.Add(newLoot);
+                            }
+                        }
+                    }
+                }
+            }
+
+            return bossLoot;
+        }
+
+        /// <summary>
         /// Saving this information for future use
         /// </summary>
-        private void createRaidNode(List<BossLootFromRaid> bossLoots /* Dictionary<string, List<int>> bossloot*/)
+        private void createRaidNode(List<BossLootFromRaid> bossLoots)
         {
             bool deleteFile = false;
 
@@ -699,6 +709,73 @@ namespace WoWGuildOrganizer
                     writer.Flush();
                     writer.Close();
                 }
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ButtonGetCurrentRaids_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                GetWebJSONData getData = new GetWebJSONData();
+                JSONRaidData data = getData.GetRaidJSONData();
+                List<int> expansions = new List<int>();
+
+                if (data != null)
+                {
+                    // Find the last Expansion Id.  That will be the one we care about
+                    foreach (JSONZoneData raid in data.Zones)
+                    {
+                        if (!expansions.Contains(raid.ExpansionId))
+                        {
+                            expansions.Add(raid.ExpansionId);
+                        }
+                    }
+
+                    int expansionId = expansions != null ? expansions.Max() : 0;
+                    List<BossLootFromRaid> bossLoots = new List<BossLootFromRaid>();
+
+                    foreach (JSONZoneData raid in data.Zones)
+                    {
+                        if (raid.ExpansionId == expansionId && raid.IsRaid)
+                        {
+                            // We found a relevant raid!  Capture all the info.
+                            BossLootFromRaid newRaid = new BossLootFromRaid();
+                            newRaid.Name = raid.Name;
+                            newRaid.Zone = raid.Id;
+
+                            // Now create the loot information for this boss
+                            newRaid.Loot = new List<LootInformation>();
+
+                            /* todo:
+                            foreach (DataRow item in FormMain.Items.GetData().Rows)
+                            {
+                                if (item["iteminfo"].ToString() == "test")
+                                {
+                                    LootInformation newLoot = new LootInformation();
+                                    newRaid.Loot = newLoot;
+                                }
+                            }*/
+
+                            foreach (JSONRaidBossData boss in raid.Bosses)
+                            {
+                                // Add this current boss to the List of boss loots
+                                bossLoots.Add(GetWowHeadNPCData(boss.Id));
+                            }
+                        }
+                    }
+
+                    // Now that we have all the data, create the xml file
+                    createRaidNode(bossLoots);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logging.DisplayError($"Error: {ex.Message}");
             }
         }
     }

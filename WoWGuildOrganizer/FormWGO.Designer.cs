@@ -70,6 +70,7 @@ namespace WoWGuildOrganizer
             this.toolStripComboBoxPickRaid = new System.Windows.Forms.ToolStripComboBox();
             this.toolStripLabelPickBoss = new System.Windows.Forms.ToolStripLabel();
             this.toolStripComboBoxPickBoss = new System.Windows.Forms.ToolStripComboBox();
+            this.addCharacterToRaidDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControlWGO.SuspendLayout();
             this.tabPageGuildData.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewGuildData)).BeginInit();
@@ -133,9 +134,10 @@ namespace WoWGuildOrganizer
             // contextMenuStripGuildMembers
             // 
             this.contextMenuStripGuildMembers.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.updateCharacterToolStripMenuItem});
+            this.updateCharacterToolStripMenuItem,
+            this.addCharacterToRaidDataToolStripMenuItem});
             this.contextMenuStripGuildMembers.Name = "contextMenuStrip1";
-            this.contextMenuStripGuildMembers.Size = new System.Drawing.Size(167, 26);
+            this.contextMenuStripGuildMembers.Size = new System.Drawing.Size(220, 48);
             // 
             // updateCharacterToolStripMenuItem
             // 
@@ -367,7 +369,7 @@ namespace WoWGuildOrganizer
             this.toolStripComboBoxPickBoss});
             this.toolStripMain.Location = new System.Drawing.Point(0, 0);
             this.toolStripMain.Name = "toolStripMain";
-            this.toolStripMain.Size = new System.Drawing.Size(721, 25);
+            this.toolStripMain.Size = new System.Drawing.Size(721, 27);
             this.toolStripMain.TabIndex = 1;
             this.toolStripMain.Text = "toolStrip2";
             // 
@@ -474,6 +476,13 @@ namespace WoWGuildOrganizer
             this.toolStripComboBoxPickBoss.Visible = false;
             this.toolStripComboBoxPickBoss.SelectedIndexChanged += new System.EventHandler(this.ToolStripComboBoxPickBoss_SelectedIndexChanged);
             // 
+            // addCharacterToRaidDataToolStripMenuItem
+            // 
+            this.addCharacterToRaidDataToolStripMenuItem.Name = "addCharacterToRaidDataToolStripMenuItem";
+            this.addCharacterToRaidDataToolStripMenuItem.Size = new System.Drawing.Size(219, 22);
+            this.addCharacterToRaidDataToolStripMenuItem.Text = "Add Character To Raid Data";
+            this.addCharacterToRaidDataToolStripMenuItem.Click += new System.EventHandler(this.AddCharacterToRaidDataToolStripMenuItem_Click);
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -483,6 +492,7 @@ namespace WoWGuildOrganizer
             this.Controls.Add(this.tabControlWGO);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FormMain";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "WoW Guild Organizer";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
@@ -548,6 +558,7 @@ namespace WoWGuildOrganizer
         private System.Windows.Forms.ToolStripButton toolStripButtonSort;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Button buttonOpenRaidLootDialog;
+        private System.Windows.Forms.ToolStripMenuItem addCharacterToRaidDataToolStripMenuItem;
     }
 }
 

@@ -22,4 +22,5 @@ Global:
 9.  FIX: Item tooltip for Tier Pieces - show bonus or at least that it's a Tier piece
 10. TEST:If Guild Roster is giving different level than individual check, take the higher one.
 11. TEST:If Item Id + Context is not giving an item, then when it's found, add both items in the cache. (To prevent multiple internet searches each time)
-12. ADD: Include the date/time variable from the character and guild roster JSON data.  Use it to compare.
+12. ADD: Include the date/time variable from the character and guild roster JSON data.  Use it to compare. (not working on Blizzard's side yet)
+13. ADD: Redo Audit - use the armory audit instead

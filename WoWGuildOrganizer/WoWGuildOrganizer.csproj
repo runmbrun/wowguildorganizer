@@ -156,16 +156,17 @@
     </Compile>
     <Compile Include="GetWebJSONData.cs" />
     <Compile Include="GetWebSiteData.cs" />
-    <Compile Include="JSONCharacterData.cs" />
-    <Compile Include="JSONCharacterItems.cs" />
-    <Compile Include="JSONGuildData.cs" />
+    <Compile Include="JSON Data Files\JSONCharacterData.cs" />
+    <Compile Include="JSON Data Files\JSONCharacterItems.cs" />
+    <Compile Include="JSON Data Files\JSONGuildData.cs" />
     <Compile Include="GuildMember.cs" />
     <Compile Include="GuildMemberGroup.cs" />
     <Compile Include="ItemAudit.cs" />
     <Compile Include="ItemCache.cs" />
     <Compile Include="ItemInfo.cs" />
-    <Compile Include="JSONItemData.cs" />
-    <Compile Include="JSONSpecData.cs" />
+    <Compile Include="JSON Data Files\JSONItemData.cs" />
+    <Compile Include="JSON Data Files\JSONRaidData.cs" />
+    <Compile Include="JSON Data Files\JSONSpecData.cs" />
     <Compile Include="Logging.cs" />
     <Compile Include="MultiThreadUIInvokeFunctions.cs">
       <SubType>Form</SubType>
