@@ -36,6 +36,7 @@ namespace WoWGuildOrganizer
             this.dataGridViewGuildData = new System.Windows.Forms.DataGridView();
             this.contextMenuStripGuildMembers = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.updateCharacterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addCharacterToRaidDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabPageRaidData = new System.Windows.Forms.TabPage();
             this.dataGridViewRaidGroup = new System.Windows.Forms.DataGridView();
             this.contextMenuStripRaidMembers = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -70,7 +71,6 @@ namespace WoWGuildOrganizer
             this.toolStripComboBoxPickRaid = new System.Windows.Forms.ToolStripComboBox();
             this.toolStripLabelPickBoss = new System.Windows.Forms.ToolStripLabel();
             this.toolStripComboBoxPickBoss = new System.Windows.Forms.ToolStripComboBox();
-            this.addCharacterToRaidDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControlWGO.SuspendLayout();
             this.tabPageGuildData.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewGuildData)).BeginInit();
@@ -142,9 +142,16 @@ namespace WoWGuildOrganizer
             // updateCharacterToolStripMenuItem
             // 
             this.updateCharacterToolStripMenuItem.Name = "updateCharacterToolStripMenuItem";
-            this.updateCharacterToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.updateCharacterToolStripMenuItem.Size = new System.Drawing.Size(219, 22);
             this.updateCharacterToolStripMenuItem.Text = "Update Character";
             this.updateCharacterToolStripMenuItem.Click += new System.EventHandler(this.UpdateCharacterToolStripMenuItem_Click);
+            // 
+            // addCharacterToRaidDataToolStripMenuItem
+            // 
+            this.addCharacterToRaidDataToolStripMenuItem.Name = "addCharacterToRaidDataToolStripMenuItem";
+            this.addCharacterToRaidDataToolStripMenuItem.Size = new System.Drawing.Size(219, 22);
+            this.addCharacterToRaidDataToolStripMenuItem.Text = "Add Character To Raid Data";
+            this.addCharacterToRaidDataToolStripMenuItem.Click += new System.EventHandler(this.AddCharacterToRaidDataToolStripMenuItem_Click);
             // 
             // tabPageRaidData
             // 
@@ -174,6 +181,7 @@ namespace WoWGuildOrganizer
             this.dataGridViewRaidGroup.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridViewRaidGroup_CellMouseDown);
             this.dataGridViewRaidGroup.CellMouseUp += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridViewRaidGroup_CellMouseUp);
             this.dataGridViewRaidGroup.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.DataGridViewRaidGroup_ColumnHeaderMouseClick);
+            this.dataGridViewRaidGroup.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.dataGridViewRaidGroup_DataError);
             this.dataGridViewRaidGroup.RowEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewRaidGroup_RowEnter);
             this.dataGridViewRaidGroup.RowLeave += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewRaidGroup_RowLeave);
             this.dataGridViewRaidGroup.RowPostPaint += new System.Windows.Forms.DataGridViewRowPostPaintEventHandler(this.DataGridViewRaidGroup_RowPostPaint);
@@ -369,7 +377,7 @@ namespace WoWGuildOrganizer
             this.toolStripComboBoxPickBoss});
             this.toolStripMain.Location = new System.Drawing.Point(0, 0);
             this.toolStripMain.Name = "toolStripMain";
-            this.toolStripMain.Size = new System.Drawing.Size(721, 27);
+            this.toolStripMain.Size = new System.Drawing.Size(721, 25);
             this.toolStripMain.TabIndex = 1;
             this.toolStripMain.Text = "toolStrip2";
             // 
@@ -475,13 +483,6 @@ namespace WoWGuildOrganizer
             this.toolStripComboBoxPickBoss.Size = new System.Drawing.Size(121, 25);
             this.toolStripComboBoxPickBoss.Visible = false;
             this.toolStripComboBoxPickBoss.SelectedIndexChanged += new System.EventHandler(this.ToolStripComboBoxPickBoss_SelectedIndexChanged);
-            // 
-            // addCharacterToRaidDataToolStripMenuItem
-            // 
-            this.addCharacterToRaidDataToolStripMenuItem.Name = "addCharacterToRaidDataToolStripMenuItem";
-            this.addCharacterToRaidDataToolStripMenuItem.Size = new System.Drawing.Size(219, 22);
-            this.addCharacterToRaidDataToolStripMenuItem.Text = "Add Character To Raid Data";
-            this.addCharacterToRaidDataToolStripMenuItem.Click += new System.EventHandler(this.AddCharacterToRaidDataToolStripMenuItem_Click);
             // 
             // FormMain
             // 

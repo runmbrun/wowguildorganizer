@@ -394,8 +394,7 @@ namespace WoWGuildOrganizer
             {
                 // now we have the data, get all the loot 
                 //  but only the loot that has a source                        
-                string dataString = data.Data;
-                
+                string dataString = data.Data;                
                 string boss = string.Empty;
                 string zone = string.Empty;
                 string searchString = string.Empty;
@@ -411,10 +410,10 @@ namespace WoWGuildOrganizer
                 bossLoot.Name = boss;
 
                 // Second, get the boss's Zone
-                searchString = @"<noscript><br /><h2 class=""heading-size-2""><a href=";
+                searchString = @"({zone: ";
                 start = dataString.IndexOf(searchString) + searchString.Length;
-                start = dataString.IndexOf(">", start) + ">".Length;
-                end = dataString.IndexOf("<", start);
+                //start = dataString.IndexOf(",", start) + ",".Length;
+                end = dataString.IndexOf(",", start);
                 zone = dataString.Substring(start, end - start).Trim();
                 bossLoot.Zone = zone;
 
@@ -424,11 +423,13 @@ namespace WoWGuildOrganizer
 
                 if (start == -1)
                 {
-                    MessageBox.Show("Can't find: " + searchString);
+                    Logging.Log("Can't find: " + searchString);
                 }
-                end = dataString.IndexOf("});\n", start);
-
-                tempData = dataString.Substring(start, end - start);
+                else
+                {
+                    end = dataString.IndexOf("});\n", start);
+                    tempData = dataString.Substring(start, end - start);
+                }
 
                 // We have the temp data, but now we need to delete all the items from it that are of "slot":0,
                 //  I switched it from slot:0 to classs:0 and classs: 12 so I could get the tier pieces
@@ -490,11 +491,13 @@ namespace WoWGuildOrganizer
 
                 if (start == -1)
                 {
-                    MessageBox.Show("Can't find: " + searchString);
+                    Logging.Log("Can't find: " + searchString);
                 }
-                end = dataString.IndexOf("$.extend(true, g_items, _);", start);
-
-                tempData = dataString.Substring(start, end - start);
+                else
+                {
+                    end = dataString.IndexOf("$.extend(true, g_items, _);", start);
+                    tempData = dataString.Substring(start, end - start);
+                }
 
                 string[] stringSeparators = new string[] { "_[" };
                 string[] results;
@@ -531,15 +534,15 @@ namespace WoWGuildOrganizer
                             if (contexts != null)
                             {
                                 newLoot.Contexts = contexts.ToList<string>();
-
-                                if (specInfo.ContainsKey(id))
-                                {
-                                    // Add the spec info now
-                                    newLoot.Specs = specInfo[id];
-                                }
-
-                                bossLoot.Loot.Add(newLoot);
                             }
+
+                            if (specInfo.ContainsKey(id))
+                            {
+                                // Add the spec info now
+                                newLoot.Specs = specInfo[id];
+                            }
+
+                            bossLoot.Loot.Add(newLoot);
                         }
                     }
                 }
@@ -633,6 +636,7 @@ namespace WoWGuildOrganizer
                                 writer.WriteString(raidDifficulty);
                                 break;
                         }
+
                         writer.WriteEndAttribute();
 
                         foreach (BossLootFromRaid bossLoot in bossLoots)
@@ -641,22 +645,26 @@ namespace WoWGuildOrganizer
                             writer.WriteStartElement("boss");
 
                             // Boss Name
-                            writer.WriteStartElement("name");
+                            writer.WriteStartAttribute("name");
                             writer.WriteString(bossLoot.Name);
-                            writer.WriteEndElement();
+                            writer.WriteEndAttribute();
 
                             foreach (LootInformation loot in bossLoot.Loot)
                             {
-                                foreach (string difficulty in loot.Contexts)
+                                //foreach (string difficulty in loot.Contexts)
                                 {
-                                    if (raidDifficulty == difficulty)
+                                    //if (raidDifficulty == difficulty)
                                     {
                                         // Loot Section                
                                         writer.WriteStartElement("loot");
 
-                                        writer.WriteStartElement("id");
+                                        writer.WriteStartAttribute("id");
                                         writer.WriteString(loot.Id.ToString());
-                                        writer.WriteEndElement();
+                                        writer.WriteEndAttribute();
+
+                                        writer.WriteStartAttribute("context");
+                                        writer.WriteString(raidDifficulty);
+                                        writer.WriteEndAttribute();
 
                                         if (loot.Specs != null)
                                         {
@@ -727,6 +735,8 @@ namespace WoWGuildOrganizer
 
                 if (data != null)
                 {
+                    this.Cursor = Cursors.WaitCursor;
+
                     // Find the last Expansion Id.  That will be the one we care about
                     foreach (JSONZoneData raid in data.Zones)
                     {
@@ -764,7 +774,9 @@ namespace WoWGuildOrganizer
                             foreach (JSONRaidBossData boss in raid.Bosses)
                             {
                                 // Add this current boss to the List of boss loots
-                                bossLoots.Add(GetWowHeadNPCData(boss.Id));
+                                newRaid = GetWowHeadNPCData(boss.Id);
+                                newRaid.Zone = raid.Name;
+                                bossLoots.Add(newRaid);
                             }
                         }
                     }
@@ -776,6 +788,10 @@ namespace WoWGuildOrganizer
             catch (Exception ex)
             {
                 Logging.DisplayError($"Error: {ex.Message}");
+            }
+            finally
+            {
+                this.Cursor = Cursors.Default;
             }
         }
     }

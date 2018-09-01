@@ -359,12 +359,13 @@ namespace WoWGuildOrganizer
         /// <param name="e">e parameter</param>
         private void Form1_Load(object sender, EventArgs e)
         {
-            // refresh the grid data since it's been changed
-            dataGridViewRaidGroup.DataSource = null;
+            // Add in the Data for the Raid Group
+            this.dataGridViewRaidGroup.AllowUserToAddRows = false;
+            BindingSource source = new BindingSource();
+            source.DataSource = this.raidGroup.RaidGroup;
+            this.dataGridViewRaidGroup.DataSource = source;
             dataGridViewRaidGroup.Refresh();
-            dataGridViewRaidGroup.DataSource = this.raidGroup.RaidGroup;
-            this.UpdateRaidGrid();
-            
+
             this.SortGrid(WGOTabs.GuildData, this.sortGuild);
         }
 
@@ -702,12 +703,16 @@ namespace WoWGuildOrganizer
 
             if (tab == WGOTabs.GuildData)
             {
-                dataGridViewGuildData.DataSource = null;
+                if (this.savedCharacters.SavedCharacters.Count > 0)
+                {
+                    this.savedCharacters.SavedCharacters.Sort(new ObjectComparer(sorting, multipleSort));
+                }
 
-                this.savedCharacters.SavedCharacters.Sort(new ObjectComparer(sorting, multipleSort));
-
-                // refresh grid data
-                dataGridViewGuildData.DataSource = this.savedCharacters.SavedCharacters;
+                if (dataGridViewGuildData.DataSource == null)
+                {
+                    // refresh grid data
+                    dataGridViewGuildData.DataSource = this.savedCharacters.SavedCharacters;
+                }
 
                 // Now update the grid
                 this.UpdateGrid();
@@ -717,9 +722,9 @@ namespace WoWGuildOrganizer
                 this.raidGroup.RaidGroup.Sort(new ObjectComparer(sorting, multipleSort));
 
                 // refresh grid data
-                dataGridViewRaidGroup.DataSource = null;
-                dataGridViewRaidGroup.Refresh();
-                dataGridViewRaidGroup.DataSource = this.raidGroup.RaidGroup;
+                //dataGridViewRaidGroup.DataSource = null;
+                //dataGridViewRaidGroup.Refresh();
+                //dataGridViewRaidGroup.DataSource = this.raidGroup.RaidGroup;
 
                 // Now update the grid
                 this.UpdateRaidGrid();
@@ -1122,7 +1127,7 @@ namespace WoWGuildOrganizer
                 // Change the button text so that this can be cancelled
                 this.EnableRefreshButton(true);
 
-                // Show the progress bar
+                // Hide the progress bar
                 this.toolStripProgressBar1.Visible = false;
 
                 this.UpdateLabelMT(string.Format("{0} total characters in {1} seconds", this.savedCharacters.SavedCharacters.Count, (this.sw.GetElapsedTime() / 1000).ToString("0")));
@@ -1269,17 +1274,11 @@ namespace WoWGuildOrganizer
 
                 if (gm != null)
                 {
-                    // Clear out the Grid Data Source to get it ready for the new data
-                    dataGridViewRaidGroup.DataSource = null;
-
                     // Add new character to Raid
                     this.raidGroup.RaidGroup.Add(gm);
 
                     // refresh grid data
                     dataGridViewRaidGroup.Enabled = false;
-                    dataGridViewRaidGroup.DataSource = null;
-                    //dataGridViewRaidGroup.Refresh();
-                    dataGridViewRaidGroup.DataSource = this.raidGroup.RaidGroup;
                     dataGridViewRaidGroup.Refresh();
                     dataGridViewRaidGroup.ClearSelection();
 
@@ -1407,8 +1406,8 @@ namespace WoWGuildOrganizer
 
                     // Sort the selected column.                
                     this.raidGroup.RaidGroup.Sort(new ObjectComparer(sorting, false));
-                    dataGridViewRaidGroup.DataSource = null;
-                    dataGridViewRaidGroup.DataSource = this.raidGroup.RaidGroup;
+                    //dataGridViewRaidGroup.DataSource = null;
+                    //dataGridViewRaidGroup.DataSource = this.raidGroup.RaidGroup;
                     dataGridViewRaidGroup.Columns[e.ColumnIndex].HeaderCell.SortGlyphDirection = direction == ListSortDirection.Ascending ? SortOrder.Ascending : SortOrder.Descending;
                     this.UpdateRaidGrid();
                 }
@@ -1826,20 +1825,18 @@ namespace WoWGuildOrganizer
 
                             if (gm != null)
                             {
-                                // Clear out the Grid Data Source to get it ready for the new data
-                                this.dataGridViewRaidGroup.DataSource = null;
-
-                                // Add new character to Raid
-                                this.raidGroup.RaidGroup.Add(gm);
-
-                                // refresh grid data
-                                this.dataGridViewRaidGroup.Enabled = false;
-                                this.dataGridViewRaidGroup.DataSource = null;
-                                this.dataGridViewRaidGroup.DataSource = this.raidGroup.RaidGroup;
-                                this.UpdateRaidGrid();
-                                this.dataGridViewRaidGroup.ClearSelection();
-                                this.SortGrid(WGOTabs.RaidData, this.sortRaid);
-                                this.dataGridViewRaidGroup.Enabled = true;
+                                // refresh grid data - need to begin invoke since the data grid seems to be on another thread
+                                this.dataGridViewRaidGroup.BeginInvoke((Action)(() =>
+                                {
+                                    // Add new character to Raid
+                                    this.dataGridViewRaidGroup.SuspendLayout();
+                                    this.raidGroup.RaidGroup.Add(gm);
+                                    ((BindingSource)this.dataGridViewRaidGroup.DataSource).ResetBindings(false);
+                                    this.UpdateRaidGrid();
+                                    this.SortGrid(WGOTabs.RaidData, this.sortRaid);
+                                    this.SortGrid(WGOTabs.GuildData, this.sortGuild);
+                                    this.dataGridViewRaidGroup.ResumeLayout();
+                                }));
                             }
                         }
 
@@ -1878,20 +1875,58 @@ namespace WoWGuildOrganizer
                     {
                         Logging.Log("Search Started...");
 
-                        // start the wait cursor
-                        this.WaitCursor(true);
-
-                        // Change the button text so that this can be cancelled
-                        this.EnableRefreshButton(false);
-
-                        // Show the progress bar
-                        this.toolStripProgressBar1.Visible = true;
-
-                        // Start the stop watch
+                        // Reset the Counter
+                        this.toolStripProgressBar1.Value = 0;
+                        this.toolStripProgressBar1.Style = ProgressBarStyle.Marquee;
                         this.sw.Start();
+                        this.Cursor = Cursors.WaitCursor;
+                        this.toolStripProgressBar1.Visible = true;
+                        this.tabControlWGO.Enabled = false;
+                        this.toolStripMain.Enabled = false;
 
-                        // Kickoff the worker thread to begin it's DoWork function.
-                        this.guildInfoAsyncWorker.RunWorkerAsync();
+                        this.dataGridViewGuildData.DataSource = null;
+
+                        // Get the entire Guild Roster
+                        Task<bool> taskGetGuildMembers = Task.Factory.StartNew<bool>(() => this.GetGuildMembers());
+                        taskGetGuildMembers.ContinueWith(
+                            (antecedent) =>
+                            {
+                                if (antecedent.Exception != null)
+                                {
+                                    MessageBox.Show($"Error: {antecedent.Exception.Message}");
+                                }
+                                else
+                                {
+                                    // Stop Timer - How long did it take?
+                                    this.sw.Stop();
+                                    this.toolStripProgressBar1.Value = 100;
+                                    this.toolStripProgressBar1.Style = ProgressBarStyle.Continuous;
+                                    this.toolStripProgressBar1.Visible = false;
+                                    this.Cursor = Cursors.Default;
+
+                                    // Query is done... update form
+                                    this.tabControlWGO.Enabled = true;
+                                    this.toolStripMain.Enabled = true;
+
+                                    // Update label
+                                    string message = $"{this.savedCharacters.SavedCharacters.Count} total characters in {(this.sw.GetElapsedTime() / 1000).ToString("0")} seconds";
+                                    Logging.Log(message);
+                                    this.toolStripLabelRefreshStatus.Text = string.Format("Total Characters in guild: {0}", this.savedCharacters.SavedCharacters.Count);
+
+                                    if (antecedent.Result)
+                                    {
+                                        // New data
+                                        this.dataGridViewGuildData.DataSource = this.savedCharacters.SavedCharacters;
+                                        
+                                        // Update Grid now
+                                        this.UpdateGrid();
+
+                                        // Sort
+                                        this.SortGrid(WGOTabs.GuildData, this.sortGuild);
+                                    }
+                                }
+                            },
+                            TaskScheduler.FromCurrentSynchronizationContext());
                     }
                     else
                     {
@@ -1901,7 +1936,51 @@ namespace WoWGuildOrganizer
             }
             else if (this.tabControlWGO.SelectedTab.Text == "Raid Data")
             {
-                this.UpdateCharacters(this.dataGridViewRaidGroup.Rows.Cast<DataGridViewRow>().ToList(), false);
+                StopWatch timer = new StopWatch();
+                int maxConcurrency = 2;
+
+                // Start Timer
+                this.Cursor = Cursors.WaitCursor;
+                timer.Start();
+                
+                // Do the actual work, in parallel
+                using (SemaphoreSlim concurrencySemaphore = new SemaphoreSlim(maxConcurrency))
+                {
+                    List<Task> tasks = new List<Task>();
+
+                    foreach (DataGridViewRow row in this.dataGridViewRaidGroup.Rows.Cast<DataGridViewRow>().ToList())
+                    {
+                        concurrencySemaphore.Wait();
+
+                        var t = Task.Factory.StartNew(() =>
+                        {
+
+                            try
+                            {
+                                GuildMember currentVersion = (GuildMember)this.raidGroup.RaidGroup[row.Index];
+                                this.UpdateCharacter(currentVersion);
+                            }
+                            finally
+                            {
+                                concurrencySemaphore.Release();
+                            }
+                        });
+
+                        tasks.Add(t);
+                    }
+
+                    Task.WaitAll(tasks.ToArray());
+                }
+
+                // Stop Timer - How long did it take?
+                timer.Stop();
+                this.Cursor = Cursors.Default;
+                this.UpdateRaidGrid();
+
+                // Update label
+                string message = $"{this.dataGridViewRaidGroup.Rows.Cast<DataGridViewRow>().ToList().Count} total characters in {(timer.GetElapsedTime() / 1000).ToString("0")} seconds";
+                Logging.Log(message);
+                Logging.DisplayError(message);
             }
             else if (this.tabControlWGO.SelectedTab.Text == "Raid Loot Drops")
             {
@@ -1915,6 +1994,244 @@ namespace WoWGuildOrganizer
                     this.ToolStripComboBoxPickBoss_SelectedIndexChanged(null, null);
                 }
             }
+        }
+
+        /// <summary>
+        /// Will get all the guild member data from a specific guild.
+        /// </summary>
+        /// <returns>True if data was obtained.</returns>
+        private bool GetGuildMembers()
+        {
+            bool result = false;
+
+            try
+            {
+                // Get the guild information
+                GetGuildInfo guildInfo = new GetGuildInfo();
+
+                if (guildInfo.GetJSONData(this.toolStripTextBoxGuild.Text, this.toolStripTextBoxRealm.Text))
+                {
+                    // Success! Now check to see if a grid needs to be updated or if it's the first time used
+                    if (this.savedCharacters.SavedCharacters.Count > 0)
+                    {
+                        // save the current data to a temp var
+                        ArrayList temp = new ArrayList();
+
+                        foreach (GuildMember m in this.savedCharacters.SavedCharacters)
+                        {
+                            temp.Add(m);
+                        }
+
+                        // erase the current data so we can start new
+                        this.savedCharacters.SavedCharacters.Clear();
+
+                        // Fill out the data grid with the data we collected
+                        this.savedCharacters.SavedCharacters = guildInfo.Characters;
+
+                        if (this.savedCharacters.Guild == this.toolStripTextBoxGuild.Text &&
+                            this.savedCharacters.Realm == this.toolStripTextBoxRealm.Text)
+                        {
+                            foreach (GuildMember newmember in this.savedCharacters.SavedCharacters)
+                            {
+                                // now see if this is a new char or if level was updated
+                                foreach (GuildMember oldmember in temp)
+                                {
+                                    if (newmember.Name == oldmember.Name)
+                                    {
+                                        // match!
+
+                                        // now check to see if level or achievement points have been updated
+                                        if (newmember.Level == oldmember.Level)
+                                        {
+                                            newmember.ClearFlags();
+                                        }
+
+                                        // always check to carry over the max iLevel value from old to new
+                                        //   since new will always be blank
+                                        if (newmember.MaxiLevel == 0 && oldmember.MaxiLevel != 0)
+                                        {
+                                            newmember.MaxiLevel = oldmember.MaxiLevel;
+                                            newmember.ClearMaxItemLevelFlag();
+                                        }
+
+                                        // always check to carry over the max iLevel value from old to new
+                                        //   since new will always be blank
+                                        if (newmember.EquipediLevel == 0 && oldmember.EquipediLevel != 0)
+                                        {
+                                            newmember.EquipediLevel = oldmember.EquipediLevel;
+                                            newmember.ClearEquipItemLevelFlag();
+                                        }
+
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            // Either the guild or the realm changed... either way, a guild member compare isn't needed
+                            this.savedCharacters.SavedCharacters = guildInfo.Characters;
+
+                            // Store the new guild and realm names
+                            this.savedCharacters.Guild = toolStripTextBoxGuild.Text;
+                            this.savedCharacters.Realm = toolStripTextBoxRealm.Text;
+                        }
+                    }
+                    else
+                    {
+                        // First time collection of the guild...
+                        //  Fill out the data grid with the data we collected
+                        this.savedCharacters.SavedCharacters = guildInfo.Characters;
+
+                        // Store the guild and realm names
+                        this.savedCharacters.Guild = this.toolStripTextBoxGuild.Text;
+                        this.savedCharacters.Realm = this.toolStripTextBoxRealm.Text;
+                    }
+                }
+
+                // Now get the individual Character data
+                //int count = 0;
+                //int total = this.savedCharacters.SavedCharacters.Count;
+
+                /*try
+                {
+                    // Go through all the guild members to get more details
+                    foreach (GuildMember gm in this.savedCharacters.SavedCharacters)
+                    {
+                        // Progress update
+                        this.UpdateLabelMT(this.savedCharacters.SavedCharacters.Count.ToString() + " total characters - On Character #" + (count + 1));
+
+                        // Only check for Item Level for characters over level 10
+                        //  Otherwise these characters won't be in the Armory
+                        if (gm.Level >= 10)
+                        {
+                            GuildMember charInfo = this.GetCharacterInformation(gm.Name, this.savedCharacters.Realm);
+
+                            if (charInfo != null)
+                            {
+                                // success!
+
+                                // Check out the times
+                                // todo: first need to capture the time variable from the web site
+
+                                // Fill out the data grid with the data we collected
+                                if (gm.Level < charInfo.Level)
+                                {
+                                    gm.Level = charInfo.Level;
+                                }
+                                else
+                                {
+                                    gm.ClearFlags();
+                                }
+
+                                if (gm.MaxiLevel < charInfo.MaxiLevel)
+                                {
+                                    gm.MaxiLevel = charInfo.MaxiLevel;
+                                }
+                                else
+                                {
+                                    gm.ClearMaxItemLevelFlag();
+                                }
+
+                                if (gm.EquipediLevel < charInfo.EquipediLevel)
+                                {
+                                    gm.EquipediLevel = charInfo.EquipediLevel;
+                                }
+                                else
+                                {
+                                    gm.ClearEquipItemLevelFlag();
+                                }
+
+                                gm.Profession1 = charInfo.Profession1;
+                                gm.Profession2 = charInfo.Profession2;
+                                gm.Spec = charInfo.Spec;
+                                gm.Role = charInfo.Role;
+                                gm.ItemAudits = charInfo.ItemAudits;
+                                gm.Class = charInfo.Class;
+                                gm.Name = charInfo.Name;
+                                gm.Race = charInfo.Race;
+                                gm.Realm = charInfo.Realm;
+
+                                if (gm.AchievementPoints < charInfo.AchievementPoints && charInfo.AchievementPoints > 0)
+                                {
+                                    gm.AchievementPoints = charInfo.AchievementPoints;
+                                }
+                                else if (gm.AchievementPoints != charInfo.AchievementPoints)
+                                {
+                                    // Weird situation that happens sometimes, check for it and log it
+                                    Logging.Warning(string.Format("Old vs New Achievement points.  [{0}] vs [{1}].", gm.AchievementPoints, charInfo.AchievementPoints));
+                                }
+
+                                gm.SetArmoryCheckTime();
+                                gm.SetItemLevelCheckTime();
+                            }
+                        }
+
+                        // Progress update for Progress Bar
+                        double tempNum = (double)count++ / (double)total * 100;
+                        //async.ReportProgress((int)tempNum);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logging.Error(ex.Message);
+                }
+
+                // Data has been gathered now...
+                //async.ReportProgress(100);
+
+                // re-sort by Item Level
+                this.SortGridMT(this.sortGuild);
+
+                // Stop the stopwatch
+                this.sw.Stop();
+
+                // stop the wait cursor
+                this.WaitCursor(false);
+                */
+
+                int maxConcurrency = 3;
+                string realm = this.toolStripTextBoxRealm.Text;
+
+                using (SemaphoreSlim concurrencySemaphore = new SemaphoreSlim(maxConcurrency))
+                {
+                    List<Task> tasks = new List<Task>();
+
+                    foreach (GuildMember gm in this.savedCharacters.SavedCharacters)
+                    {
+                        concurrencySemaphore.Wait();
+
+                        var t = Task.Run(() =>
+                        {
+                            try
+                            {
+                                if (WoWGuildOrganizer.FormMain.WebSiteOnline)
+                                {
+                                    gm.Realm = realm;
+                                    this.UpdateCharacter(gm, false);
+                                }
+                            }
+                            finally
+                            {
+                                concurrencySemaphore.Release();
+                            }
+                        });
+
+                        tasks.Add(t);
+                    }
+
+                    Task.WaitAll(tasks.ToArray());
+
+                    // Done!
+                    result = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logging.Error(ex.Message);
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -2007,6 +2324,8 @@ namespace WoWGuildOrganizer
         /// <param name="e">e parameter</param>
         private void DeleteCharacterFromGridToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            this.dataGridViewRaidGroup.SuspendLayout();
+
             // Delete this character(s) from the Raid Group
             foreach (DataGridViewRow row in this.dataGridViewRaidGroup.SelectedRows)
             {
@@ -2014,14 +2333,10 @@ namespace WoWGuildOrganizer
                 this.raidGroup.RaidGroup.RemoveAt(row.Index);
             }
 
-            // Clear out the Grid Data Source to get it ready for the new data
-            dataGridViewRaidGroup.DataSource = null;
-
-            // refresh grid data
-            dataGridViewRaidGroup.DataSource = this.raidGroup.RaidGroup;
-
-            // refresh the grid data since it's been changed
+            // refresh the grid since the data has been changed
+            ((BindingSource)this.dataGridViewRaidGroup.DataSource).ResetBindings(false);
             this.UpdateRaidGrid();
+            this.dataGridViewRaidGroup.ResumeLayout();
         }
 
         /// <summary>
@@ -2176,6 +2491,117 @@ namespace WoWGuildOrganizer
                 }
 
                 this.WaitCursor(false);
+            }
+            else
+            {
+                Logging.DisplayError("Battle.Net Not Reachable at this time.");
+            }
+        }
+
+        /// <summary>
+        /// Updates a collection of characters with the current information
+        /// </summary>
+        /// <param name="chars">A collection of selected rows in a data grid view</param>
+        /// <param name="guildUpdate">Flag if the update is in the guild or raid data grid view</param>
+        private void UpdateCharacter(GuildMember oldVersion, bool checkRoleChange = true)
+        {
+            bool updated = false;
+
+            if (WoWGuildOrganizer.FormMain.WebSiteOnline)
+            {
+                try
+                {
+                    GuildMember gm = this.GetCharacterInformation(oldVersion.Name, oldVersion.Realm);
+
+                    if (gm != null)
+                    {
+                        // Success! Now we have the new info
+                        bool success = true;
+
+                        // Check the spec first... if spec is different then first 
+                        //  ask if the update should happen
+                        // This prevents from losing primary spec data
+                        if (oldVersion.Role != gm.Role && checkRoleChange)
+                        {
+                            if (MessageBox.Show($"The role for {oldVersion.Name} has changed from {oldVersion.Role} to {gm.Role}.\n  Are you sure that you want to update?", "Spec Change", MessageBoxButtons.YesNo) == DialogResult.No)
+                            {
+                                success = false;
+                            }
+                        }
+
+                        if (success)
+                        {
+                            // Success! Now we have the new info
+                            // Compare the new info with the old info
+                            //  And make updates as needed...
+
+                            // Level
+                            if (oldVersion.Level != gm.Level)
+                            {
+                                oldVersion.Level = gm.Level;
+                            }
+                            else
+                            {
+                                oldVersion.ClearFlags();
+                                gm.ClearFlags();
+                            }
+
+                            // Achievement Points
+                            if (oldVersion.AchievementPoints != gm.AchievementPoints)
+                            {
+                                oldVersion.AchievementPoints = gm.AchievementPoints;
+                            }
+
+                            // Equiped iLevel
+                            if (oldVersion.EquipediLevel != gm.EquipediLevel)
+                            {
+                                oldVersion.EquipediLevel = gm.EquipediLevel;
+                            }
+                            else
+                            {
+                                oldVersion.ClearEquipItemLevelFlag();
+                                gm.ClearEquipItemLevelFlag();
+                            }
+
+                            // Max iLevel
+                            if (oldVersion.MaxiLevel != gm.MaxiLevel)
+                            {
+                                oldVersion.MaxiLevel = gm.MaxiLevel;
+                            }
+                            else
+                            {
+                                oldVersion.ClearMaxItemLevelFlag();
+                                gm.ClearMaxItemLevelFlag();
+                            }
+
+                            // Spec
+                            if (oldVersion.Spec != gm.Spec)
+                            {
+                                oldVersion.Spec = gm.Spec;
+                            }
+
+                            // Role
+                            if (oldVersion.Role != gm.Role)
+                            {
+                                oldVersion.Role = gm.Role;
+                            }
+
+                            // ItemAudit - always update, just in case
+                            oldVersion.ItemAudits = gm.ItemAudits;
+
+                            // Update the last updated time with the current date and time
+                            oldVersion.LastUpdated = DateTime.Now;
+                        }
+                    }
+                    else
+                    {
+                        Logging.Error("Character Update Unsuccessful.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logging.Error(ex.Message);
+                }
             }
             else
             {
@@ -2346,5 +2772,10 @@ namespace WoWGuildOrganizer
         }
 
         #endregion
+
+        private void dataGridViewRaidGroup_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+
+        }
     }
 }
